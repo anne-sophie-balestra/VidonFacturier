@@ -31,15 +31,9 @@
                     <ul class="nav navbar-nav">
                         <li class="text-center"><a href="index.php"><i class="icon-home fa fa-home fa-2x icon-2x"></i><br> Accueil</a></li>
                         <li class="dropdown text-center">
-                            <a href="#menuUbat" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon-th-list fa fa-th-list fa-2x icon-2x"></i><br>Gestion UBAT<b class="caret"></b>
+                            <a href="#listeDossiers" class="text-center" data-toggle="dropdown">
+                                <i class="glyphicon-th-list fa fa-th-list fa-2x icon-2x"></i><br>Liste dossiers
                             </a>
-                            <ul class="dropdown-menu text-left">
-                                <li class="dropdown-header">Ajouts</li>
-                                <li><a href="index.php?action=ajoutConstructeur"><i class="icon-plus fa fa-plus"></i> Nouveau constructeur...</a></li>
-                                <li><a href="index.php?action=ajoutChantier"><i class="icon-plus fa fa-plus"></i> Nouveau chantier...</a></li>
-                                <li><a href="index.php?action=ajoutDocument"><i class="icon-plus fa fa-plus"></i> Nouveau document bibliothèque...</a></li>
-                            </ul>
                         </li>
                     </ul>
                 </div>
