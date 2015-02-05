@@ -69,6 +69,10 @@ $liste_dossiers = pg_query("SELECT dos_id, dos_type, dos_numcomplet, dos_respons
 <script type="text/javascript" src="librairies/DataTables-1.10.4/media/js/jquery.dataTables.min.js"></script> 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
-        $('#ldossiers').DataTable();
-    } );
+        $('#ldossiers').DataTable({
+        "language": {
+            "sUrl": "librairies/DataTables-1.10.4/media/fr_FR.txt"
+          }
+        });
+    });
 </script>
