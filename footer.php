@@ -1,7 +1,7 @@
 <?php
 /********************************************
 * footer.php                                *
-* Fermeture de Html + script Js             *
+* Fermeture de Html                         *
 *                                           *
 * Auteurs : Anne-Sophie Balestra            *
 *           Abdoul Wahab Haidara            *
@@ -15,7 +15,7 @@
         </div>
     </body>
     <footer class="footer">
-        <div class="well-sm" style="margin-left: 215px;">
+        <div class="well-sm" style="right: 0; position: absolute; bottom: 0;">
             <?php echo (date('Y')!="2015" ? " - " . date('Y') : ""); ?>2015. Solent 2. Tous droits réservés.
         </div>
     </footer>

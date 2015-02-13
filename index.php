@@ -15,14 +15,25 @@
 /* Ajout en-tete avec le menu */
 require_once("header.php");
 
-pg_connect("host=localhost port=5432 dbname=solent2 user=Miage2015 password=miage2015");
+include_once("SPDO.php");
 
 /* On verifie si une page a ete demandee */
-if (filter_input(INPUT_GET, 'action') != NULL) { 
+if (filter_input(INPUT_GET, 'action') != NULL) {
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
     switch (filter_input(INPUT_GET, 'action')) {
+        /* Onglet Dossiers */
         case('listeDossiers'):
             require_once("pages/dossier/listeDossiers.php");
+            break;
+        
+        /* Onglet Factures */
+        case('listeFactures'):
+            require_once("pages/facture/listeFactures.php");
+            break;
+        
+        /* Onglet Autres */
+        case('createPrestation'):
+            require_once("pages/administrateurs/createPrestation.php");
             break;
     }
 }

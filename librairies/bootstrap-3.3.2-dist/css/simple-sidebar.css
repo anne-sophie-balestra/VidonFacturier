@@ -96,6 +96,19 @@
     background: none;
 }
 
+.sidebar-brand a {
+    color: #cccccc;
+}
+
+.sidebar-brand a:hover {
+    color: #337ab7;
+    background-color: #272727;
+}
+
+.sidebar-brand a:active {
+    color: #337ab7;
+}
+
 @media(min-width:768px) {
     #wrapper {
         padding-left: 210px;
