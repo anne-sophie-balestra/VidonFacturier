@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel="STYLESHEET" type="text/css" href="codebase/dhtmlxgrid.css">
+    <link rel="stylesheet" type="text/css" href="codebase/skins/dhtmlxgrid_dhx_skyblue.css">
+    
+    <!--  script src="codebase/dhtmlxgrid.js"></script>
+    <script src="codebase/dhtmlxgridcell.js"></script>-->
+    
+    <script type="text/javascript" src="codebase/dhtmlx.js"></script>
+    <script type="text/javascript" src="codebase/dataProcessor/dhtmlxdataprocessor.js"></script>
+    <script type="text/javascript" src="codebase/ext/dhtmlxgrid_filter.js" ></script>
+	<script type="text/javascript" src="codebase/connector/connector.js"></script>
+	<div id="mygrid_container" style="width:1000px; height:500px"></div>
+
+<script type="text/javascript">
+ function doOnLoad()
+        {
+        mygrid = new dhtmlXGridObject('mygrid_container');  //creates a grid instance
+       
+        mygrid.setImagePath("codebase/imgs/");                                             //sets the path to the grid images
+        mygrid.setHeader("Numero,Type,Titre,Responsable"); //sets the headers of the columns
+       
+        
+       
+        mygrid.setInitWidths("200,200,300,300");                                                 //sets the width of the columns; '*' makes the column fill all the remaining space
+        mygrid.setColSorting("str,str,str,str");
+        
+        mygrid.setColAlign("center,center,left,left");                                            //sets the horizontal alignment in the columns
+        mygrid.attachHeader("#text_filter,#select_filter,#text_filter,#text_filter");                                                     
+        //mygrid.enablePaging(true,30,null,"pagingArea",true,"recinfoArea");
+        
+        mygrid.init();
+        //mygrid.setPagingSkin("bricks");
+        mygrid.enableSmartRendering(true,50);
+        //mygrid.enablePaging(true,30,null,"pagingArea",true,"recinfoArea");
+        mygrid.load("data.php");
+        
+        //---grid initialization
+        
+        
+        
+        //    myDP = new dataProcessor("data.php");
+         //   myDP.init(myGrid);
+            //mygrid.enablePaging(true,15,5,); 
+            //populates the grid with data from the DB
+     
+            //---dataProcessor initialization
+    	                                                 
+            //initializes dataProcessor. As the parameter you should specify your grid
+        
+        
+        }
+ </script>
+
+
+</head>
+ 
+<body onLoad="doOnLoad()">
+<table>
+		<tr>
+			<td id="recinfoArea"></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="mygrid_container" ></div>
+			</td>
+		</tr>
+		<tr>
+			<td id="pagingArea"></td>
+		</tr>
+	</table>
+<br>
+
+
+
+</body>
+</html>
