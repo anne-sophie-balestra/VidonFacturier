@@ -22,23 +22,21 @@
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/simple-sidebar.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="librairies/font-awesome-4.3.0/css/font-awesome.min.css">
-        <link rel="STYLESHEET" type="text/css" href="librairies/dhtmlxSuite_v412_std/codebase/dhtmlx.css">
+        <link href="https://raw.githubusercontent.com/t0m/select2-bootstrap-css/bootstrap3/select2-bootstrap.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-spinner.gif" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.css" rel="stylesheet" />
     </head>
 
     <body>        
         <!--Pour le menu vertical-->  
         <div id="wrapper">       
-            <div id="sidebar-wrapper" class="container">
+            <div id="sidebar-wrapper" class="container">     
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav sidebar-brand">
                         <li class="text-center sidebar-brand" style="margin-bottom: 20px;">
                             <a class="sidebar-brand" href="index.php"><img src="img/logo.png" width="85" height="72"></a>
-                        </li>
-                        <li class="text-center sidebar-brand" style="margin-bottom: 20px;">
-                            <div class="input-group">
-                                <span class="input-group-addon" id="sizing-addon2"><i class="icon-search fa fa-search"></i></span>
-                                <input type="search" class="form-control" placeholder="Rechercher" aria-describedby="sizing-addon2">
-                            </div>
                         </li>
                         <li class="text-center sidebar-brand"><a href="index.php"><i class="icon-home fa fa-home fa-2x icon-2x"></i><br>Accueil</a></li>
                         <li class="text-center sidebar-brand"><a href="#agenda"><i class="icon-calendar fa fa-calendar fa-2x icon-2x"></i><br>Agenda</a></li>
@@ -49,7 +47,7 @@
                         <li class="text-center sidebar-brand"><a href="index.php?action=listeFactures"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br>Factures</a></li>
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
                         <li class="dropdown text-center sidebar-brand">
-                            <a href="#administrateurs" class="dropdown-toggle" data-toggle="dropdown">
+                            <a href="index.php?action=createPrestation" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="glyphicon-cog fa fa-cog fa-2x icon-2x"></i><br>Administrateurs <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu text-left">
@@ -59,7 +57,27 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div>             
+            <div id="slider" style="background-color: #333; width: 40px; height: 40px;"><img src="img/left-arrow.png" width="35" height="35"></div>    
+            <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+            <script>
+                $(document).ready(function(e) {
+                    var a=0;
+                    var b=0;
+                    $("#slider").click(function(e) {
+                        e.preventDefault();
+                        if (a==0) {
+                            $("#sidebar-wrapper").animate({"left":"210px"}, "fast").show();
+                            $("#slider").animate({"left":"210px"}, "fast").show();
+                            a=1;
+                        } else {
+                            $("#sidebar-wrapper").animate({"left":"10px"}, "fast");
+                            // left: 10px to be back to the position
+                            a=0;
+                        }
+                    });
+                });
+            </script> 
             
                
     <!--Pour le menu horizontal-->     
