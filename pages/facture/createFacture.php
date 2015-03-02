@@ -8,5 +8,14 @@
 *           Baptiste Quere                  *
 *           Yoann Le Taillanter             *
 *                                           *
-* Date de creation : 06/02/2015             *
+* Date de creation : 02/03/2015             *
 ********************************************/
+<html>
+    <head>
+        <link rel="STYLESHEET" type="text/css" href="../../librairies/dhtmlx/dhtmlx.css">
+        <script src="../../librairies/dhtmlx/dhtmlx.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+    </body>
+</html>
