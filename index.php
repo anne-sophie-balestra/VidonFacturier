@@ -14,7 +14,7 @@
 
 /* Ajout en-tete avec le menu */
 require_once("header.php");
-
+        
 include_once("SPDO.php");
 
 /* On verifie si une page a ete demandee */
@@ -33,7 +33,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         
         /* Onglet Autres */
         case('createPrestation'):
-            require_once("pages/administrateurs/createPrestation.php");
+            require_once("pages/facture/administrateurs/createPrestation.php");
             break;
     }
 }

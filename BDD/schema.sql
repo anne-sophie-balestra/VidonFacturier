@@ -11,12 +11,13 @@
 * Date de creation : 06/02/2015             *
 ********************************************/
 
-
 CREATE TABLE type_dossier
 (
     t_dos_id VARCHAR(11) NOT NULL PRIMARY KEY,
-    t_dos_creadate TIMESTAMP, 
+    t_dos_creadate TIMESTAMP,
     t_dos_moddate TIMESTAMP,
+    t_dos_creauser VARCHAR(3),
+    t_dos_moduser VARCHAR(3),
     t_dos_entite VARCHAR(255),
     t_dos_type VARCHAR(255)
 );
@@ -26,23 +27,70 @@ CREATE TABLE type_operation
     t_ope_id VARCHAR(11) NOT NULL PRIMARY KEY,
     t_ope_creadate TIMESTAMP,
     t_ope_moddate TIMESTAMP,
+    t_ope_creauser VARCHAR(3),
+    t_ope_moduser VARCHAR(3),
     t_ope_libelle VARCHAR(255)
 );
 
-CREATE TABLE prestation 
+CREATE TABLE prestation
 (
     pres_id VARCHAR(11) NOT NULL PRIMARY KEY,
     pres_creadate TIMESTAMP,
     pres_moddate TIMESTAMP,
-    pres_rf_nom_code VARCHAR(255),
-    pres_prestation VARCHAR(255), 
-    pres_libelle VARCHAR(255), 
+    pres_creauser VARCHAR(3),
+    pres_moduser VARCHAR(3),
+    pres_rf_nom VARCHAR(11),
+    pres_prestation VARCHAR(255),
+    pres_libelle_ligne_fac VARCHAR(255),
     pres_t_tarif VARCHAR(10),
     pres_tarif_std NUMERIC(10,2) DEFAULT 0,
     pres_repartition_cons NUMERIC (3),
-    pres_pays VARCHAR(255),
-    pres_rf_type_dossier VARCHAR(11),
+    pres_rf_pay VARCHAR(11),
+    pres_rf_typ_dossier VARCHAR(11),
     pres_rf_typ_operation VARCHAR(11),
-    FOREIGN KEY (pres_re_type_dossier) REFERENCES type_dossier(t_dos_id), 
-    FOREIGN KEY (pres_re_type_operation) REFERENCES type_operation(t_ope_id) 
+    pres_typ_ligne VARCHAR(5),
+
+    FOREIGN KEY (pres_rf_typ_dossier) REFERENCES type_dossier(t_dos_id),
+    FOREIGN KEY (pres_rf_typ_operation) REFERENCES type_operation(t_ope_id),
+    FOREIGN KEY (pres_rf_nom) REFERENCES nomenclature(nom_id),
+    FOREIGN KEY (pres_rf_pay) REFERENCES pays(pay_id)
+);
+
+CREATE TABLE type_facture
+(
+    t_fac_id VARCHAR (11) NOT NULL PRIMARY KEY,
+    t_fac_rf_typdos VARCHAR (11),
+    t_fac_rf_ent VARCHAR(11),
+    t_fac_creadate TIMESTAMP WITH TIME ZONE,
+    t_fac_moddate TIMESTAMP WITH TIME ZONE,
+    t_fac_creauser VARCHAR(3),
+    t_fac_moduser VARCHAR(3),
+    t_fac_type VARCHAR(200),
+    t_fac_objet VARCHAR(255),
+    t_fac_rf_ope VARCHAR(11),
+    t_fac_devise VARCHAR(3),
+    t_fac_tauxdevise NUMERIC,
+    t_fac_tauxtva NUMERIC,
+    t_fac_langue VARCHAR (4),
+
+    FOREIGN KEY (t_fac_rf_typdos) REFERENCES type_dossier(t_dos_id),
+    FOREIGN KEY (t_fac_rf_ent) REFERENCES entite(ent_id)
+);
+
+CREATE TABLE type_ligne
+(
+    t_lig_id VARCHAR(11) NOT NULL PRIMARY KEY,
+    t_lig_rf_pres VARCHAR(11) NOT NULL,
+    t_lig_creadate TIMESTAMP WITH TIME ZONE,
+    t_lig_moddate TIMESTAMP WITH TIME ZONE,
+    t_lig_creauser VARCHAR(3),
+    t_lig_moduser VARCHAR(3),
+    t_lig_rubrique VARCHAR(255),
+    t_lig_libelle VARCHAR(255),
+    t_lig_rf_typ_fac VARCHAR(11),
+    t_lig_nb NUMERIC,
+    t_lig_total NUMERIC,
+
+    FOREIGN KEY (t_lig_rf_typ_fac) REFERENCES type_facture(t_fac_id),
+    FOREIGN KEY (t_lig_rf_pres) REFERENCES prestation(pres_id)
 );
