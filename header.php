@@ -27,12 +27,13 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-spinner.gif" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="http://localhost:8888/solent2/lienfacturier/librairies/dhtmlxSuite_v413_std/codebase/dhtmlx.css">
     </head>
 
-    <body>        
-        <!--Pour le menu vertical-->  
-        <div id="wrapper">       
-            <div id="sidebar-wrapper" class="container">     
+    <body>
+        <!--Pour le menu vertical-->
+        <div id="wrapper">
+            <div id="sidebar-wrapper" class="container">
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav sidebar-brand">
                         <li class="text-center sidebar-brand" style="margin-bottom: 20px;">
@@ -57,8 +58,8 @@
                         </li>
                     </ul>
                 </div>
-            </div>             
-            <div id="slider" style="background-color: #333; width: 40px; height: 40px;"><img src="img/left-arrow.png" width="35" height="35"></div>    
+            </div>
+            <div id="slider" style="background-color: #333; width: 40px; height: 40px;"><img src="img/left-arrow.png" width="35" height="35"></div>
             <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
             <script>
                 $(document).ready(function(e) {
@@ -77,11 +78,11 @@
                         }
                     });
                 });
-            </script> 
-            
-               
-    <!--Pour le menu horizontal-->     
-<!--    <nav class="navbar navbar-inverse nav-stacked" role="navigation">            
+            </script>
+
+
+    <!--Pour le menu horizontal-->
+<!--    <nav class="navbar navbar-inverse nav-stacked" role="navigation">
             <a class="navbar-brand" href="index.php"><img src="img/logo.png" width="75" height="63" style="margin-top: -10%; margin-left: 15%;"></a>
             <div class="container">
                 <div class="collapse navbar-collapse navbar-ex1-collapse">

@@ -14,7 +14,7 @@
 
 /* Ajout en-tete avec le menu */
 require_once("header.php");
-        
+
 include_once("SPDO.php");
 
 /* On verifie si une page a ete demandee */
@@ -25,12 +25,17 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('listeDossiers'):
             require_once("pages/dossier/listeDossiers.php");
             break;
-        
+
         /* Onglet Factures */
         case('listeFactures'):
             require_once("pages/facture/listeFactures.php");
             break;
-        
+
+        /* Onglet Factures */
+        case('createFacture'):
+            require_once("pages/facture/createFacture.php");
+            break;
+
         /* Onglet Autres */
         case('createPrestation'):
             require_once("pages/facture/administrateurs/createPrestation.php");
