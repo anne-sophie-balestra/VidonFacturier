@@ -11,6 +11,7 @@
 * Date de creation : 06/02/2015             *
 ********************************************/
 
+/* Creation de tables */
 CREATE TABLE type_dossier
 (
     t_dos_id VARCHAR(11) NOT NULL PRIMARY KEY,
@@ -94,3 +95,18 @@ CREATE TABLE type_ligne
     FOREIGN KEY (t_lig_rf_typ_fac) REFERENCES type_facture(t_fac_id),
     FOREIGN KEY (t_lig_rf_pres) REFERENCES prestation(pres_id)
 );
+
+/* Insertion tables de typage */
+INSERT INTO type_dossier (t_dos_id, t_dos_creadate, t_dos_moddate, t_dos_creauser, t_dos_moduser, t_dos_entite, t_dos_type) VALUES ('TDOre000001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Brevet', 'Brevet');
+INSERT INTO type_dossier (t_dos_id, t_dos_creadate, t_dos_moddate, t_dos_creauser, t_dos_moduser, t_dos_entite, t_dos_type) VALUES ('TDOre000002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Brevet', 'Etude');
+INSERT INTO type_dossier (t_dos_id, t_dos_creadate, t_dos_moddate, t_dos_creauser, t_dos_moduser, t_dos_entite, t_dos_type) VALUES ('TDOre000003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Juridique', 'DessinModele');
+INSERT INTO type_dossier (t_dos_id, t_dos_creadate, t_dos_moddate, t_dos_creauser, t_dos_moduser, t_dos_entite, t_dos_type) VALUES ('TDOre000004', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Juridique', 'Marque');
+
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Dépôt');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Procédure');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Délivrance');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000004', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Enregistrement');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000005', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Renouvellement');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000006', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Surveillance');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000007', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Recherches');
+INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000008', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Divers');

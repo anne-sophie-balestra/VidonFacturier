@@ -22,11 +22,21 @@
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/simple-sidebar.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="librairies/font-awesome-4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
         <link href="https://raw.githubusercontent.com/t0m/select2-bootstrap-css/bootstrap3/select2-bootstrap.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-spinner.gif" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.css" rel="stylesheet" />
+        <!-- JQuery --> 
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+        <!-- Select2 -->  
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2_locale_fr.js"></script>
+        <!-- Bootstrap -->  
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     </head>
 
     <body>        
@@ -35,7 +45,10 @@
             <div id="sidebar-wrapper" class="container">     
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav sidebar-brand">
-                        <li class="text-center sidebar-brand" style="margin-bottom: 20px;">
+                        <li class="text-center sidebar-brand">                            
+                            <a id="slider" class="sidebar-brand" style="padding-left: 85%; background-color: transparent; cursor: pointer;"><img src="img/arrows.png" width="50" height="50"></a>
+                        </li>
+                        <li class="text-center sidebar-brand" style="margin-bottom: 20px;">                            
                             <a class="sidebar-brand" href="index.php"><img src="img/logo.png" width="85" height="72"></a>
                         </li>
                         <li class="text-center sidebar-brand"><a href="index.php"><i class="icon-home fa fa-home fa-2x icon-2x"></i><br>Accueil</a></li>
@@ -57,21 +70,17 @@
                         </li>
                     </ul>
                 </div>
-            </div>             
-            <div id="slider" style="background-color: #333; width: 40px; height: 40px;"><img src="img/left-arrow.png" width="35" height="35"></div>    
-            <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+            </div>                
             <script>
                 $(document).ready(function(e) {
                     var a=0;
-                    var b=0;
                     $("#slider").click(function(e) {
                         e.preventDefault();
                         if (a==0) {
                             $("#sidebar-wrapper").animate({"left":"210px"}, "fast").show();
-                            $("#slider").animate({"left":"210px"}, "fast").show();
                             a=1;
                         } else {
-                            $("#sidebar-wrapper").animate({"left":"10px"}, "fast");
+                            $("#sidebar-wrapper").animate({"left":"50px"}, "fast");
                             // left: 10px to be back to the position
                             a=0;
                         }

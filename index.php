@@ -15,7 +15,8 @@
 /* Ajout en-tete avec le menu */
 require_once("header.php");
         
-include_once("SPDO.php");
+require_once("SPDO.php");
+require_once("ajax.php");
 
 /* On verifie si une page a ete demandee */
 if (filter_input(INPUT_GET, 'action') != NULL) {
