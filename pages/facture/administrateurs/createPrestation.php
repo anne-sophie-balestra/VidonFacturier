@@ -31,12 +31,12 @@ $result_pays_reg->execute();
 ?>
 <!-- Contenu principal de la page -->
 <div class="container">
-    <form action="index.php?action=addPrestation" method="post" role="form"> 
+    <form id="formNewPrestation" action="index.php?action=insertPrestation" method="post" role="form" data-toggle="validator"> 
         <h2>Nouvelle prestation</h2>        
         <div class="form-group">
             <label class="control-label" for="operation">Opération :</label>
             <select name="operation" id="operation" required class="form-control select2">
-                <option></option>
+                <option></option> 
             <?php foreach($result_ope->fetchAll(PDO::FETCH_OBJ) as $ope) { ?>
                 <option value="<?php echo $ope->t_ope_id; ?>"><?php echo $ope->t_ope_libelle; ?></option>
             <?php } ?>
@@ -81,16 +81,13 @@ $result_pays_reg->execute();
         </div>
         <div class="form-group">
             <label class="control-label" for="prestation">Prestation :</label>
-            <input name="prestation" type="text" required class="form-control" id="prestation">
+            <input name="prestation" type="text" required class="form-control" id="prestation" data-error="Veuillez entrer le nom de la prestation générale">
+            <div class="help-block with-errors"></div>
         </div>
         <div class="form-group">
             <label class="control-label" for="nb_infos_prestation">Nombre de prestations liées :</label>
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button onclick="genererInfosPrestation('infosPrestation', $('#nbInfos').val(), 'Informations');" class="btn btn-default" type="button">Créer</button>
-                </span>
-                <input name="nbInfos" id="nbInfos" type="number" value='1' required class="form-control">
-            </div>
+            <input name="nbInfos" id="nbInfos" onkeyup="genererInfosPrestation('infosPrestation', $('#nbInfos').val(), 'Informations');" type="number" value='0' min='1' required class="form-control" data-error="Veuillez entrer le nombre de prestations associées à créer (au moins une)">
+            <div class="help-block with-errors"></div>
         </div>
         <div class="panel-group" id="infosPrestation" role="tablist" aria-multiselectable="true"></div>
         <div>

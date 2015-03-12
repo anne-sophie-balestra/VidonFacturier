@@ -91,7 +91,7 @@ function genererListeTypeDossier(p_id, p_value) {
 function genererInfosPrestation(p_id, p_value, p_nom){
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
-    
+
     // Vérifie si le navigateur supporte l'AJAX
     if (xmlHttp == null) {
         alert ("Votre navigateur ne supporte pas AJAX");
@@ -120,7 +120,7 @@ function genererInfosPrestation(p_id, p_value, p_nom){
 function genererTarifs(p_id, p_value, p_num){
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
-    
+
     // Vérifie si le navigateur supporte l'AJAX
     if (xmlHttp == null) {
         alert ("Votre navigateur ne supporte pas AJAX");
@@ -128,7 +128,7 @@ function genererTarifs(p_id, p_value, p_num){
     } 
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=genererTarifs&tt=" + p_value + "&num=" + p_num;
-    
+
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
@@ -136,5 +136,5 @@ function genererTarifs(p_id, p_value, p_num){
         };
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
-    xmlHttp.send(null); 
+    xmlHttp.send(null);
 }

@@ -70,7 +70,7 @@ function genererListeTypeDossier($p_entite)
  * @param String $p_nom : nom des blocs
  ***/
 function genererInfosPrestation($p_nb, $p_nom)
-{    
+{   
     for($i=1;$i<=$p_nb;$i++) { ?>        
         <div class="panel panel-default">
             <div class="panel-heading" style="cursor: pointer;" role="tab" id="title_<?php echo $p_nom . "_" . $i; ?>" data-toggle="collapse" data-parent="#infosPrestation" href="#<?php echo $p_nom . "_" . $i; ?>" aria-expanded="true" aria-controls="<?php echo $p_nom . "_" . $i; ?>">
@@ -85,12 +85,44 @@ function genererInfosPrestation($p_nb, $p_nom)
                     <div class="form-group">
                         <label class="control-label" for="t_tarif<?php echo $i; ?>">Type de tarification :</label>
                         <select name="t_tarif<?php echo $i; ?>" id="t_tarif<?php echo $i; ?>" required class="form-control" onchange="genererTarifs('tarifs<?php echo $i; ?>', this.value, <?php echo $i; ?>);">
-                            <option></option>
+                            <option value="" disabled selected>Choisissez un type de tarification...</option>
                             <option value="F">Forfaitaire</option>
                             <option value="TH">Tarif Horaire</option>
                         </select>
                     </div>
                     <div id="tarifs<?php echo $i; ?>"></div>
+                    <div class="form-group">
+                        <label class="control-label" for="repartition<?php echo $i; ?>">Répartition des consultants :</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <select id="pourcentage_select<?php echo $i; ?>" class="form-inline" onchange="document.getElementById('pourcentage<?php echo $i; ?>').innerHTML=this.value+'%';document.getElementById('repartition<?php echo $i; ?>').value=this.value;">
+                                    <option>0</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>15</option>
+                                    <option>20</option>
+                                    <option>25</option>
+                                    <option>30</option>
+                                    <option>35</option>
+                                    <option>40</option>
+                                    <option>45</option>
+                                    <option selected>50</option>
+                                    <option>55</option>
+                                    <option>60</option>
+                                    <option>65</option>
+                                    <option>70</option>
+                                    <option>75</option>
+                                    <option>80</option>
+                                    <option>85</option>
+                                    <option>90</option>
+                                    <option>95</option>
+                                    <option>100</option>
+                                </select>
+                            </span>
+                            <input name="repartition<?php echo $i; ?>" id="repartition<?php echo $i; ?>" onchange="document.getElementById('pourcentage<?php echo $i; ?>').innerHTML=this.value+'%';document.getElementById('pourcentage_select<?php echo $i; ?>').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
+                            <span id="pourcentage<?php echo $i; ?>" class="input-group-addon">50%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,31 +141,35 @@ function genererTarifs($p_tt, $p_num)
         <div class="form-group">
             <label class="control-label" for="tarif<?php echo $p_num; ?>">Tarif :</label>
             <div class="input-group">
-                <input name="tarif<?php echo $p_num; ?>" id="tarif<?php echo $p_num; ?>" type="text" required class="form-control">
+                <input name="tarif<?php echo $p_num; ?>" id="tarif<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     <?php } else { ?>
         <div class="form-group">
             <label class="control-label" for="tarif_jr<?php echo $p_num; ?>">Tarif junior :</label>
             <div class="input-group">
-                <input name="tarif_jr<?php echo $p_num; ?>" id="tarif_jr<?php echo $p_num; ?>" type="text" required class="form-control">
+                <input name="tarif_jr<?php echo $p_num; ?>" id="tarif_jr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
+            <div class="help-block with-errors"></div>
         </div>        
         <div class="form-group">
             <label class="control-label" for="tarif_sr<?php echo $p_num; ?>">Tarif senior :</label>
             <div class="input-group">
-                <input name="tarif_sr<?php echo $p_num; ?>" id="tarif_sr<?php echo $p_num; ?>" type="text" required class="form-control">
+                <input name="tarif_sr<?php echo $p_num; ?>" id="tarif_sr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
+            <div class="help-block with-errors"></div>
         </div>        
         <div class="form-group">
             <label class="control-label" for="tarif_mgr<?php echo $p_num; ?>">Tarif manager :</label>
             <div class="input-group">
-                <input name="tarif_mgr<?php echo $p_num; ?>" id="tarif_mgr<?php echo $p_num; ?>" type="text" required class="form-control">
+                <input name="tarif_mgr<?php echo $p_num; ?>" id="tarif_mgr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
+            <div class="help-block with-errors"></div>
         </div>        
     <?php }
 }

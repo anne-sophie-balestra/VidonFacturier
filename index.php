@@ -28,13 +28,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             break;
         
         /* Onglet Factures */
-        case('listeFactures'):
-            require_once("pages/facture/listeFactures.php");
-            break;
-        
-        /* Onglet Autres */
         case('createPrestation'):
             require_once("pages/facture/administrateurs/createPrestation.php");
+            break;
+        
+        case('insertPrestation'):
+            require_once("BDD/facture/administrateurs/prestation.php");
             break;
     }
 }
