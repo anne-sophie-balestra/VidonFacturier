@@ -31,6 +31,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("pages/facture/listeFactures.php");
             break;
         
+        /* Onglet Create Factures */
+        case('createFacture'):
+            require_once("pages/facture/facture2.php");
+            break;
+        
         /* Onglet Autres */
         case('createPrestation'):
             require_once("pages/administrateurs/createPrestation.php");
