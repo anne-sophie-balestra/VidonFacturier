@@ -81,12 +81,44 @@ $result_pays_reg->execute();
         </div>
         <div class="form-group">
             <label class="control-label" for="prestation">Prestation :</label>
-            <input name="prestation" type="text" required class="form-control" id="prestation" data-error="Veuillez entrer le nom de la prestation générale">
+            <input name="prestation" type="text" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
             <div class="help-block with-errors"></div>
         </div>
         <div class="form-group">
+            <label class="control-label" for="repartition">Répartition des consultants :</label>
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <select id="pourcentage_select" class="form-inline" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('repartition').value=this.value;">
+                        <option>0</option>
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
+                        <option>25</option>
+                        <option>30</option>
+                        <option>35</option>
+                        <option>40</option>
+                        <option>45</option>
+                        <option selected>50</option>
+                        <option>55</option>
+                        <option>60</option>
+                        <option>65</option>
+                        <option>70</option>
+                        <option>75</option>
+                        <option>80</option>
+                        <option>85</option>
+                        <option>90</option>
+                        <option>95</option>
+                        <option>100</option>
+                    </select>
+                </span>
+                <input name="repartition" id="repartition" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('pourcentage_select').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
+                <span id="pourcentage" class="input-group-addon">50%</span>
+            </div>
+        </div>
+        <div class="form-group">
             <label class="control-label" for="nb_infos_prestation">Nombre de prestations liées :</label>
-            <input name="nbInfos" id="nbInfos" onkeyup="genererInfosPrestation('infosPrestation', $('#nbInfos').val(), 'Informations');" type="number" value='0' min='1' required class="form-control" data-error="Veuillez entrer le nombre de prestations associées à créer (au moins une)">
+            <input name="nbInfos" id="nbInfos" onkeyup="genererInfosPrestation('infosPrestation', $('#nbInfos').val(), 'Informations');" type="number" value="0" min='1' required class="form-control" data-error="Veuillez entrer le nombre de prestations associées à créer (au moins une)">
             <div class="help-block with-errors"></div>
         </div>
         <div class="panel-group" id="infosPrestation" role="tablist" aria-multiselectable="true"></div>
