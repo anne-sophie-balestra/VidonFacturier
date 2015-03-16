@@ -15,22 +15,12 @@
 /* Ajout en-tete avec le menu */
 require_once("header.php");
 
-include_once("SPDO.php");
+include_once("BDD/SPDO.php");
 
 /* On verifie si une page a ete demandee */
 if (filter_input(INPUT_GET, 'action') != NULL) {
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
     switch (filter_input(INPUT_GET, 'action')) {
-        /* Onglet Dossiers */
-        case('listeDossiers'):
-            require_once("pages/dossier/listeDossiers.php");
-            break;
-
-        /* Onglet Factures */
-        case('listeFactures'):
-            require_once("pages/facture/listeFactures.php");
-            break;
-
         /* Onglet Factures */
         case('createFacture'):
             require_once("pages/facture/createFacture.php");

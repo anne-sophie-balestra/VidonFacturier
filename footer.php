@@ -14,8 +14,8 @@
 ?>      
         </div>
     </body>
-    <footer class="footer">
-        <div class="well-sm" style="right: 0; position: absolute; bottom: 0;">
+    <footer>
+        <div>
             <?php echo (date('Y')!="2015" ? " - " . date('Y') : ""); ?>2015. Solent 2. Tous droits réservés.
         </div>
     </footer>
