@@ -15,8 +15,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Solent 2 - Facturier</title>
+        <title>Solent 2 - Facturier</title>        
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <link rel="stylesheet" href="librairies/dhtmlxSuite/skins/skyblue/dhtmlx.css">
+        <script type="text/javascript" src="librairies/dhtmlxSuite/codebase/dhtmlx.js"></script>
     </head>
-
-    <body>
+</html>
