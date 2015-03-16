@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<menu>
+    <item id="fTop" text="Facture" > //1st item
+        <item id="fac_man" text="Facture manuelle" imgdis="../img/nouveau.png"/>
+        <item id="fac_mod" text="Facture pré-remplie"/> //1 sub-item
+        <item id="fts0" type="separator"/>//'separator' splits level in 2 parts
+        <item id="ftQuit" text="Quit"/>
+    </item>
+    <item id="eTop" text="Prestation"> 
+    	<item id="pre_new" text="Nouvelle prestation" imgdis="../img/nouveau.png"/>
+    	<item id="fts1" type="separator"/>
+        <item id="pre_list" text="Liste Prestation"/> //1 sub-item
+    </item>
+    <item id="hTop" text="Modèle"> 
+    	<item id="mod_new" text="Nouveau modèle" imgdis="../img/nouveau.png"/>
+    	<item id="fts2" type="separator"/>
+    	<item id="mod_list" text="Liste Prestation"/>
+    </item>
+</menu>
+
+
+<!--<item id="ftPrint" text="Print" enabled="false" imgdis="printer.png"/> -->

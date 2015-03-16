@@ -12,10 +12,7 @@
 * Date de creation : 06/02/2015             *
 ********************************************/
 ?>
-
-<body onload="doOnLoad();">
-	<div id="myForm" style="height:500px;"></div>
-</body>
+<div id="myForm" style="height:500px;"></div>
 
 <script type="text/javascript">    
     dhtmlx.image_path='librairies/dhtmlxSuite/codebase/imgs';

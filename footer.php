@@ -12,11 +12,10 @@
 * Date de creation : 29/01/2015             *
 ********************************************/
 ?>      
-        </div>
     </body>
     <footer>
-        <div>
+<!--        <div>
             <?php echo (date('Y')!="2015" ? " - " . date('Y') : ""); ?>2015. Solent 2. Tous droits réservés.
-        </div>
+        </div>-->
     </footer>
 </html>

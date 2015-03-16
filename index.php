@@ -22,12 +22,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
     switch (filter_input(INPUT_GET, 'action')) {
         /* Onglet Factures */
-        case('createFacture'):
-            require_once("pages/facture/createFacture.php");
-            break;
-
-        /* Onglet Autres */
-        case('createPrestation'):
+        case('pre_new'):
             require_once("pages/facture/administrateurs/createPrestation.php");
             break;
     }
