@@ -23,21 +23,36 @@
         <script>
             var myMenu;
             function doInitMenu() {
-            	//Creer un nouveau menu
+            	//Créer un nouveau menu
                 myMenu = new dhtmlXMenuObject("parentId");
 
                 // Inflate la structure du menu dans le fichier data/menu.xml
                 myMenu.loadStruct("data/menu.xml", function(){
                     
-                    //Gestion des evénements lorsqu'on clique sur les éléments du menu.
-                    myMenu.attachEvent("onClick", function(id, zoneId, cas){
-                        if ( id == "fTop") {
-                            if(id == "fac_man") {
-                                alert("facture manuelle!");                        
-                            }
-                        } else {
-                            alert("test");
-                        }
+                    //Gestion des évènements lorsqu'on clique sur les éléments du menu.
+                    myMenu.attachEvent("onClick", function(id){
+                        switch(id) {
+                            case "fac_mod":
+                                alert("Facture modèle !");
+                                break;
+                            case "fac_man":
+                                alert("facture manuelle !");
+                                break;
+                            case "pre_new":
+                                alert("Nouvelle Prestation !");
+                                break;
+                            case "pre_list":
+                                alert("Liste Prestation !");
+                                break;
+                            case "mod_new":
+                                alert("Nouveau Modèle !");
+                                break;
+                            case "mod_list":
+                                alert("Liste Prestation !");
+                                break;
+                            case "ftQuit":
+                                alert("Quit");
+                        } 
                     });
 
                 });
