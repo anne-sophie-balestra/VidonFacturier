@@ -33,22 +33,22 @@
                     myMenu.attachEvent("onClick", function(id){
                         switch(id) {
                             case "fac_mod":
-                                alert("Facture modèle !");
+                                document.location.href="index.php?action=fac_mod"; 
                                 break;
                             case "fac_man":
-                                alert("facture manuelle !");
+                                document.location.href="index.php?action=fac_man"; 
                                 break;
                             case "pre_new":
-                                alert("Nouvelle Prestation !");
+                                document.location.href="index.php?action=pre_new"; 
                                 break;
                             case "pre_list":
-                                alert("Liste Prestation !");
+                                document.location.href="index.php?action=pre_list";
                                 break;
                             case "mod_new":
-                                alert("Nouveau Modèle !");
+                                document.location.href="index.php?action=mod_new"; 
                                 break;
                             case "mod_list":
-                                alert("Liste Prestation !");
+                                document.location.href="index.php?action=mod_list"; 
                                 break;
                             case "ftQuit":
                                 alert("Quit");
