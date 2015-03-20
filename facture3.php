@@ -1,28 +1,25 @@
 <?php
-//echo ...
 ?>
-
-
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Création d'une Facture Manuelle</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<link rel="stylesheet" type="text/css" href="grid_server/codebase/dhtmlx.css"/>
-	<script src="librairies/dhtmlxSuite/dhtmlx.css"></script>
-     <script src="ibrairies/dhtmlxSuite/dhtmlx.js"></script>
-	<!--  <link rel="stylesheet" type="text/css" href="grid_server/codebase/dhtmlx.css"/>
-	<link rel="stylesheet" type="text/css" href="grid_server/codebase/dhtmlxform.css"/>
-	<script src="grid_server/codebase/dhtmlx.js"></script>-->
+
+	<!-- <script src="librairies/dhtmlxSuite/codebase/dhtmlx.css"></script> -->
+     <script src="librairies/dhtmlxSuite/codebase/dhtmlx.js"></script>
+	<link rel="stylesheet" type="text/css" href="dhtmlx.css"/>
+	<link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlx.css"/>
+
 	<script>
 		var myForm, formData;
 		function doOnLoad()
 		{
 			formData=[
 						
-		{type: "container", name: "myGridDossier", label: "Dossier", inputWidth: 390, inputHeight: 200},
-		{type: "container", name: "myGridLigne", label: "Ligne de factures", inputWidth: 390, inputHeight: 200},
-		{type: "container", name: "myGridAchat", label: "Achats", inputWidth: 390, inputHeight: 200},
+		{type: "container", name: "myGridDossier", label: "Dossier", inputWidth: 390, inputHeight: 150},
+		{type: "container", name: "myGridLigne", label: "Ligne de factures", inputWidth: 390, inputHeight:150},
+		{type: "container", name: "myGridAchat", label: "Achats", inputWidth: 390, inputHeight: 150},
 		{type: "fieldset", label: "Editer une Facture ", inputWidth: "*", list:[
 		{type:"settings",position:"label-left"},
 		{type:"label",list:[
@@ -49,17 +46,33 @@
 		{type: "input",name:"tva",label:"TVA",inputWidth:45, value:"20", required:false },
 		]},
 		
-
+		{type:"label",list:[
 		{type: "radio", name: "frais", value:"1" , label: "Honoraires", checked: true},
+		{type: "newcolumn"},
 		{type: "radio", name: "frais", value:"2", label: "Frais",position:"label-right"},
+		{type: "newcolumn"},
 		{type:"input",name:"",inputWidth:45,value:"1000", required:false,position:"label-right"},
-		{type:"input",name:"TTC",inputWidth:45,label:"Montant TTC",value:"1000", required:false}]}];
+		]},
+
+		{type:"input",name:"TTC",inputWidth:45,label:"Montant TTC",value:"1000", required:false},
+
+		{type: "block", inputWidth: "auto", list:[
+		{type: "button", value: "Annuler", name: "resetValidateData"},
+		 {type: "newcolumn"},
+		 {type: "button", value: "Enregistrer", name:"saveData"},
+		 {type: "newcolumn"},
+		 {type: "button", value: "Clear", name: "resetValidateData"},
+		 
+		   ]},
+
+
+
+
+		]}];
 
 			myForm = new dhtmlXForm("myForm", formData);
 			                                          	                            
 		}
-
-
 		
 		function doFormValidate() {
 			myForm.validate();
