@@ -12,7 +12,7 @@
 * Date de creation : 06/02/2015             *
 ********************************************/
 ?>
-<div id="myForm" style="height:500px;"></div>
+<div id="myForm" style="width:350px; height:160px; padding-left:100px;"></div>
 
 <script type="text/javascript">    
     dhtmlx.image_path='librairies/dhtmlxSuite/codebase/imgs';
@@ -21,7 +21,7 @@
     function doOnLoad() {
         formData = [
             { type:"fieldset" , name:"form_fieldset_1", label:"Nouvelle prestation", list:[
-            { type:"combo" , name:"form_combo_2", label:"Opération", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"  },
+            { type:"combo" , name:"form_combo_2", label:"Opération", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"},
             { type:"fieldset" , name:"form_fieldset_3", label:"Type de dossier", list:[
             { type:"combo" , name:"form_combo_3", label:"Entité", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"  },
             { type:"combo" , name:"form_combo_4", label:"Type", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"  }
@@ -30,8 +30,8 @@
             { type:"combo" , name:"form_combo_6", label:"Pays", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"  },
             { type:"input" , name:"form_input_1", label:"Prestation", inputWidth:200, required:true, position:"label-top"  },
             { type:"input" , name:"form_input_2", label:"Répartition", inputWidth:200, value:"0", required:true, position:"label-top"  }
-            ]  }
+            ]}
         ];        
-        myForm = new dhtmlXForm("myForm", formData);
+        myForm = new dhtmlXForm("myForm", formData)
     }
 </script>

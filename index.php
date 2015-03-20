@@ -25,6 +25,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('pre_new'):
             require_once("pages/facture/administrateurs/createPrestation.php");
             break;
+        case('fac_man'):
+        require_once("pages/facture/administrateurs/createFacture.php");
+        break;
+        case('mod_new'):
+        require_once("pages/facture/administrateurs/createModel.html");
+        break;
     }
 }
 
