@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Création d'un modèle</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<script>
+		var myForm, formData;
+		function doOnLoad() {
+			formData = [
+			
+            //************************* Debut Nom de l'entité ****************Debut Etape 1'**************************
+			 {type: "fieldset", label: "Etape 1 ", inputWidth: "*", list:[
+			 {type: "label", list: [
+			 {type: "newcolumn"},
+			 {type: "newcolumn"},
+				{type: "label", name:"entite", label: "Nom de l'entité : ", position:"label-left", info: true, note: {
+					text: "Ce nom est généré automatique."
+				}},
+				]},
+			//****************************Fin Nom de l'entité ***************************************************
+				
+							
+				//*****************************Debut Nom du modèle ******************************************
+				{type: "settings", position: "label-left", labelWidth: 150, inputWidth: 200},
+				{type: "label", label: "Formulaire de création de modèle "},
+				{type: "input", label: "Nom du modèle", value: "", required: true, validate:"NotEmpty"},
+				//******************************Fin  Nom du modèle *****************************************
+		
+		
+		
+		
+				//****************************Debut Zone Geograhique *******************************************
+				{type: "label", list: [
+				{type: "newcolumn"},
+				{type: "label", label: "Zone géographique "},
+				
+				{type: "newcolumn"},
+				{type: "radio", name: "zone", label: "France ", checked:true,  position: "label-right"},
+				{type: "newcolumn"},
+				{type: "radio", name: "zone", label: "Etranger", position: "label-right" },
+				]},
+              	//******************************* Fin Zone Geograhique ****************************************
+			
+			
+			//*******************************Debut Type de facture ****************************************
+				{type: "label", label: "Type de facture : "},
+		 	{type: "label", list: [
+					{type: "settings", offsetLeft: 5},
+					{type: "select", label: "Brevet ou Marque", options:[
+						{value: "1", text: "", selected: true},
+						{value: "2", text: "Liste des brevets, ou "},
+						{value: "3", text: "Liste des marques"}
+					]},
+					
+					]},
+					]},
+			  //******************************** Fin Type de facture *************Fin Etape 1**************************
+				
+				
+				//*******************************Debut Objet de la facture ****************************************
+				{type: "fieldset", label: "Etape 2 ", inputWidth: "*", list:[
+				{type: "input", name: "objet", label: "Objet ", rows: 5, inputWidth: 400, value: "", required: true, validate:"NotEmpty", 
+				  info: true, note: {text: "Veuillez saisir l'objet de la facture, SVP."
+				}},
+					
+				]},
+				
+				//*******************************Fin Objet de la facture****************************************
+				
+				
+				//*******************************Debut Devis, Langue, TVA ****************************************
+				{type: "fieldset", label: "Etape 3 ", inputWidth: "*", list:[
+				{type: "label", list: [
+				{type: "input", name: "devise", label: "Devise", position: "label-top", value:"Euro", required:true},
+				{type: "newcolumn"},
+				{type:"label", label:""},
+					{type: "newcolumn"},
+				{type: "input", name: "langue", label: "Langue", position: "label-top", value:"Français", required:true},
+				{type: "newcolumn"},
+				{type:"label", label:""},
+				{type: "newcolumn"},
+				{type: "input", name: "tva", label: "TVA", position: "label-top", inputWidth:45, value:"20", required:false },
+				]},
+				]},
+				//*******************************Fin Devis, Langue, TVA****************************************
+				
+			
+			
+					//****************************** Debut conteneur de la prestation *****************************************
+				    {type: "fieldset", label: "Etape 4 ", inputWidth: "*", list:[
+					{type: "container", name: "myGrid", label: "Prestation", inputWidth: 390, inputHeight: 200},
+				
+					//******************************* Fin conteneur de la prestation ****************************************
+			
+			
+				//****************************** Debut bouton de validation *****************************************
+				
+				{type: "block", inputWidth: "auto", list:[
+					{type: "button", value: "Validate", name: "doFormValidate"},
+					{type: "newcolumn"},
+					{type: "button", value: "Clear", name: "resetValidateData"}
+				]},
+				]}
+				//****************************** Fin bouton de validation*****************************************
+				
+
+						
+			];//fin de la fonction
+			
+
+			myForm = new dhtmlXForm("myForm", formData);
+			//myForm.disableItem("entite");
+			
+			//***********************************************************************
+			myGrid = new dhtmlXGridObject(myForm.getContainer("myGrid"));
+			myGrid.setSkin("dhx_skyblue");
+			
+			//myGrid.enableBlockSelection(true);			
+			//myGrid.enableRowsHover(true,"hover");
+			myGrid.enableMultiline(true);
+			myGrid.enableMultiselect(true);
+			//myGrid.setColTypes("txt,ed,ch");
+			myGrid.getCombo(3).put(1,1);
+			//myGrid.checkAll(true);
+			myGrid.init();
+			myGrid.setImagePath("../../../librairies/dhtmlxSuite/codebase/imgs/");
+			myGrid.loadXML("../../../librairies/dhtmlxSuite/samples/dhtmlxGrid/common/grid.xml");
+			
+			// enabled/disabled mode see in 04_events/09_container_events.html
+			myGrid.attachEvent("onEditCell", function(){return false;});
+			
+			
+		//**********************Fin du grid *************************************************
+				
+			myForm.attachEvent("onButtonClick", function(name){
+				window[name]();
+			});
+		}
+		function doFormValidate() {
+			myForm.validate();
+		}
+		function resetValidateData() {
+			myForm.resetValidateCss();
+		}
+	</script>
+</head>
+<body onload="doOnLoad();">
+	<div id="myForm"></div>
+</body>
+</html>
