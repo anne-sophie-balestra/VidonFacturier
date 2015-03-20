@@ -6,18 +6,20 @@
 	<title>Création d'une Facture Manuelle</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-	<!-- <script src="librairies/dhtmlxSuite/codebase/dhtmlx.css"></script> -->
+	<!-- <script src="librairies/dhtmlxSuite/codebase/dhtmlx.css"></script>
      <script src="librairies/dhtmlxSuite/codebase/dhtmlx.js"></script>
 	<link rel="stylesheet" type="text/css" href="dhtmlx.css"/>
 	<link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlx.css"/>
+	<script src="librairies/dhtmlxSuite/codebase/dhtmlx.js"></script>!-->
+	
 
 	<script>
-		var myForm, formData;
+		var myForm, formData,mygrid;
 		function doOnLoad()
 		{
 			formData=[
 						
-		{type: "container", name: "myGridDossier", label: "Dossier", inputWidth: 390, inputHeight: 150},
+		{type: "container", name: "myGridDossier", label: "Dossier", inputWidth:400, inputHeight: 150},
 		{type: "container", name: "myGridLigne", label: "Ligne de factures", inputWidth: 390, inputHeight:150},
 		{type: "container", name: "myGridAchat", label: "Achats", inputWidth: 390, inputHeight: 150},
 		{type: "fieldset", label: "Editer une Facture ", inputWidth: "*", list:[
@@ -71,6 +73,18 @@
 		]}];
 
 			myForm = new dhtmlXForm("myForm", formData);
+			mygrid = new dhtmlXGridObject(myForm.getContainer("myGridDossier"));  //creates a grid instance
+		       
+	      mygrid.setImagePath("dhtmlxSuite/codebase/imgs");                                             //sets the path to the grid images
+	        mygrid.setHeader("Type de Dossier,Date de Dossier,Objet du Dossier,Client");
+
+	        mygrid.setInitWidths("100,100,100,100"); 
+	        
+
+
+
+
+			
 			                                          	                            
 		}
 		
