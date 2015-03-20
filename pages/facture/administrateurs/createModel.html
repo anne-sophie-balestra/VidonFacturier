@@ -4,8 +4,6 @@
 	<title>Création d'un modèle</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-	<link rel="stylesheet" type="text/css" href="../../codebase/dhtmlx.css"/>
-	<script src="../../codebase/dhtmlx.js"></script>
 	<script>
 		var myForm, formData;
 		function doOnLoad() {
@@ -87,27 +85,6 @@
 				]},
 				//*******************************Fin Devis, Langue, TVA****************************************
 				
-				
-				
-				
-				
-				
-				
-				
-				/*
-				{type: "checkbox", label: "Copy backup to server", position: "label-right", list:[
-					{type: "input", label: "Login", value: "nakamuro"},
-					{type: "password", label: "Password", value: "123"}
-				]},
-				*/
-				
-				
-			
-				
-				/*
-				{type: "checkbox", label: "I agreed with Terms & Conditions", position: "label-right", labelWidth: "250", required: true, value: "1", validate: function(v){return v>0;}},
-			
-			*/
 			
 			
 					//****************************** Debut conteneur de la prestation *****************************************
@@ -147,35 +124,15 @@
 			myGrid.getCombo(3).put(1,1);
 			//myGrid.checkAll(true);
 			myGrid.init();
-			myGrid.setImagePath("../../codebase/imgs/");
-			myGrid.loadXML("common/grid.xml?etc="+new Date().getTime());
+			myGrid.setImagePath("../../../librairies/dhtmlxSuite/codebase/imgs/");
+			myGrid.loadXML("../../../librairies/dhtmlxSuite/samples/dhtmlxGrid/common/grid.xml");
 			
 			// enabled/disabled mode see in 04_events/09_container_events.html
 			myGrid.attachEvent("onEditCell", function(){return false;});
 			
 			
-			/**
-				function doOnLoad() {
-			myGrid = new dhtmlXGridObject('gridbox');
-			myGrid.setImagePath("../../../codebase/imgs/");
-			myGrid.setHeader("Sales,Book Title,Author,Price,In Store,Shipping,Bestseller,Date of Publication");
-			myGrid.setInitWidths("50,150,120,80,80,80,80,200");
-			myGrid.setColAlign("right,left,left,right,center,left,center,center");
-			myGrid.setColTypes("dyn,ed,txt,price,ch,coro,ra,ro");
-			myGrid.setColSorting("int,str,str,int,str,str,str,date");
-			myGrid.getCombo(5).put(2,2);
-			myGrid.init();
-			myGrid.loadXML("../common/grid.xml");
-		}
-			
-			
-			**/
 		//**********************Fin du grid *************************************************
-			
-			
-			
-			
-			
+				
 			myForm.attachEvent("onButtonClick", function(name){
 				window[name]();
 			});

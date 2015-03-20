@@ -47,7 +47,7 @@ $json_pays = generateJSON("pay_id", "pay_nom", $stmt_pays);
             { type:"combo" , name:"form_combo_4", label:"Type", connector:"./data/data_combo.json", inputWidth:200, required:true, position:"label-top"  }
             ]  },
             { type:"combo" , name:"form_combo_5", label:"Code", options:<?php echo $json_code;?>, inputWidth:200, required:true, position:"label-top"  },
-            { type:"combo" , name:"form_combo_6", label:"Pays", options:<?php echo $json_pays;?>, inputWidth:200, required:true, position:"label-top"  },
+            //{ type:"combo" , name:"form_combo_6", label:"Pays", options:<?php echo $json_pays;?>, inputWidth:200, required:true, position:"label-top"  },
             { type:"input" , name:"form_input_1", label:"Prestation", inputWidth:200, required:true, position:"label-top"  },
             { type:"input" , name:"form_input_2", label:"Répartition", inputWidth:200, value:"0", required:true, position:"label-top"  }
             ]}
