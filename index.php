@@ -16,6 +16,7 @@
 require_once("header.php");
 
 include_once("BDD/SPDO.php");
+include_once("./utiles.php");
 
 /* On verifie si une page a ete demandee */
 if (filter_input(INPUT_GET, 'action') != NULL) {
