@@ -58,10 +58,11 @@
                         <li class="text-center sidebar-brand"><a href="index.php?action=listeDossiers"><i class="icon-folder-open fa fa-folder-open fa-2x icon-2x"></i><br>Dossiers</a></li>
                         <li class="text-center sidebar-brand"><a href="#communications"><i class="icon-phone fa fa-phone fa-2x icon-2x"></i><br>Communications</a></li>
                         <li class="text-center sidebar-brand"><a href="#actions"><i class="icon-dashboard fa fa-dashboard fa-2x icon-2x"></i><br>Actions</a></li>
-                        <li class="dropdown text-center sidebar-brand"><a href="index.php?action=createPrestation"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br>Factures <b class="caret"></b></a>
-                            <ul class="dropdown-menu text-left">
+                        <li class="dropdown text-center"><a href="#factures" class="dropdown-toggle" data-toggle="dropdown" title="Factures"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br />Factures <b class="caret"></b></a>    
+                            <ul class="dropdown-menu">
                                 <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
+                                <li><a href="index.php?action=updatePrestation"><i class="icon-plus fa fa-pencil"></i> Modification de prestation...</a></li>
                             </ul>
                         </li>
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
@@ -75,11 +76,10 @@
                     $("#slider").click(function(e) {
                         e.preventDefault();
                         if (a==0) {
-                            $("#sidebar-wrapper").animate({"left":"210px"}, "fast").show();
+                            $("#sidebar-wrapper").animate({"left":"250px"}, "fast").show();
                             a=1;
                         } else {
                             $("#sidebar-wrapper").animate({"left":"50px"}, "fast");
-                            // left: 10px to be back to the position
                             a=0;
                         }
                     });
