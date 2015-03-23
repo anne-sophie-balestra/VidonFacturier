@@ -17,8 +17,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Solent 2 - Facturier</title>
+  
+        <script src="librairies/dhtmlxSuite/codebase/dhtmlx.js" type="text/javascript"></script>
+         <script src="librairies/dhtmlxSuite/codebase/dhtmlxgrid.js" type="text/javascript"></script>
+      
         <script src="librairies/dhtmlxSuite/codebase/dhtmlx.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlx.css">
+        <link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlxgrid.css">
+        <link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlxform.css">
+        <link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlx.css">
+        <link rel="stylesheet" type="text/css" href="librairies/dhtmlxSuite/codebase/dhtmlx.css">
+        
 
         <script>
             var myMenu;
