@@ -34,15 +34,15 @@ $result_type_dossier->execute();
 
         <!--Renseignement de la zone geographique-->
 		<div class="form-group">
-			<label class="control-label" for="operation">Zone géographique </label>
-			<input type="radio" name="area" value="France" checked> France <input
-				type="radio" name="area" value="Etranger"> Etranger
+			<label class="control-label" for="area">Zone géographique </label>
+			<input type="radio" name="area" value="France" checked> France
+            <input type="radio" name="area" value="Etranger"> Etranger
 		</div>
 
         <!--On demande a l'utilisateur quel est le type de dossier concerne par le modele de facture-->
 		<div class="form-group">
-			<label class="control-label" for="operation">Type de dossier :</label>
-			<select name="type_dossier" id="type_dossier" required class="form-control select2">
+			<label class="control-label" for="t_dossier">Type de dossier :</label>
+			<select name="type_dossier" id="t_dossier" required class="form-control select2">
 				<option></option>
             <?php 
             foreach($result_type_dossier->fetchAll(PDO::FETCH_OBJ) as $type_dossier) { ?>
@@ -68,13 +68,14 @@ $result_type_dossier->execute();
         <!--Renseignement du taux de TVA-->
 		<div class="form-group">
 			<label class="control-label" for="TVA">TVA :</label> 
-			<input name="TVA" type="number" value="20" required class="form-control" id="number" maxlength="255" data-error="Veuillez entrer le taux de TVA">
+			<input name="TVA" type="number" value="20" required class="form-control" id="TVA" maxlength="255" data-error="Veuillez entrer le taux de TVA">
 			<div class="help-block with-errors"></div>
 		</div>
 
         <!--Validation du formulaire-->
 		<div>
-			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter"> <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
+			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
+            <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
 		</div>
 		
 	</form>
