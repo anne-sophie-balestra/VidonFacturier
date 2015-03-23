@@ -56,3 +56,11 @@ function generateId($p_key, $p_reg, $p_table) {
     //on retourne l'id du style TABre000001
     return $p_key . $p_reg . $newnum;
 }
+
+/*****
+ * returnToIndex : renvoie l'utilisateur sur la page d'accueil 
+ ***/
+function returnToIndex(){
+    echo "<script>window.location.href='index.php';</script>";
+    exit;
+}
