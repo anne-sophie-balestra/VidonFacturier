@@ -46,7 +46,10 @@ $result_dossiers->execute();
         foreach($result_dossiers->fetchAll(PDO::FETCH_OBJ) as $dossier) { ?>
         <tr>
             <td><?php echo $dossier->dos_type; ?></td>
-            <td><?php echo $dossier->dos_numcomplet; ?></td>
+            <td>
+            <a  href="createFacture.php?id=<?php echo$dossier->dos_id; ?>"> 
+            
+            <?php echo $dossier->dos_numcomplet; ?></a></td>
             <td><?php echo $dossier->dos_responsable; ?></td>
             <td><?php echo $dossier->dos_titre; ?></td>
             <td><?php echo $dossier->dos_refclient; ?></td>
