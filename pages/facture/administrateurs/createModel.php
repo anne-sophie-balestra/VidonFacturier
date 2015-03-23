@@ -11,7 +11,6 @@
 *                                           *
 * Date de creation : 06/02/2015             *
 ********************************************/
-require '../../../BDD/SPDO.php';
 
 $pdo = new SPDO();
 /*$stmt_nom = "SELECT nom_id, nom_code FROM nomenclature ORDER BY nom_code";
@@ -34,19 +33,22 @@ $result_type_dossier->execute();
 <!-- Contenu principal de la page -->
 <div class="container">
     <form id="formNewModel" action="index.php?action=insertModel" method="post" role="form" data-toggle="validator"> 
-        <h2>Nouveau Mod�le</h2>        
+        <h2>Nouveau Modèle</h2>        
         <div>
-            <fieldset><legend>Etape1</legend>
-            <label class="control-label" for="operation">Nom du mod�le :</label>
-          	<input type="text" name="ModelName" required>
-    <br/>
-        	<label class="control-label" for="operation">Zone g�ographique :</label>
-          	<input type="radio" name="area" value="France" checked>France
-          	<input type="radio" name="area" value="Etranger">Etranger
+            <fieldset><legend>Etape 1</legend>
+            <div class="form-group">
+	            <label class="control-label" for="operation">Nom du modèle </label>
+	          	<input type="text" name="ModelName" required>
+          	</div>
+    		<div class="form-group">
+	        	<label class="control-label" for="operation">Zone géographique  </label>
+	          	<input type="radio" name="area" value="France" checked> France
+	          	<input type="radio" name="area" value="Etranger"> Etranger
+          	</div>
           </fieldset>
         </div>
-        <fieldset><legend>Etape2</legend>
-        <div>
+        <fieldset><legend>Etape 2</legend>
+        <div class="form-group">
      		<label class="control-label" for="operation">Type de dossier :</label>
      		<select name="pays" id="pays" required class="form-control select2">
                 <option></option>
@@ -63,14 +65,14 @@ $result_type_dossier->execute();
             <?php } ?>
             </select>
         </div>
-        <div>
+        <div class="form-group">
         	<label class="control-label" for="operation">Objet de la facture</label>
-        	<textarea name="object" rows="4" required>Saisir l'objet de la facture</textarea>
+        	<textarea name="object" rows="4" placeholder="Saisir l'objet de la facture" required></textarea>
         </div>
         </fieldset>
-        <div>
-            <label class="control-label" for="pays">Langue</label>
-            <input type="text" name="language" value="Fran�ais">
+        <div class="form-group">
+            <label class="control-label" for="pays">Langue de la facture</label>
+            <input type="text" name="language" value="Français">
             <label class="control-label" for="prestation">TVA</label>
             <input type="number" name="TVA" value="20" >
         </div>
@@ -79,10 +81,10 @@ $result_type_dossier->execute();
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
         $("#operation").select2({
-            placeholder: "Choisissez une opération..."
+            placeholder: "Choisissez une opÃ©ration..."
         });
         $("#ent_dossier").select2({
-            placeholder: "Choisissez une entité..."
+            placeholder: "Choisissez une entitÃ©..."
         });
         $("#type_dossier").select2({
             placeholder: "Choisissez un type..."
