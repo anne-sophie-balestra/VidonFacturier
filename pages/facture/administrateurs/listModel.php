@@ -20,37 +20,40 @@ $result_model->execute();
 
 <!-- Contenu principal de la page -->
 <div class="container" style="width:90%;">    
-    <h2>Dossiers</h2>
-    <table class="table table-striped table-bordered table-condensed table-hover" id="ldossiers">
+    <h2>Modèles</h2>
+    <table class="table table-striped table-bordered table-condensed table-hover" id="list_models">
     <thead>
         <tr>
             <th scope="col">Id</th>
-            <th scope="col">Entreprise</th>
+            <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
+            <th scope="col">Modification</th>
         </tr>
         <tr>
             <th scope="col">Id</th>
-            <th scope="col">Entreprise</th>
+            <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
         <?php /* On parcours les chantiers pour les inserer dans le tableau */
-        foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $model) { ?>
+        foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $models) { ?>
         <tr>
-            <td><?php echo $model->t_fac_id; ?></td>
-            <td><?php echo $model->t_fac_rf_ent; ?></td>
-            <td><?php echo $model->t_fac_rf_typdos; ?></td>
-            <td><?php echo $model->t_fac_rf_ope; ?></td>
+            <td><?php echo $models->t_fac_id; ?></td>
+            <td><?php echo $models->t_fac_rf_ent; ?></td>
+            <td><?php echo $models->t_fac_rf_typdos; ?></td>
+            <td><?php echo $models->t_fac_rf_ope; ?></td>
+            <td><a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a></td>
         </tr>
         <?php } ?>
     </tbody>
         <tfoot>
             <tr>
             <th scope="col">Id</th>
-            <th scope="col">Entreprise</th>
+            <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
             </tr>
