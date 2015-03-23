@@ -63,11 +63,12 @@
                                 <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
                             </ul>
-                            <ul>
-                                <li class="dropdown-header">Génération de Modèle</li>
+                        <li class="dropdown text-center sidebar-brand"><a href="index.php?action=createModel"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br>Mod&egravele <b class="caret"></br></a></li>
+                            <ul class="dropdown-menu text-left">
+                                <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Modèle...</a></li>
-                        	</ul>
-                        </li>
+                            </ul>                            
+
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
                     </ul>
                 </div>
