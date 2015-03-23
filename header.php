@@ -22,22 +22,25 @@
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/simple-sidebar.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="librairies/font-awesome-4.3.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
-        <link href="https://raw.githubusercontent.com/t0m/select2-bootstrap-css/bootstrap3/select2-bootstrap.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.min.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-spinner.gif" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.css" rel="stylesheet" />
-        <!-- JQuery --> 
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
-        <!-- Select2 -->  
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2_locale_fr.js"></script>
+        <link rel="stylesheet" href="librairies/jQuery/jquery-ui-1.11.4.custom/jquery-ui.css">
+        <link href="librairies/select2-4.0.0-rc.2/dist/css/select2-bootstrap.css" rel="stylesheet" />
+        <link href="librairies/select2-4.0.0-rc.2/dist/css/select2-bootstrap.min.css" rel="stylesheet" />
+        <link href="librairies/select2-4.0.0-rc.2/dist/css/select2.css" rel="stylesheet" />
+        <!-- JQuery -->  
+        <script type="text/javascript" src="librairies/jQuery/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="librairies/jQuery/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
         <!-- Bootstrap -->  
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        <script src="librairies/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
         <script src="librairies/bootstrap-validator/js/validator.js"></script>
+        <!-- Datatables --> 
+        <script type="text/javascript" src="librairies/DataTables-1.10.5/media/js/jquery.js"></script>
+        <script type="text/javascript" src="librairies/DataTables-1.10.5/media/js/jquery.dataTables.min.js"></script> 
+        <script type="text/javascript" src="librairies/DataTables-1.10.5/media/js/jquery.dataTables.columnFilter.js"></script> 
+        <script type="text/javascript" src="librairies/DataTables-1.10.5/media/js/dataTables.bootstrap.js"></script>
+        <!-- Select2 -->  
+        <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/select2.js"></script>
+        <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/select2.min.js"></script>
+        <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/i18n/fr.js"></script>
     </head>
 
     <body>        
@@ -58,16 +61,16 @@
                         <li class="text-center sidebar-brand"><a href="index.php?action=listeDossiers"><i class="icon-folder-open fa fa-folder-open fa-2x icon-2x"></i><br>Dossiers</a></li>
                         <li class="text-center sidebar-brand"><a href="#communications"><i class="icon-phone fa fa-phone fa-2x icon-2x"></i><br>Communications</a></li>
                         <li class="text-center sidebar-brand"><a href="#actions"><i class="icon-dashboard fa fa-dashboard fa-2x icon-2x"></i><br>Actions</a></li>
-                        <li class="dropdown text-center sidebar-brand"><a href="index.php?action=createPrestation"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br>Factures <b class="caret"></b></a>
-                            <ul class="dropdown-menu text-left">
+                        <li class="dropdown text-center"><a href="#factures" class="dropdown-toggle" data-toggle="dropdown" title="Factures"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br />Factures <b class="caret"></b></a>    
+                            <ul class="dropdown-menu">
                                 <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
-                            </ul>
-                            <ul>
-                                <li class="dropdown-header">Génération de Modèle</li>
-                                <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Modèle...</a></li>
-                        	</ul>
-                        </li>
+                                <li><a href="index.php?action=updatePrestation"><i class="icon-plus fa fa-pencil"></i> Modification de prestation...</a></li>
+                                <li class="divider"></li>
+                                <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Mod&egravele...</a></li>
+                                <li><a href="index.php"><i class="icon-plus fa fa-pencil"></i> Modification d'un Mod&egravele...</a></li>
+                            </ul>                            
+
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
                     </ul>
                 </div>
@@ -79,11 +82,10 @@
                     $("#slider").click(function(e) {
                         e.preventDefault();
                         if (a==0) {
-                            $("#sidebar-wrapper").animate({"left":"210px"}, "fast").show();
+                            $("#sidebar-wrapper").animate({"left":"250px"}, "fast").show();
                             a=1;
                         } else {
                             $("#sidebar-wrapper").animate({"left":"50px"}, "fast");
-                            // left: 10px to be back to the position
                             a=0;
                         }
                     });
