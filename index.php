@@ -38,6 +38,16 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('insertPrestation'):
             require_once("BDD/facture/administrateurs/prestation.php");
             break;
+        
+        //Formulaire de modification d'une prestation
+        case('updatePrestation'):
+            require_once("pages/facture/administrateurs/updatePrestation.php");
+            break;
+        
+        //Recuperation des infos envoyées par le formulaire de modification de prestation avec verification php et modification/insertion dans la base de donnees
+        case('changePrestation'):
+            require_once("BDD/facture/administrateurs/prestation.php");
+            break;
     }
 }
 
