@@ -13,6 +13,7 @@
 * Date de creation : 12/03/2015             *
 ********************************************/
 
+//Connexion a la base de données
 $pdo = new SPDO();
 
 /* On verifie l'action demandee */
@@ -24,7 +25,8 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
             
-            /* Recuperation des inputs avec verification de leur initialisation */
+            /* Recuperation des inputs avec verification de leur initialisation  
+             * Si on trouve une erreur, on renvoie l'utilisateur sur la page de creation de prestation */
             $operation = "";
             if (filter_input(INPUT_POST, 'operation') != NULL) {
                 $operation = filter_input(INPUT_POST, 'operation');
@@ -161,7 +163,10 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     . ":nom_code, :prestation, :libelle, :type_tarif, :tarif_std, " 
                     . ":tarif_jr, :tarif_sr, :tarif_mgr, :repartition, " 
                     . ":pays, :type_dossier, :operation)";
+            
             $stmt_insert = $pdo->prepare($insert_string);
+            
+            //On lie les parametres recuperés via le formulaire pour les associer a la requete
             $stmt_insert->bindParam(':id', $id);
             $stmt_insert->bindParam(':creadate', $date);
             $stmt_insert->bindParam(':moddate', $date);
@@ -180,9 +185,13 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_insert->bindParam(':type_dossier', $type_dossier);
             $stmt_insert->bindParam(':operation', $operation);
             
+            //On cree autant de lignes dans la base que de lignes de prestation
             for($i=1;$i<=$nbInfos;$i++){
+                //On genere un id 
                 $id = generateId("PRE", "re", "prestation");
+                //On recupere la date actuelle
                 $date = date(date("Y-m-d H:i:s"));
+                //On recupere l'utilisateur qui a fait l'ajout
                 $user = "GLS";
                 $libelle = $libelles[$i];
                 $type_tarif = $type_tarifs[$i];
@@ -197,8 +206,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     $tarif_sr = 0;
                     $tarif_mgr = 0;
                 }
+                //On execute la requete
                 $stmt_insert->execute();                
             }
+            //On retourne a la page d'accueil
+            returnToIndex();
             break;
     }
 }

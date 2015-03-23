@@ -29,6 +29,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             break;
         
         /* Onglet Factures */
+        //Formulaire de creation d'une prestation
         case('createPrestation'):
             require_once("pages/facture/administrateurs/createPrestation.php");
             break;
@@ -37,6 +38,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         	require_once("pages/facture/administrateurs/createModel.php");
         	break;
         
+        //Recuperation des infos envoyées par le formulaire de creation de prestation avec verification php et insertion dans la base de donnees
         case('insertPrestation'):
             require_once("BDD/facture/administrateurs/prestation.php");
             break;
