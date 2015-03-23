@@ -66,8 +66,11 @@
                                 <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
                                 <li><a href="index.php?action=updatePrestation"><i class="icon-plus fa fa-pencil"></i> Modification de prestation...</a></li>
-                            </ul>
-                        </li>
+                                <li class="divider"></li>
+                                <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Mod&egravele...</a></li>
+                                <li><a href="index.php"><i class="icon-plus fa fa-pencil"></i> Modification d'un Mod&egravele...</a></li>
+                            </ul>                            
+
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
                     </ul>
                 </div>
