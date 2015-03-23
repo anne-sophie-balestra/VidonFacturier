@@ -68,14 +68,6 @@ $result_dossiers->execute();
         </tfoot>
     </table>
 </div>
-<!-- JQuery --> 
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script> 
-<!-- Bootstrap --> 
-<script type="text/javascript" src="../../librairies/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script> 
-<!-- Datatables --> 
-<script type="text/javascript" src="http://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script> 
-<script type="text/javascript" src="http://jquery-datatables-column-filter.googlecode.com/svn/trunk/media/js/jquery.dataTables.columnFilter.js"></script> 
-<script type="text/javascript" src="http://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script> 
 <script type="text/javascript" charset="utf-8">
     $('#ldossiers').dataTable({
         "language":{
