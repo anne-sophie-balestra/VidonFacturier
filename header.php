@@ -69,6 +69,7 @@
                 </div>
             </div>                
             <script>
+                //Permet de gerer le menu en slide
                 $(document).ready(function(e) {
                     var a=0;
                     $("#slider").click(function(e) {

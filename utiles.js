@@ -63,11 +63,10 @@ function genererListeTypeDossier(p_id, p_value) {
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             var jsonData = $.parseJSON(xmlHttp.responseText);
-            //get a reference to the select element
+            //on recupere la reference a l'element select que l'on veut peupler
             var $select = $(p_id);
             $select.empty();    
             $select.select2('data', null);    
-            $select.prop("disabled", false);
             $select.append('<option></option>');
             $select.select2({placeholder:"Choisissez un type..."});
             $.each(jsonData,function(key, value) 
