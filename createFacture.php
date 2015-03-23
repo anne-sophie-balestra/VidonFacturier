@@ -1,5 +1,7 @@
 <?php
 require_once("header.php");
+require_once("modeleFacture.php");
+$id=$_GET['id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +11,7 @@ require_once("header.php");
   
   <meta name="description" content="">
   <meta name="author" content="">
-	<!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->	
+	
 </head>
 
 <body>
@@ -41,20 +43,25 @@ require_once("header.php");
 						</td>
 					</tr>
 					<tr class="active">
+					<?php 
+					$dos=generateElementDossier($id);
+					foreach ($dos as $row)
+					{
+					?>
 						<td>
-							Depot
+							<?php echo $row->dos_type ;?>
 						</td>
 						<td>
-							08/12/2015
+							<?php echo $row->dos_creadate ;?>
 						</td>
 						<td>
-							Système de Détection des Drones
+							<?php echo $row->dos_titre ;?>
 						</td>
 						<td class="col-lg-1">
-							EuroLogiciel
+						<?php echo $row->dos_titulaire_saisi ;?>
 						</td>
 					</tr>
-					
+					<?php }?>
 	
 				</tbody>
 			</table>
