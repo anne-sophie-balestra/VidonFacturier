@@ -16,14 +16,14 @@ require_once("header.php");
 <div class="container">
 
 <div class="row clearfix">
-		<div class="col-md-12 column">
+		<div class="col-md-10 column">
 			<h2 class="text-center text-danger">
 					Facture
 			</h2>
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="col-md-11 column">
+		<div class="col-md-10 column">
 			<h3>Informations sur le Dossier</h3>
 			<table class="table table-bordered table-striped table-condensed">
 				<tbody>
@@ -63,7 +63,7 @@ require_once("header.php");
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="col-md-11 column">
+		<div class="col-md-10 column">
 			<h3>Lignes de Factures
 			</h3>
 			<table class="table  table-striped table-condensed table-hover">
@@ -156,12 +156,12 @@ require_once("header.php");
 		</div>
 	</div>	
 		<div class="row clearfix">
-		<div class="col-md-12 column">
+		<div class="col-md-10 column">
 	<button type="button" class="btn btn-warning"><em class="glyphicon glyphicon-plus-sign">Ajouter une Ligne de Facture</em></button>
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="col-md-11 column">
+		<div class="col-md-10 column">
 			<h3>Achats
 			</h3>
 			<table class="table table-hover table-condensed">
@@ -253,12 +253,12 @@ require_once("header.php");
 		</div>
 			
 <div class="row clearfix">
-		<div class="col-md-11 column">
+		<div class="col-md-10 column">
 	<button type="button" class="btn btn-warning"><em class="glyphicon glyphicon-plus-sign">Ajouter un Achat</em></button>
 		</div>
 </div>
 	<div class="row clearfix">
-		<div class="col-md-12 column">
+		<div class="col-md-10 column">
 		
 	<form class="form-horizontal" id="container">
 	
@@ -308,33 +308,33 @@ require_once("header.php");
 </div> 
 </div>
 </div>
-  <div class="row clearfix col-xs-offset-5">
+  <div class="row clearfix col-xs-offset-4">
  <div class="form-group">
  
  <div class="controls form-inline">
-  <div class="col-lg-offset-8 col-lg-3 col-xs-offset-5 input-group"> 
+  <div class="col-lg-offset-6 col-lg-3 col-xs-offset-5 input-group"> 
     <span class="input-group-addon">€</span>
     <input type="text" class="form-control" style="text-align:right" value="100">
    
   </div>
 
  
-  <label class="control-label col-lg-1" style="text-align:left" for="montant">HT</label>
+  <label class="control-label col-lg-2" style="text-align:left" for="montant">Montant HT</label>
  
   </div>
  </div>
  </div> 
  
-  <div class="row clearfix col-xs-offset-5">
+  <div class="row clearfix col-xs-offset-4">
  <div class="form-group">
  
  <div class="controls form-inline">
-  <div class="col-lg-offset-8 col-lg-3 input-group"> 
+  <div class="col-lg-offset-6 col-lg-3 input-group"> 
     <span class="input-group-addon">%</span>
     <input type="text" class="form-control" style="text-align:right" value="19.6">
    
   </div>
-  <label class="control-label col-lg-1" style="text-align:left" for="montant">TVA</label>
+  <label class="control-label col-lg-2" style="text-align:left" for="montant">TVA</label>
  
   </div>
  </div>
@@ -344,17 +344,20 @@ require_once("header.php");
  <div class="form-group">
 
  <div class="controls form-inline">
-<div class=" col-lg-offset-7 col-lg-3 input-group">
+<div class=" col-lg-offset-4 col-lg-3 input-group">
  <div class="radio">
       <label><input type="radio" name="optradio">Honoraires</label>
     </div>
     <div class="radio">
       <label><input type="radio" name="optradio">Frais</label>
     </div>
-
+ <div class="radio">
+      <label><input type="radio" name="optradio">Taxes</label>
+    </div>
+    
 </div>
 
-<div class=" col-lg-2 input-group"> 
+<div class=" col-lg-offset-2 col-lg-2 input-group"> 
     <span class="input-group-addon">€</span>
     <input type="text" class="form-control" style="text-align:right" value="100">
    
@@ -364,18 +367,18 @@ require_once("header.php");
 </div>
 </div>
 
-  <div class="row clearfix col-xs-offset-5">
+  <div class="row clearfix col-xs-offset-4">
  <div class="form-group">
  
  <div class="controls form-inline">
-  <div class="col-lg-offset-8 col-lg-3 col-xs-offset-5 input-group"> 
+  <div class="col-lg-offset-5 col-lg-3 col-xs-offset-5 input-group"> 
     <span class="input-group-addon">€</span>
     <input type="text" class="form-control" style="text-align:right" value="100">
    
   </div>
 
  
-  <label class="control-label col-lg-1" style="text-align:left" for="montant">TTC</label>
+  <label class="control-label col-lg-3" style="text-align:left" for="montant">Montant TTC</label>
  
   </div>
  </div>
