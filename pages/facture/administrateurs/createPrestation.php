@@ -1,7 +1,7 @@
 <?php
 /********************************************
-* listeDossiers.php                         *
-* Affiche tous les dossiers en liste        *
+* createPrestation.php                      *
+* Formulaire de creation d'une prestation   *
 *                                           *
 * Auteurs : Anne-Sophie Balestra            *
 *           Abdoul Wahab Haidara            *
