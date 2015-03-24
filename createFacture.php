@@ -14,11 +14,77 @@ $id=$_GET['id'];
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   <meta name="description" content="">
   <meta name="author" content="">
+	
+	
+	
 	<script type="text/javascript">
-	$(document).ready(function(){
-		$("#myModal").modal('show');
-	});
-</script>
+
+
+	function ajouterLigne()
+	{
+		var tableau = document.getElementById("tableau_facture");
+
+		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
+
+		var colonne1 = ligne.insertCell(0);//on a une ajouté la prestation	
+		colonne1.innerHTML += document.getElementById("prestation_text").value;//on y met le contenu de titre
+
+		var colonne2 = ligne.insertCell(1);//on ajoute le libelle
+		colonne2.innerHTML += document.getElementById("libelle_text").value;
+
+
+		var date=new Date();
+
+		var colonne3 = ligne.insertCell(2);
+	 
+		colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
+		
+
+		var colonne4 = ligne.insertCell(3);//on ajoute le montant
+		colonne4.innerHTML += document.getElementById("montant_text").value;
+
+		var colonne5 = ligne.insertCell(4);//on ajoute la quantite
+		colonne5.innerHTML += document.getElementById("qte_text").value;
+
+		var colonne6 = ligne.insertCell(5);//
+		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
+
+
+		document.getElementById("prestation_text").value="";
+		document.getElementById("libelle_text").value="";
+
+		document.getElementById("montant_text").value="";
+		document.getElementById("qte_text").value="";
+		document.getElementById("total_text").value="";
+	    
+	    parent.document.getElementById('annuler_bouton').click();
+
+
+	    
+
+	    
+		
+
+	}
+
+
+
+
+
+
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 </head>
 
 <body>
@@ -80,7 +146,7 @@ $id=$_GET['id'];
 		<div class="col-md-10 column">
 			<h3>Lignes de Factures
 			</h3>
-			<table class="table  table-striped table-condensed table-hover">
+			<table class="table  table-striped table-condensed table-hover" id="tableau_facture">
 				<thead>
 					<tr class="warning">
 						<th class="col-lg-1">
@@ -187,35 +253,35 @@ $id=$_GET['id'];
                     
                     <form class="form-horizontal" role="form">
 						<div class="form-group">
-							 <label for="inputEmail3" class="col-sm-2 control-label">Code de la Prestation</label>
-							<div class="col-sm-10">
+							 <label for="inputEmail3" class="col-sm-3 control-label">Code de la Prestation</label>
+							<div class="col-sm-9">
 								<input class="form-control" id="prestation_text" type="text" />
 							</div>
 						</div>
 						<div class="form-group">
-							 <label for="inputPassword3" class="col-sm-2 control-label">Libelle</label>
-							<div class="col-sm-10">
+							 <label for="libelle" class="col-sm-3 control-label">Libelle</label>
+							<div class="col-sm-9">
 								<input class="form-control" id="libelle_text" type="text" />
 							</div>
 						</div>
 						
 						<div class="form-group">
-							 <label for="inputPassword3" class="col-sm-2 control-label">Montant</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="_text" type="text" />
+							 <label for="Montant" class="col-sm-3 control-label">Montant</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="montant_text" type="text" />
 							</div>
 						</div>
 						
 						<div class="form-group">
-							 <label for="inputPassword3" class="col-sm-2 control-label">Qte</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="_text" type="text" />
+							 <label for="Qte" class="col-sm-3 control-label">Qte</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="qte_text" type="text" />
 							</div>
 						</div>
 						
 						<div class="form-group">
-							 <label for="inputPassword3" class="col-sm-2 control-label">Total</label>
-							<div class="col-sm-10">
+							 <label for="inputPassword3" class="col-sm-3 control-label">Total</label>
+							<div class="col-sm-9">
 								<input class="form-control" id="total_text" type="text" />
 							</div>
 						</div>
@@ -226,8 +292,8 @@ $id=$_GET['id'];
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Ajouter</button>
+                    <button type="button" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="ajouterLigne();">Ajouter</button>
                 </div>
             </div>
         </div>
