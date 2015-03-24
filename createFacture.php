@@ -8,8 +8,6 @@ $id=$_GET['id'];
 <head>
   <meta charset="utf-8">
   <title>Facture</title>
-  
-  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   <meta name="description" content="">
@@ -22,9 +20,14 @@ $id=$_GET['id'];
 
 	function ajouterLigne()
 	{
+		
 		var tableau = document.getElementById("tableau_facture");
 
+
+		var arraylines=document.getElementById("tableau_facture");
+
 		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
+		
 
 		var colonne1 = ligne.insertCell(0);//on a une ajouté la prestation	
 		colonne1.innerHTML += document.getElementById("prestation_text").value;//on y met le contenu de titre
@@ -49,6 +52,12 @@ $id=$_GET['id'];
 		var colonne6 = ligne.insertCell(5);//
 		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
 
+		var colonne6 = ligne.insertCell(6);//
+		colonne6.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
+
+		var colonne7 = ligne.insertCell(7);//
+		colonne7.innerHTML +="<a href=\"#\ onclick=""><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
+		
 
 		document.getElementById("prestation_text").value="";
 		document.getElementById("libelle_text").value="";
@@ -56,15 +65,11 @@ $id=$_GET['id'];
 		document.getElementById("montant_text").value="";
 		document.getElementById("qte_text").value="";
 		document.getElementById("total_text").value="";
-	    
-	    parent.document.getElementById('annuler_bouton').click();
 
-
-	    
-
-	    
-		
-
+		var longueur = arraylines.length;
+	    alert(longueur);
+	    parent.document.getElementById('annuler_bouton').click();  
+	
 	}
 
 
@@ -314,17 +319,7 @@ $id=$_GET['id'];
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-10 column">
@@ -458,8 +453,6 @@ $id=$_GET['id'];
   </div>
   
 </div>
-
-
 
 </div>
 </div>

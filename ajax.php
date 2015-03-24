@@ -27,6 +27,12 @@ if (filter_input(INPUT_GET, 'action') != NULL)
         case('genererListeTypeDossier'):
             $entite = (filter_input(INPUT_GET, 'ent') != NULL ? filter_input(INPUT_GET, 'ent') : "");
             genererListeTypeDossier($entite);
+            break;
+        
+        //Permet de retourner un JSON contenant les prestations liees au code choisi dans la modification d'une prestation
+        case('genererListePrestationsLiees'):
+            $code = (filter_input(INPUT_GET, 'code') != NULL ? filter_input(INPUT_GET, 'code') : "");
+            genererListePrestationsLiees($code);
             break;   
 
         //
@@ -42,6 +48,12 @@ if (filter_input(INPUT_GET, 'action') != NULL)
             genererInfosPrestation($nb, $nom);
             break;              
         
+        //Genere les informations de la prestation que nous pouvons modifier
+        case('genererInfosPrestationUpdate'):
+            $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : "");
+            genererInfosPrestationUpdate($prestation);
+            break;              
+        
         //Genere les blocs de tarifs selon si on a choisit forfaitaire ou horaire
         case('genererTarifs'):
             $tt = (filter_input(INPUT_GET, 'tt') != NULL ? filter_input(INPUT_GET, 'tt') : "");
@@ -53,7 +65,7 @@ if (filter_input(INPUT_GET, 'action') != NULL)
 }
 
 /*****
- * genererListeTypeDossier : genere le select pour les types de dossier en fonction de l'entite (brevet ou juridique)
+ * genererListeTypeDossier : genere les infos du select pour les types de dossier en fonction de l'entite (brevet ou juridique)
  *
  * @param String $p_entite : entite choisie
  ***/
@@ -62,8 +74,9 @@ function genererListeTypeDossier($p_entite)
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_t_dos_type = "SELECT t_dos_id, t_dos_type FROM type_dossier WHERE t_dos_entite = '" . $p_entite . "' ORDER BY t_dos_type";
+    $stmt_t_dos_type = "SELECT t_dos_id, t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
     $result_t_dos_type = $pdo->prepare($stmt_t_dos_type);
+    $result_t_dos_type->bindParam(":entite", $p_entite);
     $result_t_dos_type->execute();
     
     //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
@@ -72,6 +85,37 @@ function genererListeTypeDossier($p_entite)
         $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
+}
+
+/*****
+ * genererListePrestationsLiees : genere les infos du select pour les prestations liees au code de nomenclature choisi
+ *
+ * @param String $p_code : code choisi
+ ***/
+function genererListePrestationsLiees($p_code)
+{    
+    $pdo = new SPDO;
+    
+    /* On recupere les prestations liees au code */
+    $stmt_prestation = "SELECT DISTINCT(pres_prestation) FROM prestation WHERE pres_rf_nom = :code ORDER BY pres_prestation";
+    $result_prestation = $pdo->prepare($stmt_prestation);
+    $result_prestation->bindParam(":code", $p_code);
+    $result_prestation->execute();
+    
+    //On cree un array avec le nom de la prestation que l'on va retourner en JSON
+    $array_pres = array();    
+    foreach($result_prestation->fetchAll(PDO::FETCH_OBJ) as $presta) {
+        /* On recupere les prestations liees au code */
+        $stmt_prestation_infos = "SELECT pres_id, pres_libelle_ligne_fac FROM prestation WHERE pres_rf_nom = :code AND pres_prestation = :prestation ORDER BY pres_prestation";
+        $result_prestation_infos = $pdo->prepare($stmt_prestation_infos);
+        $result_prestation_infos->bindParam(":code", $p_code);
+        $result_prestation_infos->bindParam(":prestation", $presta->pres_prestation);
+        $result_prestation_infos->execute();
+        foreach($result_prestation_infos->fetchAll(PDO::FETCH_OBJ) as $info) {
+            $array_pres[$presta->pres_prestation][$info->pres_id] = $info->pres_libelle_ligne_fac;
+        }
+    }
+    echo json_encode($array_pres);
 }
 
 /*****
@@ -121,9 +165,9 @@ function genererTarifs($p_tt, $p_num)
     //Si on a choisit une tarification forfaitaire, on a un seul tarif
     if($p_tt == "F") { ?>
         <div class="form-group">
-            <label class="control-label" for="tarif<?php echo $p_num; ?>">Tarif :</label>
+            <label class="control-label" for="tarif<?php // echo $p_num; ?>">Tarif :</label>
             <div class="input-group">
-                <input name="tarif<?php echo $p_num; ?>" id="tarif<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                <input name="tarif<?php // echo $p_num; ?>" id="tarif<?php // echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
             <div class="help-block with-errors"></div>
@@ -132,25 +176,25 @@ function genererTarifs($p_tt, $p_num)
     //Si on a choisit une tarification horaire, on a trois tarifs (junior, senior et manager)
     else { ?>
         <div class="form-group">
-            <label class="control-label" for="tarif_jr<?php echo $p_num; ?>">Tarif junior :</label>
+            <label class="control-label" for="tarif_jr<?php // echo $p_num; ?>">Tarif junior :</label>
             <div class="input-group">
-                <input name="tarif_jr<?php echo $p_num; ?>" id="tarif_jr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                <input name="tarif_jr<?php // echo $p_num; ?>" id="tarif_jr<?php // echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
             <div class="help-block with-errors"></div>
         </div>        
         <div class="form-group">
-            <label class="control-label" for="tarif_sr<?php echo $p_num; ?>">Tarif senior :</label>
+            <label class="control-label" for="tarif_sr<?php // echo $p_num; ?>">Tarif senior :</label>
             <div class="input-group">
-                <input name="tarif_sr<?php echo $p_num; ?>" id="tarif_sr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                <input name="tarif_sr<?php // echo $p_num; ?>" id="tarif_sr<?php // echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
             <div class="help-block with-errors"></div>
         </div>        
         <div class="form-group">
-            <label class="control-label" for="tarif_mgr<?php echo $p_num; ?>">Tarif manager :</label>
+            <label class="control-label" for="tarif_mgr<?php // echo $p_num; ?>">Tarif manager :</label>
             <div class="input-group">
-                <input name="tarif_mgr<?php echo $p_num; ?>" id="tarif_mgr<?php echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                <input name="tarif_mgr<?php // echo $p_num; ?>" id="tarif_mgr<?php // echo $p_num; ?>" type="text" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
                 <span class="input-group-addon">€</span>
             </div>
             <div class="help-block with-errors"></div>
