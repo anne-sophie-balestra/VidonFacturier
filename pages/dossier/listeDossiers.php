@@ -42,7 +42,7 @@ $result_dossiers->execute();
         </tr>
     </thead>
     <tbody>
-        <?php /* On parcours les chantiers pour les inserer dans le tableau */
+        <?php /* On parcours les dossiers pour les inserer dans le tableau */
         foreach($result_dossiers->fetchAll(PDO::FETCH_OBJ) as $dossier) { ?>
         <tr>
             <td><?php echo $dossier->dos_type; ?></td>

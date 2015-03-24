@@ -43,12 +43,20 @@ $result_pays_reg->execute();
         <div class="form-group">
             <label class="control-label" for="nom_code">Code associé :</label>
             <!--On affiche les codes de nomenclature dans le select--> 
-            <select name="nom_code" id="nom_code" required class="form-control select2">
+            <select name="nom_code" id="nom_code" required onchange="genererListePrestationsLiees('#prestations', this.value);" class="form-control select2">
                 <option></option>
             <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $nom) { ?>
                 <option value="<?php echo $nom->nom_id; ?>"><?php echo $nom->nom_code; ?></option>
             <?php } ?>
             </select>
+        </div>
+        <div id="prestations_div" class="form-group" hidden="">            
+            <label class="control-label" for="prestations">Prestation :</label>
+            <select name="prestations" id="prestations" required onchange="genererInfosPrestationUpdate('#infosPrestation', this.value);" class="form-control select2">
+                <option></option>
+            </select>
+        </div>
+        <div id="infosPrestation" class="form-group">            
         </div>
         <div>
             <input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
@@ -61,6 +69,9 @@ $result_pays_reg->execute();
     $(document).ready(function() {
         $("#nom_code").select2({
             placeholder: "Choisissez un code..."
+        });
+        $("#prestations").select2({
+            placeholder: "Choisissez une prestation..."
         });
     });
 </script>
