@@ -13,15 +13,15 @@
  ********************************************/
 $pdo = new SPDO();
 
-//On va chercher les entites possibles pour un dossier (brevet ou juridique)
-$stmt_t_dos_ent = "SELECT DISTINCT(t_dos_entite) FROM type_dossier ORDER BY t_dos_entite";
-$result_t_dos_ent = $pdo->prepare($stmt_t_dos_ent);
-$result_t_dos_ent->execute();
-
 //On recupere les types de dossiers existants
 $stmt_type_dossier = "SELECT DISTINCT(t_dos_type) FROM type_dossier ORDER BY t_dos_type";
 $result_type_dossier = $pdo->prepare ( $stmt_type_dossier );
 $result_type_dossier->execute();
+
+//On recupere les types d'operations existantes
+$stmt_type_operation = "SELECT DISTINCT(t_ope_libelle) FROM type_operation ORDER BY t_ope_libelle";
+$result_type_operation = $pdo->prepare ( $stmt_type_operation );
+$result_type_operation->execute();
 
 ?>
 <!-- Contenu principal de la page -->
@@ -44,23 +44,29 @@ $result_type_dossier->execute();
             <input type="radio" name="area" value="Etranger"> Etranger
 		</div>
 
-        <!--On demande a l'utilisateur quel est le type de dossier concerne par le modele de facture-->
-		<div class="form-group">
-			<label class="control-label" for="ent_dossier">Type de dossier :</label>
-            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value);" class="form-control select2">
-                <option></option>
-                <?php // On affiche les entites disponibles
-                foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
-                    <option value="<?php echo $t_dos_ent->t_dos_entite; ?>"><?php echo $t_dos_ent->t_dos_entite; ?></option>
-                <?php } ?>
+        <!--On demande a l'utilisateur le type de dossier et l'opération pour le modele de facture-->
+		<div class="form-inline">
+			<!-- Dossier -->
+			<label class="control-label" for="t_dossier">Type de dossier :</label>
+			<select name="type_dossier" id="t_dossier" required class="form-control select2">
+				<option></option>
+            <?php 
+            foreach($result_type_dossier->fetchAll(PDO::FETCH_OBJ) as $type_dossier) { ?>
+                 <option value="<?php echo $type_dossier->t_dos_type; ?>"><?php echo $type_dossier->t_dos_type; ?></option>
+            <?php } ?>
             </select>
+			
+			<!-- Operation -->
+			<label class="control-label" for="t_operation">Type d'op&egraveration :</label>
+			<select name="type_operation" id="t_operation" required class="form-control select2">
+				<option></option>
+            <?php 
+            foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
+                 <option value="<?php echo $type_ope->t_ope_libelle; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
+            <?php } ?>
+            </select>
+
 		</div>
-        <div class="form-group">
-            <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-            <select name="type_dossier" id="type_dossier" required class="form-control select2">
-                <option></option>
-            </select>
-        </div>
 
         <!--Renseignement de l'objet de la facture-->
 		<div class="form-group">
@@ -83,6 +89,66 @@ $result_type_dossier->execute();
 			<div class="help-block with-errors"></div>
 		</div>
 
+		<h3>Prestations</h3>
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th class="col-lg-1">
+						Nom
+					</th >
+					<th class="col-lg-2">
+						Prestation
+					</th >
+					<th class="col-lg-1">
+						Libelle ligne facture
+					</th>
+					<th class="col-lg-2">
+						Tarif	
+					</th>
+					<th class="col-lg-1">
+						Qte
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#modalPresta">
+		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
+		</button>
+
+		
+		<!-- Modal -->
+		<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
+		      </div>
+		      <div class="modal-body">
+		        
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+
+
+
         <!--Validation du formulaire-->
 		<div>
 			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
@@ -95,9 +161,6 @@ $result_type_dossier->execute();
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
-        $("#ent_dossier").select2({
-            placeholder: "Choisissez une entité..."
-        });
         $("#type_dossier").select2({
             placeholder: "Choisissez un type de dossier..."
         });
