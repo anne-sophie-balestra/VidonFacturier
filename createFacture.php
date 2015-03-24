@@ -26,10 +26,10 @@ $id=$_GET['id'];
 
 		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
 
-		var colonne1 = ligne.insertCell(0);//on a une ajouté une cellule
+		var colonne1 = ligne.insertCell(0);//on a une ajouté la prestation	
 		colonne1.innerHTML += document.getElementById("prestation_text").value;//on y met le contenu de titre
 
-		var colonne2 = ligne.insertCell(1);//on ajoute la seconde cellule
+		var colonne2 = ligne.insertCell(1);//on ajoute le libelle
 		colonne2.innerHTML += document.getElementById("libelle_text").value;
 
 
@@ -40,16 +40,29 @@ $id=$_GET['id'];
 		colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
 		
 
-		var colonne4 = ligne.insertCell(3);//on ajoute la seconde cellule
+		var colonne4 = ligne.insertCell(3);//on ajoute le montant
 		colonne4.innerHTML += document.getElementById("montant_text").value;
 
-		var colonne5 = ligne.insertCell(4);//on ajoute la seconde cellule
+		var colonne5 = ligne.insertCell(4);//on ajoute la quantite
 		colonne5.innerHTML += document.getElementById("qte_text").value;
 
-		var colonne6 = ligne.insertCell(5);//on ajoute la seconde cellule
+		var colonne6 = ligne.insertCell(5);//
 		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
-		
-		 parent.document.getElementById('annuler_bouton').click();
+
+
+		document.getElementById("prestation_text").value="";
+		document.getElementById("libelle_text").value="";
+
+		document.getElementById("montant_text").value="";
+		document.getElementById("qte_text").value="";
+		document.getElementById("total_text").value="";
+	    
+	    parent.document.getElementById('annuler_bouton').click();
+
+
+	    
+
+	    
 		
 
 	}
