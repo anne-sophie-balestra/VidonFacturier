@@ -34,6 +34,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("pages/facture/administrateurs/createPrestation.php");
             break;
             
+        //Affichage des prestations dans un tableau
+        case('listePrestations'):
+            require_once("pages/facture/administrateurs/listePrestations.php");
+            break;
+            
         case('createModel'):
         	require_once("pages/facture/administrateurs/createModel.php");
         	break;

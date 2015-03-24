@@ -153,14 +153,17 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 }
             }
             
+            //On genere un id pour la prestation general qui permettra de regrouper toutes les lignes de cette prestation
+            $id_gen = generateId("PGE", "re", "prestation_generale");
+            
             /* Creation des requetes d'insertions et ajout dans la base */
             $insert_string = "INSERT INTO prestation " 
                     . "(pres_id, pres_creadate, pres_moddate, pres_creauser, pres_moduser, " 
-                    . "pres_rf_nom, pres_prestation, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, " 
+                    . "pres_rf_nom, pres_id_general, pres_prestation, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, " 
                     . "pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr, pres_repartition_cons, " 
                     . "pres_rf_pay, pres_rf_typ_dossier, pres_rf_typ_operation) VALUES "
                     . "(:id, :creadate, :moddate, :creauser, :moduser, " 
-                    . ":nom_code, :prestation, :libelle, :type_tarif, :tarif_std, " 
+                    . ":nom_code, :id_gen, :prestation, :libelle, :type_tarif, :tarif_std, " 
                     . ":tarif_jr, :tarif_sr, :tarif_mgr, :repartition, " 
                     . ":pays, :type_dossier, :operation)";
             
@@ -173,6 +176,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_insert->bindParam(':creauser', $user);
             $stmt_insert->bindParam(':moduser', $user);
             $stmt_insert->bindParam(':nom_code', $nom_code);
+            $stmt_insert->bindParam(':id_gen', $id_gen);
             $stmt_insert->bindParam(':prestation', $prestation);
             $stmt_insert->bindParam(':libelle', $libelle);
             $stmt_insert->bindParam(':type_tarif', $type_tarif);

@@ -40,7 +40,7 @@
         <!-- Select2 -->  
         <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/select2.js"></script>
         <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/select2.min.js"></script>
-        <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/i18n/fr.js"></script>
+        <script type="text/javascript" src="librairies/select2-4.0.0-rc.2/dist/js/select2_locale_fr.js"></script>
     </head>
 
     <body>        
@@ -64,6 +64,7 @@
                         <li class="dropdown text-center"><a href="#factures" class="dropdown-toggle" data-toggle="dropdown" title="Factures"><i class="icon-list-alt fa fa-list-alt fa-2x icon-2x"></i><br />Factures <b class="caret"></b></a>    
                             <ul class="dropdown-menu">
                                 <li class="dropdown-header">Administrateurs</li>
+                                <li><a href="index.php?action=listePrestations"><i class="icon-list-alt fa fa-list-alt"></i> Liste des prestations</a></li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
                                 <li><a href="index.php?action=updatePrestation"><i class="icon-plus fa fa-pencil"></i> Modification de prestation...</a></li>
                                 <li class="divider"></li>
@@ -82,7 +83,7 @@
                     $("#slider").click(function(e) {
                         e.preventDefault();
                         if (a==0) {
-                            $("#sidebar-wrapper").animate({"left":"250px"}, "fast").show();
+                            $("#sidebar-wrapper").animate({"left":"270px"}, "fast").show();
                             a=1;
                         } else {
                             $("#sidebar-wrapper").animate({"left":"50px"}, "fast");
