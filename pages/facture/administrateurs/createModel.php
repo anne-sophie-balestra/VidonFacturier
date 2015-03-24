@@ -13,6 +13,11 @@
  ********************************************/
 $pdo = new SPDO();
 
+//On va chercher les entites possibles pour un dossier (brevet ou juridique)
+$stmt_t_dos_ent = "SELECT DISTINCT(t_dos_entite) FROM type_dossier ORDER BY t_dos_entite";
+$result_t_dos_ent = $pdo->prepare($stmt_t_dos_ent);
+$result_t_dos_ent->execute();
+
 //On recupere les types de dossiers existants
 $stmt_type_dossier = "SELECT DISTINCT(t_dos_type) FROM type_dossier ORDER BY t_dos_type";
 $result_type_dossier = $pdo->prepare ( $stmt_type_dossier );
@@ -41,15 +46,21 @@ $result_type_dossier->execute();
 
         <!--On demande a l'utilisateur quel est le type de dossier concerne par le modele de facture-->
 		<div class="form-group">
-			<label class="control-label" for="t_dossier">Type de dossier :</label>
-			<select name="type_dossier" id="t_dossier" required class="form-control select2">
-				<option></option>
-            <?php 
-            foreach($result_type_dossier->fetchAll(PDO::FETCH_OBJ) as $type_dossier) { ?>
-                 <option value="<?php echo $type_dossier->t_dos_type; ?>"><?php echo $type_dossier->t_dos_type; ?></option>
-            <?php } ?>
+			<label class="control-label" for="ent_dossier">Type de dossier :</label>
+            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value);" class="form-control select2">
+                <option></option>
+                <?php // On affiche les entites disponibles
+                foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
+                    <option value="<?php echo $t_dos_ent->t_dos_entite; ?>"><?php echo $t_dos_ent->t_dos_entite; ?></option>
+                <?php } ?>
             </select>
 		</div>
+        <div class="form-group">
+            <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+            <select name="type_dossier" id="type_dossier" required class="form-control select2">
+                <option></option>
+            </select>
+        </div>
 
         <!--Renseignement de l'objet de la facture-->
 		<div class="form-group">
@@ -84,6 +95,9 @@ $result_type_dossier->execute();
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
+        $("#ent_dossier").select2({
+            placeholder: "Choisissez une entité..."
+        });
         $("#type_dossier").select2({
             placeholder: "Choisissez un type de dossier..."
         });
