@@ -9,9 +9,16 @@ $id=$_GET['id'];
   <meta charset="utf-8">
   <title>Facture</title>
   
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   <meta name="description" content="">
   <meta name="author" content="">
-	
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#myModal").modal('show');
+	});
+</script>
 </head>
 
 <body>
@@ -163,9 +170,95 @@ $id=$_GET['id'];
 		</div>
 	</div>	
 		<div class="row clearfix">
-		<div class="col-md-10 column">
-	<button type="button" class="btn btn-warning"><em class="glyphicon glyphicon-plus-sign">Ajouter une Ligne de Facture</em></button>
-		</div>
+		
+	<button type="button" class="btn btn-warning " data-toggle="modal"
+   data-target="#largeModal"><em class="glyphicon glyphicon-plus-sign">Ajouter une Ligne de Facture</em></button>
+	
+ 
+    <div id="largeModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Ajout une Ligne de Facture</h4>
+                </div>
+                <div class="modal-body">
+                    
+                    
+                    <form class="form-horizontal" role="form">
+						<div class="form-group">
+							 <label for="inputEmail3" class="col-sm-2 control-label">Code de la Prestation</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="prestation_text" type="text" />
+							</div>
+						</div>
+						<div class="form-group">
+							 <label for="inputPassword3" class="col-sm-2 control-label">Libelle</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="libelle_text" type="text" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							 <label for="inputPassword3" class="col-sm-2 control-label">Montant</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="_text" type="text" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							 <label for="inputPassword3" class="col-sm-2 control-label">Qte</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="_text" type="text" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							 <label for="inputPassword3" class="col-sm-2 control-label">Total</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="total_text" type="text" />
+							</div>
+						</div>
+						
+						
+						
+					</form>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+  
+</div>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-10 column">
