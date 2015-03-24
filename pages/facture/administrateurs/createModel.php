@@ -18,6 +18,11 @@ $stmt_type_dossier = "SELECT DISTINCT(t_dos_type) FROM type_dossier ORDER BY t_d
 $result_type_dossier = $pdo->prepare ( $stmt_type_dossier );
 $result_type_dossier->execute();
 
+//On recupere les types d'operations existantes
+$stmt_type_operation = "SELECT DISTINCT(t_ope_libelle) FROM type_operation ORDER BY t_ope_libelle";
+$result_type_operation = $pdo->prepare ( $stmt_type_operation );
+$result_type_operation->execute();
+
 ?>
 <!-- Contenu principal de la page -->
 <div class="container">
@@ -39,8 +44,9 @@ $result_type_dossier->execute();
             <input type="radio" name="area" value="Etranger"> Etranger
 		</div>
 
-        <!--On demande a l'utilisateur quel est le type de dossier concerne par le modele de facture-->
-		<div class="form-group">
+        <!--On demande a l'utilisateur le type de dossier et l'opération pour le modele de facture-->
+		<div class="form-inline">
+			<!-- Dossier -->
 			<label class="control-label" for="t_dossier">Type de dossier :</label>
 			<select name="type_dossier" id="t_dossier" required class="form-control select2">
 				<option></option>
@@ -49,6 +55,17 @@ $result_type_dossier->execute();
                  <option value="<?php echo $type_dossier->t_dos_type; ?>"><?php echo $type_dossier->t_dos_type; ?></option>
             <?php } ?>
             </select>
+			
+			<!-- Operation -->
+			<label class="control-label" for="t_operation">Type d'op&egraveration :</label>
+			<select name="type_operation" id="t_operation" required class="form-control select2">
+				<option></option>
+            <?php 
+            foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
+                 <option value="<?php echo $type_ope->t_ope_libelle; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
+            <?php } ?>
+            </select>
+
 		</div>
 
         <!--Renseignement de l'objet de la facture-->
