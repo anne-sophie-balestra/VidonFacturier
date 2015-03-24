@@ -42,10 +42,18 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('createModel'):
         	require_once("pages/facture/administrateurs/createModel.php");
         	break;
+        case('updateModel'):
+            require_once("pages/facture/administrateurs/listModel.php");
+            break;
         
         //Recuperation des infos envoyées par le formulaire de creation de prestation avec verification php et insertion dans la base de donnees
         case('insertPrestation'):
             require_once("BDD/facture/administrateurs/prestation.php");
+            break;
+
+        //Recuperation des infos envoyées par le formulaire de creation de modele avec verification php et insertion dans la base de donnees
+        case('insertModel'):
+            require_once("BDD/facture/administrateurs/model.php");
             break;
         
         //Formulaire de modification d'une prestation

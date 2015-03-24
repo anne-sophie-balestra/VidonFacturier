@@ -11,68 +11,57 @@
 *                                           *
 * Date de creation : 30/01/2015             *
 ********************************************/
-
 $pdo = new SPDO();
-$stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_responsable, dos_titre, dos_refclient, dos_rf_int, dos_statut FROM dossier WHERE EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
-$result_dossiers = $pdo->prepare($stmt);
-$result_dossiers->execute();
+
+$stmt = "SELECT t_fac_id, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope FROM type_facture";
+$result_model = $pdo->prepare($stmt);
+$result_model->execute();
 ?>
+
 <!-- Contenu principal de la page -->
 <div class="container" style="width:90%;">    
-    <h2>Dossiers</h2>
-    <table class="table table-striped table-bordered table-condensed table-hover" id="ldossiers">
+    <h2>Modèles</h2>
+    <table class="table table-striped table-bordered table-condensed table-hover" id="list_models">
     <thead>
         <tr>
-            <th scope="col">Type</th>
-            <th scope="col">Numéro</th>
-            <th scope="col">Responsables</th>
+            <th scope="col">Id</th>
+            <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
-            <th scope="col">Client</th>
-            <th scope="col">Interlocuteur</th>
-            <th scope="col">Statut</th>
+            <th scope="col">Opération</th>
+            <th scope="col">Modification</th>
         </tr>
         <tr>
-            <th scope="col">Type</th>
-            <th scope="col">Numéro</th>
-            <th scope="col">Responsables</th>
+            <th scope="col">Id</th>
+            <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
-            <th scope="col">Client</th>
-            <th scope="col">Interlocuteur</th>
-            <th scope="col">Statut</th>
+            <th scope="col">Opération</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        <?php /* On parcours les dossiers pour les inserer dans le tableau */
-        foreach($result_dossiers->fetchAll(PDO::FETCH_OBJ) as $dossier) { ?>
+        <?php /* On parcours les chantiers pour les inserer dans le tableau */
+        foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $models) { ?>
         <tr>
-            <td><?php echo $dossier->dos_type; ?></td>
-            <td>
-            <a  href="createFacture.php?id=<?php echo$dossier->dos_id; ?>"> 
-            
-            <?php echo $dossier->dos_numcomplet; ?></a></td>
-            <td><?php echo $dossier->dos_responsable; ?></td>
-            <td><?php echo $dossier->dos_titre; ?></td>
-            <td><?php echo $dossier->dos_refclient; ?></td>
-            <td><?php echo $dossier->dos_rf_int; ?></td>
-            <td><?php echo $dossier->dos_statut; ?></td>
+            <td><?php echo $models->t_fac_id; ?></td>
+            <td><?php echo $models->t_fac_rf_ent; ?></td>
+            <td><?php echo $models->t_fac_rf_typdos; ?></td>
+            <td><?php echo $models->t_fac_rf_ope; ?></td>
+            <td><a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a></td>
         </tr>
         <?php } ?>
     </tbody>
         <tfoot>
             <tr>
-                <th scope="col">Type</th>
-                <th scope="col">Numéro</th>
-                <th scope="col">Responsables</th>
-                <th scope="col">Dossier</th>
-                <th scope="col">Client</th>
-                <th scope="col">Interlocuteur</th>
-                <th scope="col">Statut</th>
+            <th scope="col">Id</th>
+            <th scope="col">Entit&eacute</th>
+            <th scope="col">Dossier</th>
+            <th scope="col">Opération</th>
             </tr>
         </tfoot>
     </table>
 </div>
 <script type="text/javascript" charset="utf-8">
-    $('#ldossiers').dataTable({
+    $('#list_models').dataTable({
         "language":{
             sProcessing:   "Traitement en cours...",
             sLengthMenu:   "Afficher _MENU_ &eacute;l&eacute;ments",
@@ -94,10 +83,6 @@ $result_dossiers->execute();
         sPlaceHolder: "head:after",
         aoColumns: [
                         {
-                            type: "select",
-                            values: [ 'Brevet', 'Dessin', 'Marque']
-                        },
-                        {
                             type: "text"
                         },
                         {
@@ -108,13 +93,6 @@ $result_dossiers->execute();
                         },
                         {
                             type: "text"
-                        },
-                        {
-                            type: "text"
-                        },
-                        {
-                            type: "select",
-                            values: [ 'due', 'env', 'prj']
                         }
                     ]
 
