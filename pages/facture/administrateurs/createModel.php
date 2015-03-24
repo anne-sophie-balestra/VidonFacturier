@@ -89,6 +89,66 @@ $result_type_operation->execute();
 			<div class="help-block with-errors"></div>
 		</div>
 
+		<h3>Prestations</h3>
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th class="col-lg-1">
+						Nom
+					</th >
+					<th class="col-lg-2">
+						Prestation
+					</th >
+					<th class="col-lg-1">
+						Libelle ligne facture
+					</th>
+					<th class="col-lg-2">
+						Tarif	
+					</th>
+					<th class="col-lg-1">
+						Qte
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#modalPresta">
+		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
+		</button>
+
+		
+		<!-- Modal -->
+		<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
+		      </div>
+		      <div class="modal-body">
+		        
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+
+
+
         <!--Validation du formulaire-->
 		<div>
 			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
