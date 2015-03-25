@@ -253,6 +253,7 @@ function genererListePresta(p_id, p_value) {
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
     xmlHttp.send(null); 
+}
 
 /*
  * afficherTarifs : affiche les tarifs en fonction du type de tarification dans le modal
