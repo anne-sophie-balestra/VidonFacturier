@@ -218,6 +218,43 @@ function genererTarifs(p_id, p_value, p_num){
 }
 
 /*****
+ * genererListePresta : genere le select contenant les presta
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param String p_id : Contient l'id de l'element a modifier.
+ * @param String p_value: Contient l'entite choisie (brevet ou juridique)
+ ***/
+function genererListePresta(p_id, p_value) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererListePresta&dos=" + p_value;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            var jsonData = $.parseJSON(xmlHttp.responseText);
+            //on recupere la reference a l'element select que l'on veut peupler
+            var $select = $(p_id);
+            $select.empty();    
+            //$select.select2('data', null);    
+            $select.append('<option></option>');
+            //$select.select2({placeholder:"Choisissez une prestation ..."});
+            $.each(jsonData,function(key, value) 
+            {
+                $select.append('<option value=' + key + '>' + value + '</option>');
+            });
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+
+/*
  * afficherTarifs : affiche les tarifs en fonction du type de tarification dans le modal
  *
  * @param String p_value : Contient le type de tarification

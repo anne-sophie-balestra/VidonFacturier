@@ -34,6 +34,12 @@ if (filter_input(INPUT_GET, 'action') != NULL)
             $code = (filter_input(INPUT_GET, 'code') != NULL ? filter_input(INPUT_GET, 'code') : "");
             genererListePrestationsLiees($code);
             break;   
+
+        //
+        case('genererListePresta'):
+            $dos = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
+            genererListePresta($dos,"test");
+            break; 
         
         //Cree les blocs d'informations pour les create prestation
         case('genererInfosPrestation'):
@@ -53,7 +59,8 @@ if (filter_input(INPUT_GET, 'action') != NULL)
             $tt = (filter_input(INPUT_GET, 'tt') != NULL ? filter_input(INPUT_GET, 'tt') : "");
             $num = (filter_input(INPUT_GET, 'num') != NULL ? filter_input(INPUT_GET, 'num') : 1);
             genererTarifs($tt, $num);
-            break;              
+            break;   
+
     }
 }
 
@@ -194,3 +201,32 @@ function genererTarifs($p_tt, $p_num)
         </div>        
     <?php }
 }
+
+/*****
+ * genererListePresta : genere le select pour la list des presta dans la création d'un modèle (type_facture)
+ *
+ * @param String $t_dossier_rf : type de dossier
+ * @param String $t_ope : type d'opération
+ ***/
+function genererListePresta($t_dossier_rf, $t_ope)
+{    
+    $pdo = new SPDO;
+    
+    /* On recupere les types de dossier en fonction de l'entite */
+    $stmt_presta_list =
+        "SELECT pres_libelle_ligne_fac FROM prestation";
+     /*   WHERE dos.t_dos_id = '" . $t_dossier_rf . "' 
+        AND 
+        ORDER BY t_dos_type";*/
+    $result_presta_list = $pdo->prepare($stmt_presta_list);
+    $result_presta_list->execute();
+    
+    //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
+    $array_presta = array();    
+    foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) {
+        $array_presta[$presta_list->pres_libelle_ligne_fac] = $presta_list->pres_libelle_ligne_fac;
+    }
+    echo json_encode($array_presta);
+}
+
+
