@@ -129,7 +129,7 @@ $result_pays_reg->execute();
         <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
         <div class="form-group" hidden>
             <input name="nbInfos" id="nbInfos" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une prestation">
-            <div class="help-block with-errors"></div>
+            <div class="help-block with-errors"></div>            
         </div>
         <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
         <div class="form-group" hidden>

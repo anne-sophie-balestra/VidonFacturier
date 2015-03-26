@@ -218,6 +218,44 @@ function genererTarifs(p_id, p_value, p_num){
 }
 
 /*****
+ * genererListePresta : genere le select contenant les presta
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param String p_id : Contient l'id de l'element a modifier.
+ * @param String p_value: Contient l'entite choisie (brevet ou juridique)
+ ***/
+function genererListePresta(p_id, p_value) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererListePresta&dos=" + p_value;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            var jsonData = $.parseJSON(xmlHttp.responseText);
+            //on recupere la reference a l'element select que l'on veut peupler
+            var $select = $(p_id);
+            $select.empty();    
+            //$select.select2('data', null);    
+            $select.append('<option></option>');
+            //$select.select2({placeholder:"Choisissez une prestation ..."});
+            $.each(jsonData,function(key, value) 
+            {
+                $select.append('<option value=' + key + '>' + value + '</option>');
+            });
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*
  * afficherTarifs : affiche les tarifs en fonction du type de tarification dans le modal
  *
  * @param String p_value : Contient le type de tarification
@@ -275,7 +313,7 @@ function ajouterPrestationForm(p_id){
     var element = document.getElementById(p_id).innerHTML;
     
     //On cree la ligne dans la table
-    var ligne = "<tr>" 
+    var ligne = "<tr id='ligne" + document.getElementById('nbInfosTot').value + "'>" 
                 +"<td><span class='badge'>" + document.getElementById('nbInfosTot').value + "</span></td>"
                 +"<td>" + libelle 
                 + "<input type='hidden' value='" + libelle + "' name='libelle" + document.getElementById('nbInfosTot').value + "' id='libelle" + document.getElementById('nbInfosTot').value + "'/></td>"
@@ -290,13 +328,30 @@ function ajouterPrestationForm(p_id){
                 +"<td>" + tarif_mgr
                 +"<input type='hidden' value='" + tarif_mgr + "' name='tarif_mgr" + document.getElementById('nbInfosTot').value + "' id='tarif_mgr" + document.getElementById('nbInfosTot').value + "'/></td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-primary btn-sm'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                    +"<a class='btn btn-primary btn-sm' onclick='modifierPrestationForm(" + document.getElementById('nbInfosTot').value + ")'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-danger btn-sm'><i class='icon- fa fa-remove'></i> Supprimer</a>"
+                    +"<a class='btn btn-danger btn-sm' onclick='supprimerPrestationForm(" + document.getElementById('nbInfosTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
+}
+
+/*****
+ * supprimerPrestationForm : supprime la ligne de prestation choisie (cree grace au modal)
+ *
+ * @param String p_num : Contient le numero de la ligne a supprimer
+ ***/
+function supprimerPrestationForm(p_num){
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbInfos = parseInt(document.getElementById('nbInfos').value);
+    
+    //On decrement le nombre de prestations ajoutées
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);  
+    
+    //On cree la ligne dans la table
+    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + document.getElementById('nbInfosTot').value + "' id='supp" + document.getElementById('nbInfosTot').value + "'/>";
+    document.getElementById('ligne'+p_num).innerHTML = ligne;
 }
 
 /*****

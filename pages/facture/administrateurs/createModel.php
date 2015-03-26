@@ -63,7 +63,7 @@ $result_type_operation->execute();
         </div>
         <div class="form-group">
             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-            <select name="type_dossier" id="type_dossier" required class="form-control select2">
+            <select name="type_dossier" id="type_dossier" required onchange="genererListePresta('#select_presta', this.value);" class="form-control select2">
                 <option></option>
             </select>
         </div>
@@ -158,9 +158,11 @@ $result_type_operation->execute();
 		    </div>
 		  </div>
 		</div>
-
-
-
+			<div class="form-group">
+	        <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+		    <select name="select_presta" id="select_presta" required class="form-control select2">
+		    	<option></option>
+		    </select>
         <!--Validation du formulaire-->
 		<div>
 			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
@@ -168,6 +170,32 @@ $result_type_operation->execute();
 		</div>
 		
 	</form>
+
+		<!-- Modal -->
+	<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<form id="modalForm" method="POST">
+
+
+
+
+
+	      	</form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 </div>
 
 
