@@ -41,6 +41,9 @@ if(isset($_POST['ajouter_ligne']))
 		colonne2.innerHTML += document.getElementById("libelle_text").value;
 
 
+
+		var row=ligne.rowIndex;
+
 		var date=new Date();
 
 		var colonne3 = ligne.insertCell(2);
@@ -58,7 +61,7 @@ if(isset($_POST['ajouter_ligne']))
 		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
 
 		var colonne6 = ligne.insertCell(6);//
-		colonne6.innerHTML +="<a href=\"#\" onclik=\"modifier(index);\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
+		colonne6.innerHTML +="<a onclick=\"modifier("+row+"\);\" data-toggle=\"modal\" data-target=\"#shortModal\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
 
 		var colonne7 = ligne.insertCell(7);//
 		colonne7.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
@@ -115,15 +118,6 @@ if(isset($_POST['ajouter_ligne']))
 
 
 
-
-
-
-
-
-
-		   	 
-	   
-	  
 	    divParent.appendChild(nouvelLigne);
 	    
 	    nouvelLigne.appendChild(nouveauInputLibelle);
@@ -137,19 +131,40 @@ if(isset($_POST['ajouter_ligne']))
 
 		document.getElementById("montant_text").value="";
 		document.getElementById("qte_text").value="";
-		document.getElementById("total_text").value="";
-		var longueur = arraylines.length;
 		i=i+1;
 	    parent.document.getElementById('annuler_bouton').click();  
 	}
 
-		function modifier(index)
+
+
+/*
+1.Récuperation des lignes
+2.Recuperation de la ligne concernée à travers le tableau des lignes
+3.Afficher tous les elements de la ligne(colonnes) dans le modal appélé
+*/
+
+
+function miseajourdefinitif()
+{
+
+
+}
+	function modifier(index)
 		{
-		var index=document.getElementById(index);
-		alert(index);
+			
+		var arrayLignes = document.getElementById("tableau_facture").rows;		
+		var ligne=arrayLignes[index];
 
+		var prestation=ligne.cells[0].innerHTML;
+	    var libelle=ligne.cells[1].innerHTML;
+	    var montant=ligne.cells[3].innerHTML;
+	    var qte=ligne.cells[4].innerHTML;
+
+	    document.getElementById("prestation_text_mod").value=prestation;
+	    document.getElementById("libelle_text_mod").value=libelle;
+	    document.getElementById("montant_text_mod").value=montant;
+	    document.getElementById("qte_text_mod").value=qte;   
 		}
-
 
 	</script>
 	
@@ -319,6 +334,7 @@ if(isset($_POST['ajouter_ligne']))
 	<button type="button" class="btn btn-warning " data-toggle="modal"
    data-target="#largeModal"><em class="glyphicon glyphicon-plus-sign">Ajouter une Ligne de Facture</em></button>
 	
+	<!-- Modale de l'ajout de la facture -->
  
     <div id="largeModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
@@ -327,16 +343,8 @@ if(isset($_POST['ajouter_ligne']))
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h4 class="modal-title">Ajout une Ligne de Facture</h4>
                 </div>
-                <div class="modal-body">
-                    
-                    
+                <div class="modal-body">   
                     <form class="form-horizontal" role="form" method="post">
-						
-						
-						
-						
-						
-						
 						<div class="form-group">
 							 <label for="inputEmail3" class="col-sm-3 control-label">Code de la Prestation</label>
 							<div class="col-sm-9">
@@ -363,11 +371,56 @@ if(isset($_POST['ajouter_ligne']))
 								<input class="form-control" id="qte_text" type="text" />
 							</div>
 						</div>
+					</form>
+        
+                </div>
+                <div class="modal-footer">
+                    <button type="button" name="ajouter_ligne" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="ajouterLigne();">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>	
+	
+	
+	
+	<!-- Modale de la Modification -->
+	
+	
+	
+	   <div id="shortModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Editer une Ligne de Facture</h4>
+                </div>
+                <div class="modal-body">   
+                    <form class="form-horizontal" role="form" method="post">
+						<div class="form-group">
+							 <label for="inputEmail3" class="col-sm-3 control-label">Code de la Prestation</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="prestation_text_mod" type="text" />
+							</div>
+						</div>
+						<div class="form-group">
+							 <label for="libelle" class="col-sm-3 control-label">Libelle</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="libelle_text_mod" type="text" />
+							</div>
+						</div>
 						
 						<div class="form-group">
-							 <label for="inputPassword3" class="col-sm-3 control-label">Total</label>
+							 <label for="Montant" class="col-sm-3 control-label">Montant</label>
 							<div class="col-sm-9">
-								<input class="form-control" id="total_text" type="text" />
+								<input class="form-control" name="montant_text" id="montant_text_mod" type="text" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							 <label for="Qte" class="col-sm-3 control-label">Qte</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="qte_text_mod" type="text" />
 							</div>
 						</div>
 						
@@ -379,10 +432,17 @@ if(isset($_POST['ajouter_ligne']))
                 <div class="modal-footer">
                     <button type="button" name="ajouter_ligne" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-success" onclick="ajouterLigne();">Ajouter</button>
+                    
                 </div>
             </div>
         </div>
-    </div>	
+    </div>
+	
+	
+	
+	
+	
+	
 	
 	
 	<div id="new_input" type="hidden">
