@@ -32,7 +32,8 @@ if(isset($_POST['ajouter_ligne']))
 		var tableau = document.getElementById("tableau_facture");
 		var arraylines=document.getElementById("tableau_facture");
 		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
-	
+		ligne.id="ligne"+i;
+		var index=ligne.id;
 		var colonne1 = ligne.insertCell(0);//on a une ajouté la prestation	
 		colonne1.innerHTML += document.getElementById("prestation_text").value;//on y met le contenu de titre
 
@@ -46,7 +47,7 @@ if(isset($_POST['ajouter_ligne']))
 	 
 		colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
 		
-
+ 
 		var colonne4 = ligne.insertCell(3);//on ajoute le montant
 		colonne4.innerHTML += document.getElementById("montant_text").value;
 
@@ -57,7 +58,7 @@ if(isset($_POST['ajouter_ligne']))
 		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
 
 		var colonne6 = ligne.insertCell(6);//
-		colonne6.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
+		colonne6.innerHTML +="<a href=\"#\" onclik=\"modifier(index);\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
 
 		var colonne7 = ligne.insertCell(7);//
 		colonne7.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
@@ -67,6 +68,9 @@ if(isset($_POST['ajouter_ligne']))
 	    // création des libelles
 	 
 	    var nouveauInputPrestation = document.createElement('input');
+	    var nouvelLigne = document.createElement('div'+i);
+	    nouvelLigne.id='LigneFacture'+i;
+	    
 	 
 	    // input de Prestation
 	    nouveauInputPrestation.name = 'prestation'+i;
@@ -120,11 +124,12 @@ if(isset($_POST['ajouter_ligne']))
 		   	 
 	   
 	  
-	    divParent.appendChild( nouveauInputPrestation);
-	    divParent.appendChild(nouveauInputLibelle);
-	    divParent.appendChild(nouveauInputMontant);
-	    divParent.appendChild(nouveauInputQte);
-	    divParent.appendChild(nouveauInputTotal);
+	    divParent.appendChild(nouvelLigne);
+	    
+	    nouvelLigne.appendChild(nouveauInputLibelle);
+	    nouvelLigne.appendChild(nouveauInputMontant);
+	    nouvelLigne.appendChild(nouveauInputQte);
+	    nouvelLigne.appendChild(nouveauInputTotal);
 
 		
 		document.getElementById("prestation_text").value="";
@@ -138,9 +143,12 @@ if(isset($_POST['ajouter_ligne']))
 	    parent.document.getElementById('annuler_bouton').click();  
 	}
 
+		function modifier(index)
+		{
+		var index=document.getElementById(index);
+		alert(index);
 
-
-
+		}
 
 
 	</script>
@@ -611,7 +619,7 @@ if(isset($_POST['ajouter_ligne']))
  <div class="controls form-inline">
   <div class="col-lg-offset-5 col-lg-3 col-xs-offset-5 input-group"> 
     <span class="input-group-addon">€</span>
-    <input type="text" class="form-control" style="text-align:right"  value="<?php echo $_SESSION['montant_text'];?>>
+    <input type="text" class="form-control" style="text-align:right"  >
    
   </div>
 
@@ -622,9 +630,6 @@ if(isset($_POST['ajouter_ligne']))
  </div>
  </div>
   
-  
-  
- 
 
  <div class="form-group">
 <div class="col-sm-offset-4 col-sm-10">
