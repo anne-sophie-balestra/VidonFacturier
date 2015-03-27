@@ -248,9 +248,5 @@ $result_pays_reg->execute();
                     ]
 
     });
-    
-    $('#mod_updatePrestationGen').on('shown.bs.modal', function() {
-        $('#formUpdatePrestationGen').formValidation('resetForm', true);
-    });
 </script>
     
