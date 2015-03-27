@@ -61,7 +61,7 @@ $result_pays_reg->execute();
             <?php } ?>
             </select>
         </div>
-        <div class="form-group" id="type_dossier_div" hidden="true">
+        <div class="form-group">
             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
             <select name="type_dossier" id="type_dossier" required class="form-control select2">
                 <option></option>
@@ -115,21 +115,15 @@ $result_pays_reg->execute();
                 <span id="pourcentage" class="input-group-addon">50%</span>
             </div>
         </div>
-<!--        <div class="form-group">
-            <label class="control-label" for="nb_infos_prestation">Nombre de prestations liées :</label>
-            On demande le nombre de prestations que nous voulons liées, afin de generer le bon nombre de blocs d'infos à remplir
-            <input name="nbInfos" id="nbInfos" onkeyup="genererInfosPrestation('infosPrestation', $('#nbInfos').val(), 'Informations');" type="number" value="0" min='1' required class="form-control" data-error="Veuillez entrer le nombre de prestations associées à créer (au moins une)">
-            <div class="help-block with-errors"></div>
-        </div>-->
         
         <!--Bouton pour appeler le modal d'ajout d'une ligne de prestation-->
         <div class="form-group">
-            <button type="button" data-toggle="modal" class="btn btn-default" data-target="#addInfoPrestation"><i class='icon-plus fa fa-plus'></i> Ajouter une prestation</button>
+            <button type="button" class="btn btn-default" id="buttonModalAddInfoPrestation" onclick="genererModalLignePrestation('modalLignePrestation',0);"><i class='icon-plus fa fa-plus'></i> Ajouter une prestation</button>
         </div>
         <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
-        <div class="form-group" hidden>
-            <input name="nbInfos" id="nbInfos" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une prestation">
-            <div class="help-block with-errors"></div>            
+        <div class="form-group">
+            <input name="nbInfos" id="nbInfos" style="display: none;" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une ligne de prestation">   
+            <div class="help-block with-errors"></div>
         </div>
         <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
         <div class="form-group" hidden>
@@ -155,73 +149,10 @@ $result_pays_reg->execute();
                 <tbody id='listePrestations'></tbody>
             </table>
         </div>
-        <!--<ul id='listePrestations' class="list-group"></ul>-->
-        <!--Ajout des lignes de prestations par modal-->
-        <div class="modal fade" role="dialog" aria-labelledby="addInfoPrestation" aria-hidden="true" id="addInfoPrestation">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="addInfoPrestationLabel">Ajout d'une ligne de prestation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">                               
-                            <div class="form-group">
-                                <label class="control-label" for="libelle">Libellé :</label>
-                                <input name="libelle" type="text" required onkeyup="checkAddUpdateLignePrestation('subAjout');" class="form-control" id="libelle" maxlength="255">
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="t_tarif">Type de tarification :</label>
-                                <!--On choisit le type de tarification et on genere les champs qu'il faut en fonction-->
-                                <select name="t_tarif" id="t_tarif" required class="form-control" onchange="afficherTarifs(this.value);checkAddUpdateLignePrestation('subAjout');">
-                                    <option value="" disabled selected>Choisissez un type de tarification...</option>
-                                    <option value="F">Forfaitaire</option>
-                                    <option value="TH">Tarif Horaire</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="tarif_std_div" style="display: none;">
-                                <label class="control-label" for="tarif_std">Tarif :</label>
-                                <div class="input-group">
-                                    <input name="tarif_std" id="tarif_std" type="text" onkeyup="checkAddUpdateLignePrestation('subAjout');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                    <span class="input-group-addon">€</span>
-                                </div>
-                                <div class="help-block with-errors"></div>
-                            </div>
-                            <div class="form-group" id="tarif_jr_div" style="display: none;">
-                                <label class="control-label" for="tarif_jr">Tarif junior :</label>
-                                <div class="input-group">
-                                    <input name="tarif_jr" id="tarif_jr" type="text" onkeyup="checkAddUpdateLignePrestation('subAjout');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                    <span class="input-group-addon">€</span>
-                                </div>
-                                <div class="help-block with-errors"></div>
-                            </div>        
-                            <div class="form-group" id="tarif_sr_div" style="display: none;">
-                                <label class="control-label" for="tarif_sr">Tarif senior :</label>
-                                <div class="input-group">
-                                    <input name="tarif_sr" id="tarif_sr" type="text" onkeyup="checkAddUpdateLignePrestation('subAjout');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                    <span class="input-group-addon">€</span>
-                                </div>
-                                <div class="help-block with-errors"></div>
-                            </div>        
-                            <div class="form-group" id="tarif_mgr_div" style="display: none;">
-                                <label class="control-label" for="tarif_mgr">Tarif manager :</label>
-                                <div class="input-group">
-                                    <input name="tarif_mgr" id="tarif_mgr" type="text" onkeyup="checkAddUpdateLignePrestation('subAjout');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                    <span class="input-group-addon">€</span>
-                                </div>
-                                <div class="help-block with-errors"></div>
-                            </div>                       
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="subAjout" disabled data-dismiss="modal" onclick="ajouterPrestationForm('listePrestations');">Ajouter</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
         
-        <!--div qui contiendra les informations sur les lignes de prestations-->
+        <!--modal pour ajouter ou modifier une ligne de prestation-->
+        <div id="modalLignePrestation"></div>
+        
         <div class="panel-group" id="infosPrestation" role="tablist" aria-multiselectable="true"></div>
         <div>
             <a href="#" onclick="history.back()" class="btn btn-default" title="Annuler">Annuler</a>
@@ -230,21 +161,23 @@ $result_pays_reg->execute();
     </form>
 </div>
 <script type="text/javascript" charset="utf-8">
-    //Pour chaque input select2, on les definit comme select2 et on leur donne un placeholder specifique
+    //Pour chaque input select2, on les definit comme select2 et on leur donne un placeholder specifique    
+    //Pour regler les conflits entre l'utilisation des modals et des select2, on appelle les select2 avec un alias different de $
+    jQuery.noConflict();
     $(document).ready(function() {
-        $("#operation").select2({
+        jQuery("#operation").select2({
             placeholder: "Choisissez une opération..."
         });
-        $("#ent_dossier").select2({
+        jQuery("#ent_dossier").select2({
             placeholder: "Choisissez une entité..."
         });
-        $("#type_dossier").select2({
+        jQuery("#type_dossier").select2({
             placeholder: "Choisissez un type..."
         });
-        $("#nom_code").select2({
+        jQuery("#nom_code").select2({
             placeholder: "Choisissez un code..."
         });
-        $("#pays").select2({
+        jQuery("#pays").select2({
             placeholder: "Choisissez un pays..."
         });
     });

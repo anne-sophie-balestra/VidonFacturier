@@ -18,11 +18,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Solent 2 - Facturier</title>
         <!-- CSS -->
+        <link rel="stylesheet" href="librairies/jQuery/jquery-ui-1.11.4.custom/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/simple-sidebar.css">
         <link rel="stylesheet" type="text/css" href="librairies/bootstrap-3.3.2-dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="librairies/font-awesome-4.3.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="librairies/jQuery/jquery-ui-1.11.4.custom/jquery-ui.css">
         <link href="librairies/select2-4.0.0-rc.2/dist/css/select2-bootstrap.css" rel="stylesheet" />
         <link href="librairies/select2-4.0.0-rc.2/dist/css/select2-bootstrap.min.css" rel="stylesheet" />
         <link href="librairies/select2-4.0.0-rc.2/dist/css/select2.css" rel="stylesheet" />
@@ -66,7 +66,6 @@
                                 <li class="dropdown-header">Administrateurs</li>
                                 <li><a href="index.php?action=listePrestations"><i class="icon-list-alt fa fa-list-alt"></i> Liste des prestations</a></li>
                                 <li><a href="index.php?action=createPrestation"><i class="icon-plus fa fa-plus"></i> Nouvelle prestation...</a></li>
-                                <li><a href="index.php?action=updatePrestation"><i class="icon-plus fa fa-pencil"></i> Modification de prestation...</a></li>
                                 <li class="divider"></li>
                                 <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Mod&egravele...</a></li>
                                 <li><a href="index.php?action=updateModel"><i class="icon-plus fa fa-pencil"></i> Modifier un Mod&egravele...</a></li>
@@ -79,7 +78,7 @@
             <script>
                 //Permet de gerer le menu en slide
                 $(document).ready(function(e) {
-                    var a=0;
+                    var a=1;
                     $("#slider").click(function(e) {
                         e.preventDefault();
                         if (a==0) {

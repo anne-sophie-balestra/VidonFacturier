@@ -69,9 +69,9 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 returnToCreatePrestation($error);
             }
             
-            $nbInfos = 0;
-            if (filter_input(INPUT_POST, 'nbInfos') != NULL) {
-                $nbInfos = filter_input(INPUT_POST, 'nbInfos');
+            $nbInfosTot = 0;
+            if (filter_input(INPUT_POST, 'nbInfosTot') != NULL) {
+                $nbInfosTot = filter_input(INPUT_POST, 'nbInfosTot');
             } else {
                 returnToCreatePrestation($error);
             }
@@ -80,46 +80,49 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $type_tarifs = array();
             $tarifs = array();
             
-            for($i=1; $i<=$nbInfos;$i++) {
-                $libelles[$i] = "";
-                if (filter_input(INPUT_POST, 'libelle' . $i) != NULL) {
-                    $libelles[$i] = filter_input(INPUT_POST, 'libelle' . $i);
-                } else {
-                returnToCreatePrestation($error);
-                }
-                
-                $type_tarifs[$i] = "";
-                if (filter_input(INPUT_POST, 't_tarif' . $i) != NULL) {
-                    $type_tarifs[$i] = filter_input(INPUT_POST, 't_tarif' . $i);
-                } else {
+            for($i=1; $i<=$nbInfosTot;$i++) {
+                //On verifie que la ligne n'a pas ete supprimée en dynamique
+                if(filter_input(INPUT_POST, 'supp' . $i) == NULL) {
+                    $libelles[$i] = "";
+                    if (filter_input(INPUT_POST, 'libelle' . $i) != NULL) {
+                        $libelles[$i] = filter_input(INPUT_POST, 'libelle' . $i);
+                    } else {
                     returnToCreatePrestation($error);
-                }
-                
-                $tarifs[$i] = "";
-                if($type_tarifs[$i] == 'F') {
-                    if (filter_input(INPUT_POST, 'tarif' . $i) != NULL) {
-                        $tarifs[$i] = filter_input(INPUT_POST, 'tarif' . $i);
+                    }
+
+                    $type_tarifs[$i] = "";
+                    if (filter_input(INPUT_POST, 't_tarif' . $i) != NULL) {
+                        $type_tarifs[$i] = filter_input(INPUT_POST, 't_tarif' . $i);
                     } else {
                         returnToCreatePrestation($error);
                     }
-                } else {
-                    $tarifs[$i] = array();
-                    if (filter_input(INPUT_POST, 'tarif_jr' . $i) != NULL) {
-                        array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_jr' . $i));
+
+                    $tarifs[$i] = "";
+                    if($type_tarifs[$i] == 'F') {
+                        if (filter_input(INPUT_POST, 'tarif_std' . $i) != NULL) {
+                            $tarifs[$i] = filter_input(INPUT_POST, 'tarif_std' . $i);
+                        } else {
+                            returnToCreatePrestation($error);
+                        }
                     } else {
-                        returnToCreatePrestation($error);
+                        $tarifs[$i] = array();
+                        if (filter_input(INPUT_POST, 'tarif_jr' . $i) != NULL) {
+                            array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_jr' . $i));
+                        } else {
+                            returnToCreatePrestation($error);
+                        }
+                        if (filter_input(INPUT_POST, 'tarif_sr' . $i) != NULL) {
+                            array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_sr' . $i));
+                        } else {
+                            returnToCreatePrestation($error);
+                        }
+                        if (filter_input(INPUT_POST, 'tarif_mgr' . $i) != NULL) {
+                            array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_mgr' . $i));
+                        } else {
+                            returnToCreatePrestation($error);
+                        }
                     }
-                    if (filter_input(INPUT_POST, 'tarif_sr' . $i) != NULL) {
-                        array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_sr' . $i));
-                    } else {
-                        returnToCreatePrestation($error);
-                    }
-                    if (filter_input(INPUT_POST, 'tarif_mgr' . $i) != NULL) {
-                        array_push($tarifs[$i], filter_input(INPUT_POST, 'tarif_mgr' . $i));
-                    } else {
-                        returnToCreatePrestation($error);
-                    }
-                }
+                }                
             }
 
             /* Verification des inputs */
@@ -166,7 +169,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     . ":nom_code, :id_gen, :prestation, :libelle, :type_tarif, :tarif_std, " 
                     . ":tarif_jr, :tarif_sr, :tarif_mgr, :repartition, " 
                     . ":pays, :type_dossier, :operation)";
-            
             $stmt_insert = $pdo->prepare($insert_string);
             
             //On lie les parametres recuperés via le formulaire pour les associer a la requete
@@ -190,28 +192,30 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_insert->bindParam(':operation', $operation);
             
             //On cree autant de lignes dans la base que de lignes de prestation
-            for($i=1;$i<=$nbInfos;$i++){
-                //On genere un id 
-                $id = generateId("PRE", "re", "prestation");
-                //On recupere la date actuelle
-                $date = date(date("Y-m-d H:i:s"));
-                //On recupere l'utilisateur qui a fait l'ajout
-                $user = "GLS";
-                $libelle = $libelles[$i];
-                $type_tarif = $type_tarifs[$i];
-                if(is_array($tarifs[$i])) {
-                    $tarif_std = 0;
-                    $tarif_jr = $tarifs[$i][0];
-                    $tarif_sr = $tarifs[$i][1];
-                    $tarif_mgr = $tarifs[$i][2];
-                } else {
-                    $tarif_std = $tarifs[$i];
-                    $tarif_jr = 0;
-                    $tarif_sr = 0;
-                    $tarif_mgr = 0;
+            for($i=1;$i<=$nbInfosTot;$i++){
+                if(filter_input(INPUT_POST, 'supp' . $i) == NULL) {
+                    //On genere un id 
+                    $id = generateId("PRE", "re", "prestation");
+                    //On recupere la date actuelle
+                    $date = date(date("Y-m-d H:i:s"));
+                    //On recupere l'utilisateur qui a fait l'ajout
+                    $user = "GLS";
+                    $libelle = $libelles[$i];
+                    $type_tarif = $type_tarifs[$i];
+                    if(is_array($tarifs[$i])) {
+                        $tarif_std = 0;
+                        $tarif_jr = $tarifs[$i][0];
+                        $tarif_sr = $tarifs[$i][1];
+                        $tarif_mgr = $tarifs[$i][2];
+                    } else {
+                        $tarif_std = $tarifs[$i];
+                        $tarif_jr = 0;
+                        $tarif_sr = 0;
+                        $tarif_mgr = 0;
+                    }
+                    //On execute la requete
+                    $stmt_insert->execute(); 
                 }
-                //On execute la requete
-                $stmt_insert->execute();                
             }
             //On retourne a la page d'accueil
             returnToIndex();

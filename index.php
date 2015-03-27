@@ -29,41 +29,41 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             break;
         
         /* Onglet Factures */
-        //Formulaire de creation d'une prestation
-        case('createPrestation'):
-            require_once("pages/facture/administrateurs/createPrestation.php");
-            break;
-            
+        
+        /* Prestations */    
         //Affichage des prestations dans un tableau
         case('listePrestations'):
             require_once("pages/facture/administrateurs/listePrestations.php");
             break;
-            
-        case('createModel'):
-        	require_once("pages/facture/administrateurs/createModel.php");
-        	break;
-        case('updateModel'):
-            require_once("pages/facture/administrateurs/listModel.php");
+        
+        //Formulaire de creation d'une prestation
+        case('createPrestation'):
+            require_once("pages/facture/administrateurs/createPrestation.php");
             break;
         
         //Recuperation des infos envoyées par le formulaire de creation de prestation avec verification php et insertion dans la base de donnees
         case('insertPrestation'):
             require_once("BDD/facture/administrateurs/prestation.php");
             break;
-
-        //Recuperation des infos envoyées par le formulaire de creation de modele avec verification php et insertion dans la base de donnees
-        case('insertModel'):
-            require_once("BDD/facture/administrateurs/model.php");
-            break;
-        
-        //Formulaire de modification d'une prestation
-        case('updatePrestation'):
-            require_once("pages/facture/administrateurs/updatePrestation.php");
-            break;
         
         //Recuperation des infos envoyées par le formulaire de modification de prestation avec verification php et modification/insertion dans la base de donnees
         case('changePrestation'):
             require_once("BDD/facture/administrateurs/prestation.php");
+            break;
+        
+        //Formulaire de creation d'un modele de facture
+        case('createModel'):
+        	require_once("pages/facture/administrateurs/createModel.php");
+        	break;
+            
+        //Formulaire de modification d'un modele de facture
+        case('updateModel'):
+            require_once("pages/facture/administrateurs/listModel.php");
+            break;
+
+        //Recuperation des infos envoyées par le formulaire de creation de modele avec verification php et insertion dans la base de donnees
+        case('insertModel'):
+            require_once("BDD/facture/administrateurs/model.php");
             break;
     }
 }
