@@ -315,7 +315,6 @@ function ajouterPrestationForm(p_id){
     
     //On cree la ligne dans la table
     var ligne = "<tr id='ligne" + document.getElementById('nbInfosTot').value + "'>" 
-                +"<td><span class='badge'>" + document.getElementById('nbInfosTot').value + "</span></td>"
                 +"<td>" + libelle 
                 + "<input type='hidden' value='" + libelle + "' name='libelle" + document.getElementById('nbInfosTot').value + "' id='libelle" + document.getElementById('nbInfosTot').value + "'/></td>"
                 +"<td>" + t_tarif_lib
@@ -409,4 +408,59 @@ function checkAddUpdateLignePrestation(p_id){
 function isANumber( n ) {
     var numStr = /^(\d+\.?\d*)$/;
     return numStr.test(n.toString());
+}
+
+/**
+* ajouterPrestationModel : Permet d'ajouter des lignes de prestations aux modèles (type_facture).
+* @param String p_id : Contient l'ID du tableau ou les prestations seront ajoutées.
+*/
+function ajouterPrestationModel(p_id){
+
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbInfos = parseInt(document.getElementById('nbInfos').value);
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+    var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
+    
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+
+    //on recupere l'id de la prestation à ajouter.
+    var id_pres = document.getElementById('select_presta').value;
+
+    var element = document.getElementById(p_id).innerHTML;
+
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    }
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
+
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = element + xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+
+}
+
+/*****
+ * supModelPresta : supprime une ligne de prestation dans la page de création d'un modèle.
+ *
+ * @param String p_lign_num : Contient le numero de la ligne à supprimer
+ ***/
+function supModelPresta(p_lign_num) {
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbInfos = parseInt(document.getElementById('nbInfos').value);
+    
+    //On decrement le nombre de prestations ajoutées
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);  
+    
+    //On cree la ligne dans la table
+    var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + document.getElementById('nbInfosTot').value + "' id='supp" + document.getElementById('nbInfosTot').value + "'/>";
+    document.getElementById('ligne'+p_lign_num).innerHTML = ligne;
 }

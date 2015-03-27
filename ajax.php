@@ -60,8 +60,15 @@ if (filter_input(INPUT_GET, 'action') != NULL)
             $tt = (filter_input(INPUT_GET, 'tt') != NULL ? filter_input(INPUT_GET, 'tt') : "");
             $num = (filter_input(INPUT_GET, 'num') != NULL ? filter_input(INPUT_GET, 'num') : 1);
             genererTarifs($tt, $num);
-            break;   
+            break;  
 
+        //Genere une ligne de tableau dans contenant la prestation dans createModel.php
+        case('getPrestationTabFromID'):
+            $presta = (filter_input(INPUT_GET, 'presta') != NULL ? filter_input(INPUT_GET, 'presta') : "");
+            $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : "");
+            $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : "");
+            getPrestationTabFromID($presta, nbInfos, nbInfosTot);
+            break;              
     }
 }
 
@@ -214,7 +221,7 @@ function genererListePresta($t_dos, $t_ope)
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_presta_list = "SELECT pres_libelle_ligne_fac FROM prestation";
+    $stmt_presta_list = "SELECT pres_libelle_ligne_fac, pres_id FROM prestation";
      /*   "SELECT p.pres_libelle_ligne_fac FROM prestation p, dossier d, operation o";
         WHERE p.pres_rf_typ_dossier = d.t_dos_id
         AND p.pres_rf_typ_operation = o.t_ope_id
@@ -222,12 +229,41 @@ function genererListePresta($t_dos, $t_ope)
     $result_presta_list = $pdo->prepare($stmt_presta_list);
     $result_presta_list->execute();
     
-    //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
+    //On cree un array avec l'id et le nom du type de presta que l'on va retourner en JSON
     $array_presta = array();    
     foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) {
-        $array_presta[$presta_list->pres_libelle_ligne_fac] = $presta_list->pres_libelle_ligne_fac;
+        $array_presta[$presta_list->pres_id] = $presta_list->pres_libelle_ligne_fac;
     }
     echo json_encode($array_presta);
 }
 
 
+/**
+*   getPrestationTabFromID : Retourne une ligne de tableau comprenant la prestation ajoutée dans createModel.php
+*   @param String $id_presta : id de la prestation à ajouter.
+*/
+function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
+
+    $pdo = new SPDO;
+    
+    /* On recupere les infos à insérer dans notre ligne de tableau */
+    $stmt_presta_tab_model = "SELECT pres_id, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr 
+                                FROM prestation 
+                                WHERE pres_id='".$id_presta."'";
+    $result_presta_list = $pdo->prepare($stmt_presta_tab_model);
+    $result_presta_list->execute();
+
+    if($id_presta != null) { 
+        foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) ?>
+            <tr id="ligne<?php echo $nbInfosTot; ?>"
+            <input type="hidden" value="<?php echo $presta_list->pres_id; ?> " name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
+            <td><?php echo $presta_list->pres_libelle_ligne_fac; ?></td>
+            <td><?php echo $presta_list->pres_t_tarif; ?></td>
+            <td><?php echo $presta_list->pres_tarif_std; ?></td>
+            <td><?php echo $presta_list->pres_tarif_jr; ?></td>
+            <td><?php echo $presta_list->tarif_sr; ?></td>
+            <td><?php echo $presta_list->tarif_mgr; ?></td>
+            <td align="center"><a class='btn btn-danger btn-sm' onclick='supModelPresta(<?php echo $nbInfosTot; ?>)'><i class='icon-plus fa fa-edit'></i> Supprimer</a></td>
+            <?php 
+        }
+    }

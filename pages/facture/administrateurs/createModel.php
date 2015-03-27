@@ -108,6 +108,16 @@ $result_type_operation->execute();
 		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
 		</button>
 
+		<!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
+        <div class="form-group" hidden>
+            <input name="nbInfos" id="nbInfos" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une prestation">
+            <div class="help-block with-errors"></div>            
+        </div>
+        <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
+        <div class="form-group" hidden>
+            <input name="nbInfosTot" id="nbInfosTot" type="number" value="0" required class="form-control">
+        </div>
+
         <!--div qui contiendra les prestations ajoutees-->
         <div class="panel panel-default">
             <div class="panel-heading">Liste des prestations</div>
@@ -115,7 +125,6 @@ $result_type_operation->execute();
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">Libellé</th>
                         <th scope="col">Type tarification</th>
                         <th scope="col">Tarif standard</th>
@@ -123,7 +132,6 @@ $result_type_operation->execute();
                         <th scope="col">Tarif senior</th>
                         <th scope="col">Tarif manager</th>
                         <th scope="col">Modifier</th>
-                        <th scope="col">Supprimer</th>
                     </tr>
                 </thead>
                 <tbody id='listePrestations'></tbody>
@@ -149,7 +157,7 @@ $result_type_operation->execute();
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary">Save changes</button>
+		        <button type="button" class="btn btn-primary" id="subAjout" data-dismiss="modal" onclick="ajouterPrestationModel('listePrestations');">Ajouter</button>
 		      </div>
 		    </div>
 		  </div>
