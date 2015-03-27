@@ -45,9 +45,9 @@ if (filter_input(INPUT_GET, 'action') != NULL)
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('getPrestationTabFromID'):
             $presta = (filter_input(INPUT_GET, 'presta') != NULL ? filter_input(INPUT_GET, 'presta') : "");
-            $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : "");
-            $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : "");
-            getPrestationTabFromID($presta, nbInfos, nbInfosTot);
+            $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : 0);
+            $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
+            getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
             break;              
     }
 }
@@ -347,7 +347,7 @@ function genererModalPrestation($prestation)
 function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
 
     $pdo = new SPDO;
-    
+
     /* On recupere les infos à insérer dans notre ligne de tableau */
     $stmt_presta_tab_model = "SELECT pres_id, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr 
                                 FROM prestation 
@@ -356,9 +356,9 @@ function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
     $result_presta_list->execute();
 
     if($id_presta != null) { 
-        foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) ?>
-            <tr id="ligne<?php echo $nbInfosTot; ?>"
-            <input type="hidden" value="<?php echo $presta_list->pres_id; ?> " name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
+        foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) { ?>
+            <tr id="ligne<?php echo $nbInfosTot; ?>">
+            <input type="hidden" value="<?php echo $presta_list->pres_id; ?>" name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
             <td><?php echo $presta_list->pres_libelle_ligne_fac; ?></td>
             <td><?php echo $presta_list->pres_t_tarif; ?></td>
             <td><?php echo $presta_list->pres_tarif_std; ?></td>
@@ -366,6 +366,8 @@ function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
             <td><?php echo $presta_list->tarif_sr; ?></td>
             <td><?php echo $presta_list->tarif_mgr; ?></td>
             <td align="center"><a class='btn btn-danger btn-sm' onclick='supModelPresta(<?php echo $nbInfosTot; ?>)'><i class='icon-plus fa fa-edit'></i> Supprimer</a></td>
+            </tr>
             <?php 
         }
     }
+}

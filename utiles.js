@@ -442,6 +442,8 @@ function ajouterPrestationModel(p_id){
     var nbInfos = parseInt(document.getElementById('nbInfos').value);
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
     var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
+
+
     
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
@@ -459,6 +461,8 @@ function ajouterPrestationModel(p_id){
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
 
+    alert(url);
+    
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
@@ -483,6 +487,7 @@ function supModelPresta(p_lign_num) {
     document.getElementById('nbInfos').value = parseInt(nbInfos+1);  
     
     //On cree la ligne dans la table
-    var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + document.getElementById('nbInfosTot').value + "' id='supp" + document.getElementById('nbInfosTot').value + "'/>";
+    var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + p_lign_num + "' id='supp" + p_lign_num + "'/>";
+    alert(p_lign_num);
     document.getElementById('ligne'+p_lign_num).innerHTML = ligne;
 }
