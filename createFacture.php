@@ -2,6 +2,14 @@
 require_once("header.php");
 require_once("modeleFacture.php");
 $id=$_GET['id'];
+/*
+session_start();
+if(isset($_POST['ajouter_ligne']))
+{
+	$_SESSION['montant_text']=$_POST['montant_text'];
+	 
+}
+*/
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,22 +21,19 @@ $id=$_GET['id'];
   <meta name="description" content="">
   <meta name="author" content="">
 	
-	
-	
+
 	<script type="text/javascript">
 
-
+	var i=0;
 	function ajouterLigne()
-	{
+	{ 
+		
 		
 		var tableau = document.getElementById("tableau_facture");
-
-
 		var arraylines=document.getElementById("tableau_facture");
-
 		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
-		
-
+		ligne.id="ligne"+i;
+		var index=ligne.id;
 		var colonne1 = ligne.insertCell(0);//on a une ajouté la prestation	
 		colonne1.innerHTML += document.getElementById("prestation_text").value;//on y met le contenu de titre
 
@@ -42,7 +47,7 @@ $id=$_GET['id'];
 	 
 		colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
 		
-
+ 
 		var colonne4 = ligne.insertCell(3);//on ajoute le montant
 		colonne4.innerHTML += document.getElementById("montant_text").value;
 
@@ -53,28 +58,97 @@ $id=$_GET['id'];
 		colonne6.innerHTML += document.getElementById("montant_text").value*document.getElementById("qte_text").value;
 
 		var colonne6 = ligne.insertCell(6);//
-		colonne6.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
+		colonne6.innerHTML +="<a href=\"#\" onclik=\"modifier(index);\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
 
 		var colonne7 = ligne.insertCell(7);//
-		colonne7.innerHTML +="<a href=\"#\ onclick=""><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
+		colonne7.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
 		
+		var divParent = document.getElementById('new_input');
+		 
+	    // création des libelles
+	 
+	    var nouveauInputPrestation = document.createElement('input');
+	    var nouvelLigne = document.createElement('div'+i);
+	    nouvelLigne.id='LigneFacture'+i;
+	    
+	 
+	    // input de Prestation
+	    nouveauInputPrestation.name = 'prestation'+i;
+	    nouveauInputPrestation.id = 'prestation'+i;
+	    nouveauInputPrestation.type = 'hidden';
+	    nouveauInputPrestation.value=colonne1.innerHTML;
 
+	    
+	    var nouveauInputLibelle = document.createElement('input');
+		 
+	    // input de Libelle
+	    nouveauInputLibelle.name = 'libelle'+i;
+	    nouveauInputLibelle.id = 'libelle'+i;
+	    nouveauInputLibelle.type = 'hidden';
+	    nouveauInputLibelle.value=colonne2.innerHTML;
+
+
+	    var nouveauInputMontant = document.createElement('input');
+		 
+	   //input de Montant
+	    nouveauInputMontant.name = 'Montant'+i;
+	    nouveauInputMontant.id = 'Montant'+i;
+	    nouveauInputMontant.type = 'hidden';
+	    nouveauInputMontant.value=colonne4.innerHTML;
+
+	    var nouveauInputQte = document.createElement('input');
+		 
+	    // input de Qte
+	    nouveauInputQte.name = 'Qte'+i;
+	    nouveauInputQte.id = 'Qte'+i;
+	    nouveauInputQte.type = 'hidden';
+	    nouveauInputQte.value=colonne5.innerHTML;
+	    
+	    var nouveauInputTotal = document.createElement('input');
+		 
+	    // input de Total
+	    nouveauInputTotal.name = 'Total'+i;
+	    nouveauInputTotal.id = 'Total'+i;
+	    nouveauInputTotal.type = 'hidden';
+	    nouveauInputTotal.value=colonne6.innerHTML;
+
+
+
+
+
+
+
+
+
+
+		   	 
+	   
+	  
+	    divParent.appendChild(nouvelLigne);
+	    
+	    nouvelLigne.appendChild(nouveauInputLibelle);
+	    nouvelLigne.appendChild(nouveauInputMontant);
+	    nouvelLigne.appendChild(nouveauInputQte);
+	    nouvelLigne.appendChild(nouveauInputTotal);
+
+		
 		document.getElementById("prestation_text").value="";
 		document.getElementById("libelle_text").value="";
 
 		document.getElementById("montant_text").value="";
 		document.getElementById("qte_text").value="";
 		document.getElementById("total_text").value="";
-
 		var longueur = arraylines.length;
-	    alert(longueur);
+		i=i+1;
 	    parent.document.getElementById('annuler_bouton').click();  
-	
 	}
 
+		function modifier(index)
+		{
+		var index=document.getElementById(index);
+		alert(index);
 
-
-
+		}
 
 
 	</script>
@@ -256,7 +330,13 @@ $id=$_GET['id'];
                 <div class="modal-body">
                     
                     
-                    <form class="form-horizontal" role="form">
+                    <form class="form-horizontal" role="form" method="post">
+						
+						
+						
+						
+						
+						
 						<div class="form-group">
 							 <label for="inputEmail3" class="col-sm-3 control-label">Code de la Prestation</label>
 							<div class="col-sm-9">
@@ -273,7 +353,7 @@ $id=$_GET['id'];
 						<div class="form-group">
 							 <label for="Montant" class="col-sm-3 control-label">Montant</label>
 							<div class="col-sm-9">
-								<input class="form-control" id="montant_text" type="text" />
+								<input class="form-control" name="montant_text" id="montant_text" type="text" />
 							</div>
 						</div>
 						
@@ -297,7 +377,7 @@ $id=$_GET['id'];
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" name="ajouter_ligne" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-success" onclick="ajouterLigne();">Ajouter</button>
                 </div>
             </div>
@@ -305,7 +385,12 @@ $id=$_GET['id'];
     </div>	
 	
 	
+	<div id="new_input" type="hidden">
 	
+	
+	
+	
+	</div>
 	
 	
 	
@@ -454,6 +539,8 @@ $id=$_GET['id'];
   
 </div>
 
+
+
 </div>
 </div>
 <div class="form-group">
@@ -532,7 +619,7 @@ $id=$_GET['id'];
  <div class="controls form-inline">
   <div class="col-lg-offset-5 col-lg-3 col-xs-offset-5 input-group"> 
     <span class="input-group-addon">€</span>
-    <input type="text" class="form-control" style="text-align:right" value="100">
+    <input type="text" class="form-control" style="text-align:right"  >
    
   </div>
 
@@ -543,9 +630,6 @@ $id=$_GET['id'];
  </div>
  </div>
   
-  
-  
- 
 
  <div class="form-group">
 <div class="col-sm-offset-4 col-sm-10">
