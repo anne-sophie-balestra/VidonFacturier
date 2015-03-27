@@ -68,7 +68,7 @@ function genererListeTypeDossier(p_id, p_value) {
             $div.show();
             
             //on recupere la reference a l'element select que l'on veut peupler
-            var $select = $(p_id);
+            var $select = jQuery(p_id);
             $select.empty();    
             $select.select2('data', null);    
             $select.append('<option></option>');
@@ -136,7 +136,7 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
         if (xmlHttp.readyState == 4) {
             var jsonData = $.parseJSON(xmlHttp.responseText);
             //on recupere la reference a l'element select que l'on veut peupler
-            var $select = $(p_id);
+            var $select = jQuery(p_id);
             $select.empty();    
             //$select.select2('data', null);    
             $select.append('<option></option>');
