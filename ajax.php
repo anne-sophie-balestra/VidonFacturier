@@ -38,7 +38,8 @@ if (filter_input(INPUT_GET, 'action') != NULL)
         //
         case('genererListePresta'):
             $dos = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
-            genererListePresta($dos,"test");
+            $ope = (filter_input(INPUT_GET, 'ope') != NULL ? filter_input(INPUT_GET, 'ope') : "");
+            genererListePresta($dos,$ope);
             break; 
         
         //Cree les blocs d'informations pour les create prestation
@@ -205,19 +206,19 @@ function genererTarifs($p_tt, $p_num)
 /*****
  * genererListePresta : genere le select pour la list des presta dans la création d'un modèle (type_facture)
  *
- * @param String $t_dossier_rf : type de dossier
+ * @param String $t_dos : type de dossier
  * @param String $t_ope : type d'opération
  ***/
-function genererListePresta($t_dossier_rf, $t_ope)
+function genererListePresta($t_dos, $t_ope)
 {    
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_presta_list =
-        "SELECT pres_libelle_ligne_fac FROM prestation";
-     /*   WHERE dos.t_dos_id = '" . $t_dossier_rf . "' 
-        AND 
-        ORDER BY t_dos_type";*/
+    $stmt_presta_list = "SELECT pres_libelle_ligne_fac FROM prestation";
+     /*   "SELECT p.pres_libelle_ligne_fac FROM prestation p, dossier d, operation o";
+        WHERE p.pres_rf_typ_dossier = d.t_dos_id
+        AND p.pres_rf_typ_operation = o.t_ope_id
+        AND o.ope_type = '".$t_dos;*/
     $result_presta_list = $pdo->prepare($stmt_presta_list);
     $result_presta_list->execute();
     

@@ -222,9 +222,10 @@ function genererTarifs(p_id, p_value, p_num){
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *
  * @param String p_id : Contient l'id de l'element a modifier.
- * @param String p_value: Contient l'entite choisie (brevet ou juridique)
+ * @param String type_dossier: Contient le type de dossier : Dessin/Modèle (Juridique) ou Brevet/Etude (Brevet)
+ * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépot, enregistrement, etc ...
  ***/
-function genererListePresta(p_id, p_value) {
+function genererListePresta(p_id, type_dossier, type_ope ) {
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
     
@@ -234,7 +235,7 @@ function genererListePresta(p_id, p_value) {
         return;
     } 
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererListePresta&dos=" + p_value;
+    var url= "ajax.php?action=genererListePresta&dos=" + type_dossier +"&ope=" + type_ope;
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
