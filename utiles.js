@@ -438,19 +438,23 @@ function isANumber( n ) {
 */
 function ajouterPrestationModel(p_id){
 
-    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    // On recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
     var nbInfos = parseInt(document.getElementById('nbInfos').value);
-    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+
+    // On recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
     var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
 
+    // On augmente le nombre de prestations ajoutées
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1); 
+    document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1); 
 
-    
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
 
-    //on recupere l'id de la prestation à ajouter.
+    // On recupere l'id de la prestation à ajouter.
     var id_pres = document.getElementById('select_presta').value;
 
+    // On récupère les éléments du tableau HTML
     var element = document.getElementById(p_id).innerHTML;
 
     // Vérifie si le navigateur supporte l'AJAX
@@ -461,8 +465,6 @@ function ajouterPrestationModel(p_id){
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
 
-    alert(url);
-    
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
@@ -471,8 +473,8 @@ function ajouterPrestationModel(p_id){
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
     xmlHttp.send(null); 
-
 }
+
 
 /*****
  * supModelPresta : supprime une ligne de prestation dans la page de création d'un modèle.
