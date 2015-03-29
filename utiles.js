@@ -120,7 +120,7 @@ function genererInfosPrestation(p_id, p_value, p_nom){
  * @param String type_dossier: Contient le type de dossier : Dessin/Modèle (Juridique) ou Brevet/Etude (Brevet)
  * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépot, enregistrement, etc ...
  ***/
-function genererListePresta(p_id, type_dossier, type_ope ) {
+function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
     
@@ -130,7 +130,7 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
         return;
     } 
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererListePresta&dos=" + type_dossier +"&ope=" + type_ope;
+    var url= "ajax.php?action=genererListePresta&ent=" + type_ent + "&dos=" + type_dossier + "&ope=" + type_ope;
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
@@ -490,6 +490,5 @@ function supModelPresta(p_lign_num) {
     
     //On cree la ligne dans la table
     var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + p_lign_num + "' id='supp" + p_lign_num + "'/>";
-    alert(p_lign_num);
     document.getElementById('ligne'+p_lign_num).innerHTML = ligne;
 }

@@ -72,7 +72,7 @@ $result_type_operation->execute();
         <div class="form-group">
 			<!-- Operation -->
 			<label class="control-label" for="t_operation">Type d'opération :</label>
-			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('ent_dossier').value, document.getElementById('type_dossier').value, this.value);" class="form-control select2">
 				<option></option>
             <?php 
             foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
