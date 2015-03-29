@@ -63,7 +63,7 @@ function genererListeTypeDossier($p_entite)
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_t_dos_type = "SELECT t_dos_id, t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
+    $stmt_t_dos_type = "SELECT t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
     $result_t_dos_type = $pdo->prepare($stmt_t_dos_type);
     $result_t_dos_type->bindParam(":entite", $p_entite);
     $result_t_dos_type->execute();
@@ -71,7 +71,7 @@ function genererListeTypeDossier($p_entite)
     //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
     $array_dos = array();    
     foreach($result_t_dos_type->fetchAll(PDO::FETCH_OBJ) as $t_dos_type) {
-        $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
+        $array_dos[$t_dos_type->t_dos_type] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
 }
@@ -89,10 +89,21 @@ function genererListePresta($ent, $t_dos, $t_ope)
     
     /* On recupere les types de dossier en fonction de l'entite */
     $stmt_presta_list =
-      "SELECT p.pres_libelle_ligne_fac FROM prestation p
-        WHERE p.pres_rf_typ_dossier IN (SELECT t_dos_id FROM type_dossier d WHERE d.t_dos_entite ='".$ent."' AND d.t_dos_type ='".$t_dos."') 
-        AND pres_rf_typ_operation IN (SELECT t_ope_id FROM type_operation o WHERE o.t_ope_libelle ='".$t_ope."')";
+      "SELECT p.pres_libelle_ligne_fac, p.pres_id FROM prestation p
+        WHERE p.pres_rf_typ_dossier IN (
+                SELECT t_dos_id FROM type_dossier d 
+                WHERE d.t_dos_entite = :entite 
+                AND d.t_dos_type = :dossier
+        ) 
+        AND pres_rf_typ_operation IN (
+                SELECT t_ope_id FROM type_operation o 
+                WHERE o.t_ope_libelle = :operation
+        )";
+    
     $result_presta_list = $pdo->prepare($stmt_presta_list);
+    $result_presta_list->bindParam(':entite', $ent);
+    $result_presta_list->bindParam(':dossier', $t_dos);
+    $result_presta_list->bindParam(':operation', $t_ope);
     $result_presta_list->execute();
     
     //On cree un array avec l'id et le nom du type de presta que l'on va retourner en JSON

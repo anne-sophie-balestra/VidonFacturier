@@ -118,7 +118,7 @@ function genererInfosPrestation(p_id, p_value, p_nom){
  *
  * @param String p_id : Contient l'id de l'element a modifier.
  * @param String type_dossier: Contient le type de dossier : Dessin/Modèle (Juridique) ou Brevet/Etude (Brevet)
- * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépot, enregistrement, etc ...
+ * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépôt, enregistrement, etc ...
  ***/
 function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
     // Appel la fonction qui crée un objet XmlHttp.
@@ -131,6 +131,9 @@ function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
     } 
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=genererListePresta&ent=" + type_ent + "&dos=" + type_dossier + "&ope=" + type_ope;
+
+    alert(url);
+    
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {

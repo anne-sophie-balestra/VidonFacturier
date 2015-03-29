@@ -131,7 +131,7 @@ $result_type_operation->execute();
                         <th scope="col">Tarif junior</th>
                         <th scope="col">Tarif senior</th>
                         <th scope="col">Tarif manager</th>
-                        <th scope="col">Modifier</th>
+                        <th scope="col">Supprimer</th>
                     </tr>
                 </thead>
                 <tbody id='listePrestations'></tbody>
