@@ -132,8 +132,6 @@ function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=genererListePresta&ent=" + type_ent + "&dos=" + type_dossier + "&ope=" + type_ope;
 
-    alert(url);
-    
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
