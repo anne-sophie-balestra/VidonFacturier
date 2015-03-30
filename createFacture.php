@@ -119,7 +119,6 @@ $id=$_GET['id'];
 		document.getElementById("montant_text").value="";
 		document.getElementById("qte_text").value="";
 		alert(i);
-		
 		i=i+1;
 	    parent.document.getElementById('annuler_bouton').click();  
 	}
@@ -134,7 +133,7 @@ $id=$_GET['id'];
 		{
 
 			/* Recuperation des cellules de la ligne*/
-			index=index+1;
+			
 			var arrayLignes = document.getElementById("tableau_facture").rows;		
 			var ligne=arrayLignes[index];
 
@@ -177,12 +176,11 @@ $id=$_GET['id'];
        function modifier(index)
 		{
 
-    	   alert(index);
+    	
 		var updatebuttons=document.getElementById("update_button");
-		update_button.setAttribute('onclick','miseajourdefinitif('+index+')');	
-				
-		var arrayLignes = document.getElementById("tableau_facture").rows;		
-		var ligne=arrayLignes[index-1];
+		var arrayLignes = document.getElementById("tableau_facture").rows;	
+		index=index-1;
+		var ligne=arrayLignes[index];
 
 		var prestation=ligne.cells[0].innerHTML;
 	    var libelle=ligne.cells[1].innerHTML;
@@ -193,29 +191,32 @@ $id=$_GET['id'];
 	    document.getElementById("libelle_text_mod").value=libelle;
 	    document.getElementById("montant_text_mod").value=montant;
 	    document.getElementById("qte_text_mod").value=qte;   
+	    update_button.setAttribute('onclick','miseajourdefinitif('+index+')');
 		}
 
 /* Recuperer l'index de la ligne et la supprimer
- * Supprimer le div des input cachés et le supprimer 
+ * Supprimer le div des input cachés et le supprimer
+ * 
  */
 		function supprimer(index)
 		{
 
-			alert(index);
-			if (confirm('Etes-vous sur de vouloir supprimer cette ligne de facture?'))
-
-			{
-
 			
-			var arrayLignes = document.getElementById("tableau_facture").rows;		
-			var ligne=arrayLignes[index+1];
+			if (confirm('Etes-vous sur de vouloir supprimer cette ligne de facture?'))
+			{
+			var arrayLignes = document.getElementById("tableau_facture").rows;	
+			index=index-1;	
+			var ligne=arrayLignes[index];
+			alert(index);
 
 			document.getElementById("tableau_facture").deleteRow(index);
-			document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index+1)));			
+			document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index)));			
 			}
 			else
 			{
+				
 			return false;
+			
 			}
 	
 		}
@@ -426,13 +427,7 @@ $id=$_GET['id'];
         </div>
     </div>
 	
-	
-	
-	
-	
-	
-	
-	
+
 	<div id="new_input" type="hidden">
 	
 	
