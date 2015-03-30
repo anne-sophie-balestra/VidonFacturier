@@ -209,8 +209,9 @@ $id=$_GET['id'];
 			var ligne=arrayLignes[index];
 			alert(index);
 
-			document.getElementById("tableau_facture").deleteRow(index);
-			document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index)));			
+			ligne.style.display = 'none';
+			//document.getElementById("tableau_facture").deleteRow(index);
+			//document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index)));			
 			}
 			else
 			{
@@ -427,15 +428,16 @@ $id=$_GET['id'];
         </div>
     </div>
 	
-
+<!-- div des input de lignes  ajoutés  -->
 	<div id="new_input" type="hidden">
-	
-	
-	
 	
 	</div>
 	
+<!-- div des input des lignes supprimés -->
 	
+	<div id="suppr_input" type="hidden">
+	
+	</div>
 	
 	
 	
