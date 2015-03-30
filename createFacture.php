@@ -2,33 +2,30 @@
 require_once("header.php");
 require_once("modeleFacture.php");
 $id=$_GET['id'];
-/*
-session_start();
-if(isset($_POST['ajouter_ligne']))
-{
-	$_SESSION['montant_text']=$_POST['montant_text'];
-	 
-}
-*/
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Facture</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   <meta name="description" content="">
   <meta name="author" content="">
 	
 
 	<script type="text/javascript">
 
-	var i=0;
+	var i=1;
+/*
+ * Ajouter une ligne de facture dans le tableau
+ * Ajouter un input cachés des valeurs à de la ligne de facture insérée 
+ */
+
 	function ajouterLigne()
 	{ 
-		
-		
+			
 		var tableau = document.getElementById("tableau_facture");
 		var arraylines=document.getElementById("tableau_facture");
 		var ligne = tableau.insertRow(-1);//on a ajouté une ligne
@@ -41,16 +38,12 @@ if(isset($_POST['ajouter_ligne']))
 		colonne2.innerHTML += document.getElementById("libelle_text").value;
 
 
-
 		var row=ligne.rowIndex;
-
+		row=row+1;
 		var date=new Date();
-
 		var colonne3 = ligne.insertCell(2);
-	 
-		colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
+	 	colonne3.innerHTML +=date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear(); 
 		
- 
 		var colonne4 = ligne.insertCell(3);//on ajoute le montant
 		colonne4.innerHTML += document.getElementById("montant_text").value;
 
@@ -64,32 +57,28 @@ if(isset($_POST['ajouter_ligne']))
 		colonne6.innerHTML +="<a onclick=\"modifier("+row+"\);\" data-toggle=\"modal\" data-target=\"#shortModal\"><em class=\"glyphicon glyphicon-pencil\"></em></a>";
 
 		var colonne7 = ligne.insertCell(7);//
-		colonne7.innerHTML +="<a href=\"#\"><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
+		colonne7.innerHTML +="<a href=\"#\" onclick=supprimer("+row+"\);><em class=\"glyphicon glyphicon-remove-sign\"></em></a>";
 		
 		var divParent = document.getElementById('new_input');
 		 
 	    // création des libelles
-	 
 	    var nouveauInputPrestation = document.createElement('input');
 	    var nouvelLigne = document.createElement('div'+i);
 	    nouvelLigne.id='LigneFacture'+i;
 	    
-	 
 	    // input de Prestation
 	    nouveauInputPrestation.name = 'prestation'+i;
 	    nouveauInputPrestation.id = 'prestation'+i;
 	    nouveauInputPrestation.type = 'hidden';
 	    nouveauInputPrestation.value=colonne1.innerHTML;
-
-	    
+	      
 	    var nouveauInputLibelle = document.createElement('input');
-		 
+	    	 
 	    // input de Libelle
 	    nouveauInputLibelle.name = 'libelle'+i;
 	    nouveauInputLibelle.id = 'libelle'+i;
 	    nouveauInputLibelle.type = 'hidden';
 	    nouveauInputLibelle.value=colonne2.innerHTML;
-
 
 	    var nouveauInputMontant = document.createElement('input');
 		 
@@ -115,11 +104,9 @@ if(isset($_POST['ajouter_ligne']))
 	    nouveauInputTotal.type = 'hidden';
 	    nouveauInputTotal.value=colonne6.innerHTML;
 
-
-
-
 	    divParent.appendChild(nouvelLigne);
-	    
+
+	    nouvelLigne.appendChild(nouveauInputPrestation);
 	    nouvelLigne.appendChild(nouveauInputLibelle);
 	    nouvelLigne.appendChild(nouveauInputMontant);
 	    nouvelLigne.appendChild(nouveauInputQte);
@@ -131,11 +118,11 @@ if(isset($_POST['ajouter_ligne']))
 
 		document.getElementById("montant_text").value="";
 		document.getElementById("qte_text").value="";
+		alert(i);
+		
 		i=i+1;
 	    parent.document.getElementById('annuler_bouton').click();  
 	}
-
-
 
 /*
 1.Récuperation des lignes
@@ -143,42 +130,97 @@ if(isset($_POST['ajouter_ligne']))
 3.Afficher tous les elements de la ligne(colonnes) dans le modal appélé
 */
 
-
-function miseajourdefinitif()
-{
-
-
-}
-	function modifier(index)
+		function miseajourdefinitif(index)
 		{
+
+			/* Recuperation des cellules de la ligne*/
+			index=index+1;
+			var arrayLignes = document.getElementById("tableau_facture").rows;		
+			var ligne=arrayLignes[index];
+
+			var prestation=ligne.cells[0].innerHTML;
+		    var libelle=ligne.cells[1].innerHTML;
+		    
+		    var date=new Date().getDate()+'/'+(new Date().getMonth()+1)+'/'+new Date().getFullYear();
+		    
+		    var montant=ligne.cells[3].innerHTML;
+		    var qte=ligne.cells[4].innerHTML;
+		    var total=ligne.cells[5].innerHTML;
 			
+			
+			/* Modification du tableau avec les input modifies */
+			ligne.cells[0].innerHTML=document.getElementById('prestation_text_mod').value;
+			ligne.cells[1].innerHTML=document.getElementById("libelle_text_mod").value;
+			ligne.cells[2].innerHTML=date;
+			ligne.cells[3].innerHTML=document.getElementById("montant_text_mod").value;
+			ligne.cells[4].innerHTML=document.getElementById("qte_text_mod").value;   
+			total=document.getElementById("montant_text_mod").value*document.getElementById("qte_text_mod").value;
+			ligne.cells[5].innerHTML=total;
+				    
+			/*modification des input caches avec les elements du tableau*/	
+			document.getElementById("prestation"+index).value=ligne.cells[0].innerHTML;
+			document.getElementById("libelle"+index).value=ligne.cells[1].innerHTML;
+			document.getElementById("Montant"+index).value=ligne.cells[3].innerHTML;
+			document.getElementById("Qte"+index).value=ligne.cells[4].innerHTML;
+			document.getElementById("Total"+index).value=ligne.cells[5].innerHTML;
+
+			parent.document.getElementById('update_annuler_button').click(); 
+			
+			 document.getElementById("prestation_text_mod").value="";
+			 document.getElementById("libelle_text_mod").value="";
+			 document.getElementById("montant_text_mod").value="";
+			 document.getElementById("qte_text_mod").value="";   	
+	
+		}
+
+
+       function modifier(index)
+		{
+
+    	   alert(index);
+		var updatebuttons=document.getElementById("update_button");
+		update_button.setAttribute('onclick','miseajourdefinitif('+index+')');	
+				
 		var arrayLignes = document.getElementById("tableau_facture").rows;		
-		var ligne=arrayLignes[index];
+		var ligne=arrayLignes[index-1];
 
 		var prestation=ligne.cells[0].innerHTML;
 	    var libelle=ligne.cells[1].innerHTML;
 	    var montant=ligne.cells[3].innerHTML;
 	    var qte=ligne.cells[4].innerHTML;
-
+	       
 	    document.getElementById("prestation_text_mod").value=prestation;
 	    document.getElementById("libelle_text_mod").value=libelle;
 	    document.getElementById("montant_text_mod").value=montant;
 	    document.getElementById("qte_text_mod").value=qte;   
 		}
 
-	</script>
+/* Recuperer l'index de la ligne et la supprimer
+ * Supprimer le div des input cachés et le supprimer 
+ */
+		function supprimer(index)
+		{
+
+			alert(index);
+			if (confirm('Etes-vous sur de vouloir supprimer cette ligne de facture?'))
+
+			{
+
+			
+			var arrayLignes = document.getElementById("tableau_facture").rows;		
+			var ligne=arrayLignes[index+1];
+
+			document.getElementById("tableau_facture").deleteRow(index);
+			document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index+1)));			
+			}
+			else
+			{
+			return false;
+			}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		}
+
+	</script>	
 </head>
 
 <body>
@@ -228,7 +270,9 @@ function miseajourdefinitif()
 						<?php echo $row->dos_titulaire_saisi ;?>
 						</td>
 					</tr>
-					<?php }?>
+					<?php 
+					}
+					?>
 	
 				</tbody>
 			</table>
@@ -271,60 +315,7 @@ function miseajourdefinitif()
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-2">
-					Dépot de Brevet Européen
-						</td>
-						<td class="col-lg-1">
-							01/04/2012
-						</td>
-						<td class="col-lg-2">
-							200
-						</td>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-1">
-							200
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-pencil"></em></a>
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-remove-sign"></em></a>
-						</td>
-						
-					</tr>
-					<tr>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-2">
-					Dépot de Brevet Européen
-						</td>
-						<td class="col-lg-1">
-							01/04/2012
-						</td>
-						<td class="col-lg-2">
-							200
-						</td>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-1">
-							200
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-pencil"></em></a>
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-remove-sign"></em></a>
-						</td>
-						
-					</tr>
+					
 				</tbody>
 			</table>
 		</div>
@@ -385,14 +376,11 @@ function miseajourdefinitif()
 	
 	
 	<!-- Modale de la Modification -->
-	
-	
-	
-	   <div id="shortModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+	  <div id="shortModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
                     <h4 class="modal-title">Editer une Ligne de Facture</h4>
                 </div>
                 <div class="modal-body">   
@@ -429,9 +417,9 @@ function miseajourdefinitif()
 					</form>
                     
                 </div>
-                <div class="modal-footer">
-                    <button type="button" name="ajouter_ligne" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" onclick="ajouterLigne();">Ajouter</button>
+                <div class="modal-footer" id="update_buttons">
+                    <button type="button" id="update_annuler_button" name="ajouter_ligne" id="annuler_bouton" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" id="update_button" class="btn btn-success">Modifier</button>
                     
                 </div>
             </div>
@@ -501,58 +489,7 @@ function miseajourdefinitif()
 					</tr>
 				</thead>
 				<tbody>
-					<tr >
-						<td class="col-lg-1">
-							2
-						</td>
-						<td class="col-lg-2">
-				Taxe d'Habitation
-						</td>
-						<td class="col-lg-1">
-							01/04/2012
-						</td>
-						<td class="col-lg-2">
-							200
-						</td>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-1">
-							200
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-pencil"></em></a>
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-remove-sign"></em></a>
-						</td>
-					</tr>
-					<tr class="warning">
-						<td class="col-lg-1">
-							2
-						</td>
-						<td class="col-lg-2">
-				Taxe d'Habitation
-						</td>
-						<td class="col-lg-1">
-							01/04/2012
-						</td>
-						<td class="col-lg-2">
-							200
-						</td>
-						<td class="col-lg-1">
-							1
-						</td>
-						<td class="col-lg-1">
-							200
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-pencil"></em></a>
-						</td>
-						<td class="col-lg-1">
-						<a href="#"><em class="glyphicon glyphicon-remove-sign"></em></a>
-						</td>
-					</tr>
+					
 				</tbody>
 			</table>
 		</div>
@@ -594,7 +531,7 @@ function miseajourdefinitif()
   <option>Proforma</option>
   <option>Proforma</option>
   
-</select>
+   </select>
   </div>
   
 </div>
