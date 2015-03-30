@@ -72,7 +72,7 @@ function genererListeTypeDossier($p_entite) {
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_t_dos_type = "SELECT t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
+    $stmt_t_dos_type = "SELECT t_dos_type, t_dos_id FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
     $result_t_dos_type = $pdo->prepare($stmt_t_dos_type);
     $result_t_dos_type->bindParam(":entite", $p_entite);
     $result_t_dos_type->execute();
@@ -80,7 +80,7 @@ function genererListeTypeDossier($p_entite) {
     //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
     $array_dos = array();    
     foreach($result_t_dos_type->fetchAll(PDO::FETCH_OBJ) as $t_dos_type) {
-        $array_dos[$t_dos_type->t_dos_type] = $t_dos_type->t_dos_type;
+        $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
 }
