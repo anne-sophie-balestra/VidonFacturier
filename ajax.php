@@ -29,9 +29,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
 
         //
         case('genererListePresta'):
+            $ent = (filter_input(INPUT_GET, 'ent') != NULL ? filter_input(INPUT_GET, 'ent') : "");
             $dos = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
-            genererListePresta($dos,"test");
-            break;         
+            $ope = (filter_input(INPUT_GET, 'ope') != NULL ? filter_input(INPUT_GET, 'ope') : "");
+            genererListePresta($ent, $dos, $ope);
+            break; 
         
         //Genere le modal pour ajouter ou modifier une ligne de prestation dans create prestation
         case('genererModalLignePrestation'):
@@ -45,6 +47,13 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             genererModalPrestation($prestation);
             break;   
 
+        //Genere une ligne de tableau dans contenant la prestation dans createModel.php
+        case('getPrestationTabFromID'):
+            $presta = (filter_input(INPUT_GET, 'presta') != NULL ? filter_input(INPUT_GET, 'presta') : "");
+            $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : 0);
+            $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
+            getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
+            break;              
     }
 }
 
@@ -57,7 +66,7 @@ function genererListeTypeDossier($p_entite) {
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_t_dos_type = "SELECT t_dos_id, t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
+    $stmt_t_dos_type = "SELECT t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
     $result_t_dos_type = $pdo->prepare($stmt_t_dos_type);
     $result_t_dos_type->bindParam(":entite", $p_entite);
     $result_t_dos_type->execute();
@@ -65,7 +74,7 @@ function genererListeTypeDossier($p_entite) {
     //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
     $array_dos = array();    
     foreach($result_t_dos_type->fetchAll(PDO::FETCH_OBJ) as $t_dos_type) {
-        $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
+        $array_dos[$t_dos_type->t_dos_type] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
 }
@@ -73,25 +82,37 @@ function genererListeTypeDossier($p_entite) {
 /*****
  * genererListePresta : genere le select pour la list des presta dans la création d'un modèle (type_facture)
  *
- * @param String $t_dossier_rf : type de dossier
+ * @param String $ent : entite de la presta
+ * @param String $t_dos : type de dossier
  * @param String $t_ope : type d'opération
  ***/
-function genererListePresta($t_dossier_rf, $t_ope) {    
+function genererListePresta($ent, $t_dos, $t_ope)
+{    
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
     $stmt_presta_list =
-        "SELECT pres_libelle_ligne_fac FROM prestation";
-     /*   WHERE dos.t_dos_id = '" . $t_dossier_rf . "' 
-        AND 
-        ORDER BY t_dos_type";*/
+      "SELECT p.pres_libelle_ligne_fac, p.pres_id FROM prestation p
+        WHERE p.pres_rf_typ_dossier IN (
+                SELECT t_dos_id FROM type_dossier d 
+                WHERE d.t_dos_entite = :entite 
+                AND d.t_dos_type = :dossier
+        ) 
+        AND pres_rf_typ_operation IN (
+                SELECT t_ope_id FROM type_operation o 
+                WHERE o.t_ope_libelle = :operation
+        )";
+    
     $result_presta_list = $pdo->prepare($stmt_presta_list);
+    $result_presta_list->bindParam(':entite', $ent);
+    $result_presta_list->bindParam(':dossier', $t_dos);
+    $result_presta_list->bindParam(':operation', $t_ope);
     $result_presta_list->execute();
     
-    //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
+    //On cree un array avec l'id et le nom du type de presta que l'on va retourner en JSON
     $array_presta = array();    
     foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) {
-        $array_presta[$presta_list->pres_libelle_ligne_fac] = $presta_list->pres_libelle_ligne_fac;
+        $array_presta[$presta_list->pres_id] = $presta_list->pres_libelle_ligne_fac;
     }
     echo json_encode($array_presta);
 }
@@ -394,3 +415,164 @@ function genererModalPrestation($prestation) {
 <?php }
 
 
+    //On va chercher les entites possibles pour un dossier (brevet ou juridique)
+    $stmt_t_dos_ent = "SELECT DISTINCT(t_dos_entite) FROM type_dossier ORDER BY t_dos_entite";
+    $result_t_dos_ent = $pdo->prepare($stmt_t_dos_ent);
+    $result_t_dos_ent->execute();
+
+    //On recupere les codes de nomenclatures auxquels on voudra associer des prestations
+    $stmt_nom = "SELECT nom_id, nom_code FROM nomenclature ORDER BY nom_code";
+    $result_nom = $pdo->prepare($stmt_nom);
+    $result_nom->execute();
+
+    //On recupere tous les pays qui peuvent etre associés à une prestation
+    $stmt_pays_reg = "SELECT DISTINCT(pay_region) FROM pays ORDER BY pay_region";
+    $result_pays_reg = $pdo->prepare($stmt_pays_reg);
+    $result_pays_reg->execute();
+    ?>
+    <!--Ajout des lignes de prestations par modal-->
+    <div class="modal fade" role="dialog" aria-labelledby="modalInfoPrestationGenerale" aria-hidden="true" id="modalInfoPrestationGenerale">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalInfoPrestationGeneraleLabel">Modification d'une prestation</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">  
+                        <form id="formUpdatePrestation" action="index.php?action=changePrestation" method="post" role="form" data-toggle="validator">     
+                            <div role="tabpanel">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                  <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">Général</a></li>
+                                  <li role="presentation"><a href="#new" aria-controls="new" role="tab" data-toggle="tab">Ajout</a></li>
+                                  <li role="presentation" class="dropdown">
+                                        <a id="infos" class="dropdown-toggle" aria-controls="infos-contents" data-toggle="dropdown" href="#" aria-expanded="false">Infos <span class="caret"></span></a>
+                                        <ul id="myTabDrop1-contents" class="dropdown-menu" aria-labelledby="myTabDrop1" role="menu">
+                                            <li><a id="dropdown1-tab" aria-controls="dropdown1" data-toggle="tab" role="tab" tabindex="-1" href="#dropdown1" aria-expanded="false">@fat</a></li>
+                                            <li><a id="dropdown2-tab" aria-controls="dropdown2" data-toggle="tab" role="tab" tabindex="-1" href="#dropdown2" aria-expanded="false">@mdo</a></li>
+                                        </ul>
+                                  </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="general">
+                                        <div class="form-group">
+                                            <label class="control-label" for="operation">Opération :</label>
+                                            <select name="operation" id="operation" required class="form-control">
+                                            <?php //On affiche toutes les operations comme des options du select
+                                            foreach($result_ope->fetchAll(PDO::FETCH_OBJ) as $ope) { ?>
+                                                <option value="<?php echo $ope->t_ope_id; ?>" <?php if($presta->pres_rf_typ_operation == $ope->t_ope_id) { echo "selected"; } ?>><?php echo $ope->t_ope_libelle; ?></option>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="ent_dossier">Type de dossier :</label><br />
+                                            <!--En changeant l'entite, nous allons charger le select type_dossier avec les types associés à l'entite choisie-->
+                                            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value);" class="form-control">
+                                            <?php // On affiche les entites disponibles 
+                                            foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
+                                                <option value="<?php echo $t_dos_ent->t_dos_entite; ?>"><?php echo $t_dos_ent->t_dos_entite; ?></option>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+                                            <select name="type_dossier" id="type_dossier" required class="form-control">
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="nom_code">Code :</label>
+                                            <!--On affiche les codes de nomenclature dans le select--> 
+                                            <select name="nom_code" id="nom_code" required class="form-control">
+                                            <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $nom) { ?>
+                                                <option value="<?php echo $nom->nom_id; ?>"><?php echo $nom->nom_code; ?></option>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="pays">Pays :</label>
+                                            <!--On affiche les pays en les groupant par regions-->
+                                            <select name="pays" id="pays" required class="form-control">
+                                            <?php foreach($result_pays_reg->fetchAll(PDO::FETCH_OBJ) as $pays_reg) { ?>
+                                                <optgroup label="<?php echo $pays_reg->pay_region; ?>">
+                                                    <?php $stmt_pays = "SELECT pay_id, pay_nom FROM pays WHERE pay_region = '" . $pays_reg->pay_region . "' ORDER BY pay_nom";
+                                                    $result_pays = $pdo->prepare($stmt_pays);
+                                                    $result_pays->execute();
+                                                    foreach($result_pays->fetchAll(PDO::FETCH_OBJ) as $pays) { ?>
+                                                        <option value="<?php echo $pays->pay_id; ?>"><?php echo $pays->pay_nom; ?></option>
+                                                    <?php } ?>
+                                                </optgroup>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="prestation">Prestation :</label>
+                                            <!--on prend le nom general de la prestation, i.e. nom du modele-->
+                                            <input name="prestation" type="text" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                        <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
+                                        <div class="form-group">
+                                            <label class="control-label" for="repartition">Répartition des consultants :</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <select id="pourcentage_select" class="form-inline" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('repartition').value=this.value;">
+                                                        <?php for($i=0; $i<=100; $i+=5) { ?>
+                                                            <option <?php if($i == 50) { echo "selected"; } ?>><?php echo $i; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </span>
+                                                <input name="repartition" id="repartition" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('pourcentage_select').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
+                                                <span id="pourcentage" class="input-group-addon">50%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane" id="new">hello new</div>
+                                    <div role="tabpanel" class="tab-pane" id="ligne1">hello ligne 1</div>
+                                    <div role="tabpanel" class="tab-pane" id="ligne2">hello ligne 2</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" onclick="document.getElementById('formUpdatePrestation').submit();">Modifier</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+<?php }
+
+
+/**
+*   getPrestationTabFromID : Retourne une ligne de tableau comprenant la prestation ajoutée dans createModel.php
+*   @param String $id_presta : id de la prestation à ajouter.
+*/
+function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
+
+    $pdo = new SPDO;
+
+    /* On recupere les infos à insérer dans notre ligne de tableau */
+    $stmt_presta_tab_model = "SELECT pres_id, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr 
+                                FROM prestation 
+                                WHERE pres_id='".$id_presta."'";
+    $result_presta_list = $pdo->prepare($stmt_presta_tab_model);
+    $result_presta_list->execute();
+
+    if($id_presta != null) { 
+        foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) { ?>
+            <tr id="ligne<?php echo $nbInfosTot; ?>">
+            <input type="hidden" value="<?php echo $presta_list->pres_id; ?>" name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
+            <td><?php echo $presta_list->pres_libelle_ligne_fac; ?></td>
+            <td><?php echo $presta_list->pres_t_tarif; ?></td>
+            <td><?php echo $presta_list->pres_tarif_std; ?></td>
+            <td><?php echo $presta_list->pres_tarif_jr; ?></td>
+            <td><?php echo $presta_list->tarif_sr; ?></td>
+            <td><?php echo $presta_list->tarif_mgr; ?></td>
+            <td align="center"><a class='btn btn-danger btn-sm' onclick='supModelPresta(<?php echo $nbInfosTot; ?>)'><i class='icon-plus fa fa-edit'></i> Supprimer</a></td>
+            </tr>
+            <?php 
+        }
+    }
+}
