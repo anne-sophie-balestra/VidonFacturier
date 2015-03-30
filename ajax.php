@@ -44,13 +44,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('genererModalPrestation'):
             $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
             genererModalPrestation($prestation);
-            break;   
-        
-        //Genere le modal pour modifier une prestation dans la liste des prestations
-        case('genererModalPrestation'):
-            $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
-            genererModalPrestation($prestation);
-            break;   
+            break;     
 
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('getPrestationTabFromID'):

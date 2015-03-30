@@ -17,6 +17,7 @@
  * @return XMLHttpRequest xmlHttp : Retourne l'élément créé.
  */
 function GetXmlHttpObject() {
+
     var xmlHttp= null; 
 
     try
@@ -108,7 +109,6 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
     } 
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=genererListePresta&dos=" + type_dossier + "&ope=" + type_ope;
-    alert(url);
 
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
@@ -225,35 +225,6 @@ function genererModalPrestation(p_id, p_presta) {
 }
 
 /*****
- * genererModalPrestation : genere le modal pour modifier une prestation depuis la liste des prestations
- * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
- *
- * @param p_id : Contient l'id de l'element a modifier.
- * @param p_presta : Contient l'id general de la prestation a modifier
- ***/
-function genererModalPrestation(p_id, p_presta) {
-    // Appel la fonction qui crée un objet XmlHttp.
-    var xmlHttp = GetXmlHttpObject(); 
-    
-    // Vérifie si le navigateur supporte l'AJAX
-    if (xmlHttp == null) {
-        alert ("Votre navigateur ne supporte pas AJAX");
-        return;
-    } 
-    // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererModalPrestation&pre=" + p_presta;
-    // Création de la fonction qui sera appelé au changement de statut.
-    xmlHttp.onreadystatechange= function StateChanged() {
-        if (xmlHttp.readyState == 4) {
-            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
-            $('#modalInfoPrestationGenerale').modal('toggle');
-        };
-    };
-    xmlHttp.open("GET",url,true); // Ouvre l'url
-    xmlHttp.send(null); 
-}
-
-/*****
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
  * @param p_id : Contient l'id de l'element a modifier.
@@ -283,7 +254,7 @@ function ajouterPrestationForm(p_id){
         tarif_sr = document.getElementById('tarif_sr').value;
         tarif_mgr = document.getElementById('tarif_mgr').value;
         t_tarif_lib = "Horaire";
-    }    
+    } 
     
     //On augmente le nombre de prestations ajoutées
     document.getElementById('nbInfos').value = parseInt(nbInfos+1); 
@@ -482,7 +453,6 @@ function ajouterPrestationModel(p_id){
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
 
-    alert(url);
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
