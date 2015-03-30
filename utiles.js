@@ -140,11 +140,16 @@ function afficherTarifs(p_value){
         document.getElementById('tarif_jr_div').style.display= "none";
         document.getElementById('tarif_sr_div').style.display= "none";
         document.getElementById('tarif_mgr_div').style.display= "none";
-    } else {
+    } else if(p_value == "TH") {
         document.getElementById('tarif_std_div').style.display= "none";
         document.getElementById('tarif_jr_div').style.display= "block";
         document.getElementById('tarif_sr_div').style.display= "block";
         document.getElementById('tarif_mgr_div').style.display= "block";
+    } else {
+        document.getElementById('tarif_std_div').style.display= "none";
+        document.getElementById('tarif_jr_div').style.display= "none";
+        document.getElementById('tarif_sr_div').style.display= "none";
+        document.getElementById('tarif_mgr_div').style.display= "none";
     }
 }
 
@@ -256,8 +261,9 @@ function genererModalPrestation(p_id, p_presta) {
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
  * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_modal : true si on fait avec un modal
  ***/
-function ajouterPrestationForm(p_id){
+function ajouterPrestationForm(p_id, p_modal){
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
     var nbInfos = parseInt(document.getElementById('nbInfos').value);
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
@@ -306,7 +312,13 @@ function ajouterPrestationForm(p_id){
                 +"<td>" + tarif_mgr
                 +"<input type='hidden' value='" + tarif_mgr + "' name='tarif_mgr" + document.getElementById('nbInfosTot').value + "' id='tarif_mgr" + document.getElementById('nbInfosTot').value + "'/></td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-primary btn-sm' onclick='genererModalLignePrestation(\"modalLignePrestation\"," + document.getElementById('nbInfosTot').value + ")'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                +"<a class='btn btn-primary btn-sm' onclick='";
+    if(p_modal) {
+        ligne += "genererModalLignePrestation(\"modalLignePrestation\"," + document.getElementById('nbInfosTot').value + ", " + p_modal + ")'>";
+    } else {
+        ligne += "modifierPrestation(" + document.getElementById('nbInfosTot').value + ")'>";
+    }
+    ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
                 +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerPrestationForm(" + document.getElementById('nbInfosTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
@@ -314,7 +326,56 @@ function ajouterPrestationForm(p_id){
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
     //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
-    document.getElementById('modalLignePrestation').innerHTML = "";
+    if(p_modal) {
+        document.getElementById('modalLignePrestation').innerHTML = "";
+    } // sinon on vide les champs 
+    else {
+        $('#libelle').val("");
+        $('#t_tarif').val("");                    
+        $('#tarif_std').val("");
+        $('#tarif_jr').val("");
+        $('#tarif_sr').val("");
+        $('#tarif_mgr').val("");
+        afficherTarifs($('#t_tarif').val());
+    }
+}
+
+/*****
+ * modifierPrestation : permet de modifier la ligne de prestation ajouter dans le formulaire de modif dans listePrestations
+ *
+ * @param p_presta : Contient le numero de la ligne a modifier.
+ ***/
+function modifierPrestation(p_presta){
+    
+    //on recupere le libelle de la ligne de prestation que l'on veut modifier
+    var libelle = document.getElementById('libelle' + p_presta).value;
+    //on recupere le type de tarification
+    var t_tarif =  document.getElementById('t_tarif' + p_presta).value;
+    //On initialise nos variables pour les tarifs
+    var tarif_std = "";
+    var tarif_jr = "";
+    var tarif_sr = "";
+    var tarif_mgr = "";
+    //En fonction du type de tarification, on aura un ou trois champs de tarif a recuperer
+    if(t_tarif == "F") {
+        tarif_std = document.getElementById('tarif_std' + p_presta).value;
+    } else {
+        tarif_jr = document.getElementById('tarif_jr' + p_presta).value;
+        tarif_sr = document.getElementById('tarif_sr' + p_presta).value;
+        tarif_mgr = document.getElementById('tarif_mgr' + p_presta).value;
+    }    
+    
+    //On va modifier les inputs pour les preremplir avant de pouvoir faire la modification
+    $('#libelle').val(libelle);
+    $('#t_tarif').val(t_tarif);                    
+    $('#tarif_std').val(tarif_std);
+    $('#tarif_jr').val(tarif_jr);
+    $('#tarif_sr').val(tarif_sr);
+    $('#tarif_mgr').val(tarif_mgr);
+    afficherTarifs(t_tarif);
+    
+    document.getElementById('button_action').innerHTML = "<button type='button' class='btn btn-default' name='subAction' id='subAction' onclick='modifierPrestationForm(\"ligne" + p_presta + "\", \"" + p_presta + "\", false);'><i class='icon-plus fa fa-edit'></i> Modifier la prestation</button>";
+    document.getElementById('panel_action').innerHTML = "Modifier la ligne de prestation";
 }
 
 /*****
@@ -322,8 +383,9 @@ function ajouterPrestationForm(p_id){
  *
  * @param p_id : Contient l'id de l'element a modifier.
  * @param p_presta : Contient le numero de la ligne a modifier.
+ * @param p_modal : true si on modifie via un modal
  ***/
-function modifierPrestationForm(p_id, p_presta){
+function modifierPrestationForm(p_id, p_presta, p_modal){
     
     //on recupere le libelle de la ligne de prestation
     var libelle = document.getElementById('libelle').value;
@@ -359,15 +421,40 @@ function modifierPrestationForm(p_id, p_presta){
                 +"<td>" + tarif_mgr
                 +"<input type='hidden' value='" + tarif_mgr + "' name='tarif_mgr" + p_presta + "' id='tarif_mgr" + p_presta + "'/></td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-primary btn-sm' onclick='genererModalLignePrestation(\"modalLignePrestation\"," + p_presta + ")'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                    +"<a class='btn btn-primary btn-sm' onclick='";
+    if(p_modal) {
+        ligne += "genererModalLignePrestation(\"modalLignePrestation\"," + p_presta + ", " + p_modal + ")'>";
+    } else {
+        ligne += "modifierPrestation(\"" + p_presta + "\")'>";
+    }
+    ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-danger btn-sm' onclick='supprimerPrestationForm(" + p_presta + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
+                    +"<a class='btn btn-danger btn-sm'";
+    if(p_presta.substring(0,3)!= "PRE") {
+        ligne += " onclick='supprimerPrestationForm(" + p_presta + ")'";
+    } else {
+        ligne += "disabled";
+    }
+    ligne += "><i class='icon- fa fa-remove'></i> Supprimer</a>";
                 +"</td>";
         
     document.getElementById(p_id).innerHTML = ligne;
     //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
-    document.getElementById('modalLignePrestation').innerHTML = "";
+    if(p_modal) {
+        document.getElementById('modalLignePrestation').innerHTML = "";
+    } else {
+        document.getElementById('button_action').innerHTML = "<button type='button' class='btn btn-default' disabled name='subAction' id='subAction' onclick='ajouterPrestationForm(\"listePrestations\", false);'><i class='icon-plus fa fa-plus'></i> Ajouter une prestation</button>";
+        document.getElementById('panel_action').innerHTML = "Ajout d'une ligne de prestation";
+        //on remet ensuite les inputs a vide
+        $('#libelle').val("");
+        $('#t_tarif').val("");                    
+        $('#tarif_std').val("");
+        $('#tarif_jr').val("");
+        $('#tarif_sr').val("");
+        $('#tarif_mgr').val("");
+        afficherTarifs($('#t_tarif').val());
+    }
 }
 
 /*****

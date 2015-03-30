@@ -21,7 +21,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
     switch (filter_input(INPUT_GET, 'action')) {
         /* Ajout d'une nouvelle prestation */
-        case('insertPrestation'):
+        case('insertPrestation'):            
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
             
@@ -220,6 +220,10 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             //On retourne a la page d'accueil
             returnToIndex();
             break;
+            
+        case('changePrestation'):
+            var_dump($_POST);
+            exit;
     }
 }
 
