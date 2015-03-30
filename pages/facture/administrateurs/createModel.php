@@ -53,7 +53,7 @@ $result_type_operation->execute();
         <div class="form-group">
             <label class="control-label" for="ent_dossier">Type de dossier :</label><br />
             <!--En changeant l'entite, nous allons charger le select type_dossier avec les types associés à l'entite choisie-->
-            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value);" class="form-control select2">
+            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value, true);" class="form-control select2">
                 <option></option>
                 <?php // On affiche les entites disponibles
                 foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
@@ -63,7 +63,7 @@ $result_type_operation->execute();
         </div>
         <div class="form-group">
             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-            <select name="type_dossier" id="type_dossier" required onchange="genererListePresta('#select_presta', this.value);" class="form-control select2">
+            <select name="type_dossier" id="type_dossier" required class="form-control select2">
                 <option></option>
             </select>
         </div>
@@ -72,7 +72,7 @@ $result_type_operation->execute();
         <div class="form-group">
 			<!-- Operation -->
 			<label class="control-label" for="t_operation">Type d'opération :</label>
-			<select name="type_operation" id="t_operation" required class="form-control select2">
+			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('ent_dossier').value, document.getElementById('type_dossier').value, this.value);" class="form-control select2">
 				<option></option>
             <?php 
             foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
@@ -103,43 +103,41 @@ $result_type_operation->execute();
 			<div class="help-block with-errors"></div>
 		</div>
 
-		<h3>Prestations</h3>
-		<table class="table table-striped table-bordered table-condensed">
-			<thead>
-				<tr>
-					<th class="col-lg-1">
-						Nom
-					</th >
-					<th class="col-lg-2">
-						Prestation
-					</th >
-					<th class="col-lg-1">
-						Libelle ligne facture
-					</th>
-					<th class="col-lg-2">
-						Tarif	
-					</th>
-					<th class="col-lg-1">
-						Qte
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-			</tbody>
-		</table>
-
-		<button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#modalPresta">
+		<!-- Bouton d'ajout d'une prestation au modèle -->
+		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPresta">
 		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
 		</button>
 
-		
+		<!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
+        <div class="form-group" hidden>
+            <input name="nbInfos" id="nbInfos" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une prestation">
+            <div class="help-block with-errors"></div>            
+        </div>
+        <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
+        <div class="form-group" hidden>
+            <input name="nbInfosTot" id="nbInfosTot" type="number" value="0" required class="form-control">
+        </div>
+
+        <!--div qui contiendra les prestations ajoutees-->
+        <div class="panel panel-default">
+            <div class="panel-heading">Liste des prestations</div>
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Libellé</th>
+                        <th scope="col">Type tarification</th>
+                        <th scope="col">Tarif standard</th>
+                        <th scope="col">Tarif junior</th>
+                        <th scope="col">Tarif senior</th>
+                        <th scope="col">Tarif manager</th>
+                        <th scope="col">Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody id='listePrestations'></tbody>
+            </table>
+        </div>
+
 		<!-- Modal -->
 		<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">
@@ -149,64 +147,39 @@ $result_type_operation->execute();
 		        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
 		      </div>
 		      <div class="modal-body">
-		        
+		      	<div class="form-group">
+	        		<!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+				    <select name="select_presta" id="select_presta" required class="form-control select2">
+				    	<option></option>
+				    </select>
+		    	</div>
+
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary">Save changes</button>
+		        <button type="button" class="btn btn-primary" id="subAjout" data-dismiss="modal" onclick="ajouterPrestationModel('listePrestations');">Ajouter</button>
 		      </div>
 		    </div>
 		  </div>
 		</div>
-			<div class="form-group">
-	        <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-		    <select name="select_presta" id="select_presta" required class="form-control select2">
-		    	<option></option>
-		    </select>
+
         <!--Validation du formulaire-->
 		<div>
 			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
             <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
 		</div>
-		
 	</form>
-
-		<!-- Modal -->
-	<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
-	      </div>
-	      <div class="modal-body">
-	      	<form id="modalForm" method="POST">
-
-
-
-
-
-	      	</form>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary">Save changes</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
 
 </div>
 
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
-        $("#type_dossier").select2({
-            placeholder: "Choisissez un type de dossier..."
-        });
-
-    $("#ent_dossier").select2({
-        placeholder: "Choisissez une entité..."
-    });
+	    $("#type_dossier").select2({
+	        placeholder: "Choisissez un type de dossier..."
+	    });
+		$("#ent_dossier").select2({
+			placeholder: "Choisissez une entité..."
+		});
     });
 </script>
