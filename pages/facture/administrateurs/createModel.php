@@ -24,7 +24,7 @@ $result_t_dos_ent = $pdo->prepare($stmt_t_dos_ent);
 $result_t_dos_ent->execute();
 
 //On recupere les types d'operations existantes
-$stmt_type_operation = "SELECT DISTINCT(t_ope_libelle) FROM type_operation ORDER BY t_ope_libelle";
+$stmt_type_operation = "SELECT t_ope_id, t_ope_libelle FROM type_operation ORDER BY t_ope_libelle";
 $result_type_operation = $pdo->prepare ( $stmt_type_operation );
 $result_type_operation->execute();
 
@@ -72,11 +72,11 @@ $result_type_operation->execute();
         <div class="form-group">
 			<!-- Operation -->
 			<label class="control-label" for="t_operation">Type d'opération :</label>
-			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('ent_dossier').value, document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
 				<option></option>
             <?php 
             foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
-                 <option value="<?php echo $type_ope->t_ope_libelle; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
+                 <option value="<?php echo $type_ope->t_ope_id; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
             <?php } ?>
             </select>
 

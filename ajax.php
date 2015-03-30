@@ -27,12 +27,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             genererListeTypeDossier($entite);
             break;
 
-        //
+        // Genere la liste des prestations piour la page createModel.php suivant l'entite, le dossier et l'operation.
         case('genererListePresta'):
-            $ent = (filter_input(INPUT_GET, 'ent') != NULL ? filter_input(INPUT_GET, 'ent') : "");
             $dos = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
             $ope = (filter_input(INPUT_GET, 'ope') != NULL ? filter_input(INPUT_GET, 'ope') : "");
-            genererListePresta($ent, $dos, $ope);
+            genererListePresta($dos, $ope);
             break; 
         
         //Genere le modal pour ajouter ou modifier une ligne de prestation dans create prestation
@@ -92,25 +91,17 @@ function genererListeTypeDossier($p_entite) {
  * @param String $t_dos : type de dossier
  * @param String $t_ope : type d'opération
  ***/
-function genererListePresta($ent, $t_dos, $t_ope)
+function genererListePresta($t_dos, $t_ope)
 {    
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
     $stmt_presta_list =
       "SELECT p.pres_libelle_ligne_fac, p.pres_id FROM prestation p
-        WHERE p.pres_rf_typ_dossier IN (
-                SELECT t_dos_id FROM type_dossier d 
-                WHERE d.t_dos_entite = :entite 
-                AND d.t_dos_type = :dossier
-        ) 
-        AND pres_rf_typ_operation IN (
-                SELECT t_ope_id FROM type_operation o 
-                WHERE o.t_ope_libelle = :operation
-        )";
+        WHERE p.pres_rf_typ_dossier = :dossier
+        AND pres_rf_typ_operation = :operation";
     
     $result_presta_list = $pdo->prepare($stmt_presta_list);
-    $result_presta_list->bindParam(':entite', $ent);
     $result_presta_list->bindParam(':dossier', $t_dos);
     $result_presta_list->bindParam(':operation', $t_ope);
     $result_presta_list->execute();
