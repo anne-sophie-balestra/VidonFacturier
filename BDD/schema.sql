@@ -17,6 +17,8 @@ DROP TABLE prestation;
 DROP TABLE type_facture;
 DROP TABLE type_dossier;
 DROP TABLE type_operation;
+DELETE FROM sequence WHERE clef = 'prestation';
+DELETE FROM sequence WHERE clef = 'prestation_generale';
 
 /* Creation de tables */
 CREATE TABLE type_dossier
@@ -47,8 +49,8 @@ CREATE TABLE prestation
     pres_moddate TIMESTAMP,
     pres_creauser VARCHAR(3),
     pres_moduser VARCHAR(3),
-    pres_rf_nom VARCHAR(11),
     pres_id_general VARCHAR(11),
+    pres_rf_nom VARCHAR(11),
     pres_prestation VARCHAR(255),
     pres_libelle_ligne_fac VARCHAR(255),
     pres_t_tarif VARCHAR(10),
