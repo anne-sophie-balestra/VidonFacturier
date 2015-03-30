@@ -17,6 +17,7 @@
  * @return XMLHttpRequest xmlHttp : Retourne l'élément créé.
  */
 function GetXmlHttpObject() {
+
     var xmlHttp= null; 
 
     try
@@ -97,7 +98,7 @@ function genererListeTypeDossier(p_id, p_value, p_select2) {
  * @param String type_dossier: Contient le type de dossier : Dessin/Modèle (Juridique) ou Brevet/Etude (Brevet)
  * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépôt, enregistrement, etc ...
  ***/
-function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
+function genererListePresta(p_id, type_dossier, type_ope ) {
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
     
@@ -107,7 +108,7 @@ function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
         return;
     } 
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererListePresta&ent=" + type_ent + "&dos=" + type_dossier + "&ope=" + type_ope;
+    var url= "ajax.php?action=genererListePresta&dos=" + type_dossier + "&ope=" + type_ope;
 
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
@@ -229,35 +230,6 @@ function genererModalPrestation(p_id, p_presta) {
 }
 
 /*****
- * genererModalPrestation : genere le modal pour modifier une prestation depuis la liste des prestations
- * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
- *
- * @param p_id : Contient l'id de l'element a modifier.
- * @param p_presta : Contient l'id general de la prestation a modifier
- ***/
-function genererModalPrestation(p_id, p_presta) {
-    // Appel la fonction qui crée un objet XmlHttp.
-    var xmlHttp = GetXmlHttpObject(); 
-    
-    // Vérifie si le navigateur supporte l'AJAX
-    if (xmlHttp == null) {
-        alert ("Votre navigateur ne supporte pas AJAX");
-        return;
-    } 
-    // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererModalPrestation&pre=" + p_presta;
-    // Création de la fonction qui sera appelé au changement de statut.
-    xmlHttp.onreadystatechange= function StateChanged() {
-        if (xmlHttp.readyState == 4) {
-            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
-            $('#modalInfoPrestationGenerale').modal('toggle');
-        };
-    };
-    xmlHttp.open("GET",url,true); // Ouvre l'url
-    xmlHttp.send(null); 
-}
-
-/*****
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
  * @param p_id : Contient l'id de l'element a modifier.
@@ -288,7 +260,7 @@ function ajouterPrestationForm(p_id, p_modal){
         tarif_sr = document.getElementById('tarif_sr').value;
         tarif_mgr = document.getElementById('tarif_mgr').value;
         t_tarif_lib = "Horaire";
-    }    
+    } 
     
     //On augmente le nombre de prestations ajoutées
     document.getElementById('nbInfos').value = parseInt(nbInfos+1); 
