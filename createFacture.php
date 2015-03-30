@@ -210,8 +210,7 @@ $id=$_GET['id'];
 			alert(index);
 
 			ligne.style.display = 'none';
-			//document.getElementById("tableau_facture").deleteRow(index);
-			//document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index)));			
+			document.getElementById("new_input").removeChild(document.getElementById("LigneFacture"+(index)));			
 			}
 			else
 			{
