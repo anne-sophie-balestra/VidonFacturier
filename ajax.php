@@ -15,11 +15,9 @@
 require_once("BDD/SPDO.php");
 
 /* On verifie si une page a ete demandee */
-if (filter_input(INPUT_GET, 'action') != NULL)
-{ 
+if (filter_input(INPUT_GET, 'action') != NULL) { 
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
-    switch (filter_input(INPUT_GET, 'action'))
-    {
+    switch (filter_input(INPUT_GET, 'action')) {
         /*
          * FONCTIONS AJAX
          */
@@ -37,12 +35,18 @@ if (filter_input(INPUT_GET, 'action') != NULL)
             genererListePresta($ent, $dos, $ope);
             break; 
         
-        //Genere les blocs de tarifs selon si on a choisit forfaitaire ou horaire
+        //Genere le modal pour ajouter ou modifier une ligne de prestation dans create prestation
         case('genererModalLignePrestation'):
             $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
             genererModalLignePrestation($prestation);
             break;
 
+        //Genere le modal pour modifier une prestation dans la liste des prestations
+        case('genererModalPrestation'):
+            $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
+            genererModalPrestation($prestation);
+            break;   
+        
         //Genere le modal pour modifier une prestation dans la liste des prestations
         case('genererModalPrestation'):
             $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
@@ -64,8 +68,7 @@ if (filter_input(INPUT_GET, 'action') != NULL)
  *
  * @param String $p_entite : entite choisie
  ***/
-function genererListeTypeDossier($p_entite)
-{    
+function genererListeTypeDossier($p_entite) {    
     $pdo = new SPDO;
     
     /* On recupere les types de dossier en fonction de l'entite */
@@ -416,7 +419,6 @@ function genererModalPrestation($prestation) {
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 <?php }
-
 
 /**
 *   getPrestationTabFromID : Retourne une ligne de tableau comprenant la prestation ajoutée dans createModel.php

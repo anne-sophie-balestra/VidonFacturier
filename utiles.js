@@ -16,8 +16,7 @@
  *
  * @return XMLHttpRequest xmlHttp : Retourne l'élément créé.
  */
-function GetXmlHttpObject()
-{
+function GetXmlHttpObject() {
     var xmlHttp= null; 
 
     try
@@ -189,6 +188,35 @@ function genererModalLignePrestation(p_id, p_presta) {
                 afficherTarifs($('#t_tarif').val());
             }
             $('#modalInfoPrestation').modal('toggle');
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * genererModalPrestation : genere le modal pour modifier une prestation depuis la liste des prestations
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_presta : Contient l'id general de la prestation a modifier
+ ***/
+function genererModalPrestation(p_id, p_presta) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererModalPrestation&pre=" + p_presta;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            $('#modalInfoPrestationGenerale').modal('toggle');
         };
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url

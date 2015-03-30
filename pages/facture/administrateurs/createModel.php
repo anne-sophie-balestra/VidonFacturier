@@ -53,7 +53,7 @@ $result_type_operation->execute();
         <div class="form-group">
             <label class="control-label" for="ent_dossier">Type de dossier :</label><br />
             <!--En changeant l'entite, nous allons charger le select type_dossier avec les types associés à l'entite choisie-->
-            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value);" class="form-control select2">
+            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value, true);" class="form-control select2">
                 <option></option>
                 <?php // On affiche les entites disponibles
                 foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
