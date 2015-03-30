@@ -64,10 +64,11 @@ function genererListeTypeDossier(p_id, p_value, p_select2) {
         if (xmlHttp.readyState == 4) {
             var jsonData = $.parseJSON(xmlHttp.responseText);
             //on recupere la reference a l'element qui encadre notre select afin de l'afficher
-            var $div = $(p_id+'_div');
-            $div.show();
+//            var $div = $(p_id+'_div');
+//            $div.show();
             
             //on recupere la reference a l'element select que l'on veut peupler
+            //Pour que les select2 marchent avec le modal sans conflit, on utilise un autre alias que $ pour les select2 (ici jQuery)
             var $select = jQuery(p_id);
             $select.empty();
             if(p_select2) {
@@ -88,39 +89,11 @@ function genererListeTypeDossier(p_id, p_value, p_select2) {
 }
 
 /*****
- * genererInfosPrestation : genere les div pour chaque sous-prestation
- * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
- *
- * @param String p_id : Contient l'id de l'element a modifier.
- * @param int p_value: Contient le nombre de sous-prestation à creer
- * @param String p_nom: Contient le nom des sections
- ***/
-function genererInfosPrestation(p_id, p_value, p_nom){
-    // Appel la fonction qui crée un objet XmlHttp.
-    var xmlHttp = GetXmlHttpObject(); 
-
-    // Vérifie si le navigateur supporte l'AJAX
-    if (xmlHttp == null) {
-        alert ("Votre navigateur ne supporte pas AJAX");
-        return;
-    } 
-    // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererInfosPrestation&nb=" + p_value + "&nom=" + p_nom;
-    // Création de la fonction qui sera appelé au changement de statut.
-    xmlHttp.onreadystatechange= function StateChanged() {
-        if (xmlHttp.readyState == 4) {
-            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
-        };
-    };
-    xmlHttp.open("GET",url,true); // Ouvre l'url
-    xmlHttp.send(null); 
-}
-
-/*****
  * genererListePresta : genere le select contenant les presta
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *
  * @param String p_id : Contient l'id de l'element a modifier.
+ * @param String type_ent : entite
  * @param String type_dossier: Contient le type de dossier : Dessin/Modèle (Juridique) ou Brevet/Etude (Brevet)
  * @param String type_ope : Contient le type d'opération : ex : Délivrance, dépôt, enregistrement, etc ...
  ***/
@@ -136,8 +109,6 @@ function genererListePresta(p_id, type_ent, type_dossier, type_ope ) {
     // Création de l'url envoyee à l'aiguilleur.
     var url= "ajax.php?action=genererListePresta&ent=" + type_ent + "&dos=" + type_dossier + "&ope=" + type_ope;
 
-    alert(url);
-    
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
@@ -284,7 +255,7 @@ function genererModalPrestation(p_id, p_presta) {
 /*****
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
- * @param String p_id : Contient l'id de l'element a modifier.
+ * @param p_id : Contient l'id de l'element a modifier.
  ***/
 function ajouterPrestationForm(p_id){
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
@@ -316,6 +287,7 @@ function ajouterPrestationForm(p_id){
     //On augmente le nombre de prestations ajoutées
     document.getElementById('nbInfos').value = parseInt(nbInfos+1); 
     document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1); 
+    
     //On recupere ce qu'il y avait deja dans la table
     var element = document.getElementById(p_id).innerHTML;
     
@@ -334,14 +306,17 @@ function ajouterPrestationForm(p_id){
                 +"<td>" + tarif_mgr
                 +"<input type='hidden' value='" + tarif_mgr + "' name='tarif_mgr" + document.getElementById('nbInfosTot').value + "' id='tarif_mgr" + document.getElementById('nbInfosTot').value + "'/></td>"
                 +"<td align='center'>"
-                    +"<a class='btn btn-primary btn-sm' onclick='modifierPrestationForm(" + document.getElementById('nbInfosTot').value + ")'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                    +"<a class='btn btn-primary btn-sm' onclick='genererModalLignePrestation(\"modalLignePrestation\"," + document.getElementById('nbInfosTot').value + ")'><i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
                 +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerPrestationForm(" + document.getElementById('nbInfosTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
+    //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
+    document.getElementById('modalLignePrestation').innerHTML = "";
 }
+
 /*****
  * modifierPrestationForm : modifie les inputs de la ligne de prestation dans create prestation (grace au modal)
  *
@@ -398,17 +373,17 @@ function modifierPrestationForm(p_id, p_presta){
 /*****
  * supprimerPrestationForm : supprime la ligne de prestation choisie (cree grace au modal)
  *
- * @param String p_num : Contient le numero de la ligne a supprimer
+ * @param p_num : Contient le numero de la ligne a supprimer
  ***/
 function supprimerPrestationForm(p_num){
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
     var nbInfos = parseInt(document.getElementById('nbInfos').value);
     
     //On decrement le nombre de prestations ajoutées
-    document.getElementById('nbInfos').value = parseInt(nbInfos+1);  
+    document.getElementById('nbInfos').value = parseInt(nbInfos-1);  
     
     //On cree la ligne dans la table
-    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + document.getElementById('nbInfosTot').value + "' id='supp" + document.getElementById('nbInfosTot').value + "'/>";
+    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + p_num + "' id='supp" + p_num + "'/>";
     document.getElementById('ligne'+p_num).innerHTML = ligne;
 }
 
@@ -463,9 +438,14 @@ function checkLignePrestation(p_id){
         document.getElementById(p_id).disabled = true;    
 }
 
-function isANumber( n ) {
+/*****
+ * isANumber : Verifie que le parametre est un nombre au format monétaire
+ *
+ * @param p_number : Contient la valeur a verifier
+ ***/
+function isANumber(p_number) {
     var numStr = /^(\d+\.?\d*)$/;
-    return numStr.test(n.toString());
+    return numStr.test(p_number.toString());
 }
 
 /**
