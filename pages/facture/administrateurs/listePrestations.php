@@ -63,108 +63,6 @@ $result_pays_reg->execute();
 ?>
 <!-- Contenu principal de la page -->
 <div class="container" style="width:100%;">  
-    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
-    <form id="formUpdatePrestation" action="index.php?action=changePrestation" method="post" role="form" data-toggle="validator">  
-        <div class="modal fade" role="dialog" aria-labelledby="modalInfoPrestationGenerale" aria-hidden="true" id="myModal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">   
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalInfoPrestationGeneraleLabel">Modification d'une prestation</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="container-fluid"> 
-                                <div class="form-group">
-                                    <label class="control-label" for="prestation">Prestation :</label>
-                                    <!--on prend le nom general de la prestation, i.e. nom du modele-->
-                                    <input name="prestation" type="text" value="" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                                <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
-                                <div class="form-group">
-                                    <label class="control-label" for="repartition">Répartition des consultants :</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <select id="pourcentage_select" class="form-inline" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('repartition').value=this.value;">
-                                                <?php for($i=0; $i<=100; $i+=5) { ?>
-                                                    <option><?php echo $i; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </span>
-                                        <input name="repartition" value="" id="repartition" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('pourcentage_select').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
-                                        <span id="pourcentage" class="input-group-addon">0%</span>
-                                    </div>
-                                </div>
-                                    <div class="form-group">
-                                        <label class="control-label" for="libelle">Libellé :</label>
-                                        <input name="libelle" type="text" required onkeyup="checkLignePrestation('subAction');" class="form-control" id="libelle" maxlength="255">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label" for="t_tarif">Type de tarification :</label>
-                                        <!--On choisit le type de tarification et on genere les champs qu'il faut en fonction-->
-                                        <select name="t_tarif" id="t_tarif" required class="form-control" onchange="afficherTarifs(this.value);checkLignePrestation('subAction');">
-                                            <option value="" disabled selected>Choisissez un type de tarification...</option>
-                                            <option value="F">Forfaitaire</option>
-                                            <option value="TH">Tarif Horaire</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" id="tarif_std_div" style="display: none;">
-                                        <label class="control-label" for="tarif_std">Tarif :</label>
-                                        <div class="input-group">
-                                            <input name="tarif_std" id="tarif_std" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                            <span class="input-group-addon">€</span>
-                                        </div>
-                                        <div class="help-block with-errors"></div>
-                                    </div>
-                                    <div class="form-group" id="tarif_jr_div" style="display: none;">
-                                        <label class="control-label" for="tarif_jr">Tarif junior :</label>
-                                        <div class="input-group">
-                                            <input name="tarif_jr" id="tarif_jr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                            <span class="input-group-addon">€</span>
-                                        </div>
-                                        <div class="help-block with-errors"></div>
-                                    </div>        
-                                    <div class="form-group" id="tarif_sr_div" style="display: none;">
-                                        <label class="control-label" for="tarif_sr">Tarif senior :</label>
-                                        <div class="input-group">
-                                            <input name="tarif_sr" id="tarif_sr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                            <span class="input-group-addon">€</span>
-                                        </div>
-                                        <div class="help-block with-errors"></div>
-                                    </div>        
-                                    <div class="form-group" id="tarif_mgr_div" style="display: none;">
-                                        <label class="control-label" for="tarif_mgr">Tarif manager :</label>
-                                        <div class="input-group">
-                                            <input name="tarif_mgr" id="tarif_mgr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                            <span class="input-group-addon">€</span>
-                                        </div>
-                                        <div class="help-block with-errors"></div>
-                                    </div> 
-                                    <!--Bouton pou ajouter ou modifier une ligne de prestation-->
-                                    <div class="form-group" id="button_action">
-                                        <button type="button" class="btn btn-default" disabled name="subAction" id="subAction" onclick="ajouterPrestationForm('listePrestations', false);"><i class='icon-plus fa fa-plus'></i> Ajouter une prestation</button>
-                                    </div>
-                                <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
-                                <div class="form-group">
-                                    <input name="nbInfos" id="nbInfos" style="display: none;" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une ligne de prestation">   
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                                <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
-                                <div class="form-group" hidden>
-                                    <input name="nbInfosTot" id="nbInfosTot" type="number" value="0" required class="form-control">
-                                </div>
-                                    </div>
-                                </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                            <input type="submit" class="btn btn-primary" id="button" value="Modifier">
-                        </div>         
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-    </form>
     <h2>Prestations</h2>
     <table class="table table-striped table-bordered table-condensed table-hover" id="lprestations">
     <thead>
@@ -274,7 +172,6 @@ $result_pays_reg->execute();
             </tr>
         </tfoot>
     </table>    
-    <!--modal pour modifier une prestation-->
     <div id="modalPrestation"></div>
 </div>
 

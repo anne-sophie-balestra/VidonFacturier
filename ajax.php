@@ -245,7 +245,7 @@ function genererModalPrestation($prestation) {
     $result_pays_reg->execute();
     ?>
     <!--Ajout des lignes de prestations par modal-->
-    
+    <!--Creation du formulaire pour afficher les infos de la prestation et la modifier-->
     <form id="formUpdatePrestation" action="index.php?action=changePrestation" method="post" role="form" data-toggle="validator">  
         <div class="modal fade" role="dialog" aria-labelledby="modalInfoPrestationGenerale" aria-hidden="true" id="modalInfoPrestationGenerale">
             <div class="modal-dialog modal-lg">
@@ -256,7 +256,7 @@ function genererModalPrestation($prestation) {
                         </div>
                         <div class="modal-body">
                             <div class="container-fluid"> 
-
+                                <input name="pres_id_general" type="hidden" value="<?php echo $presta->pres_id_general; ?>" required class="form-control" id="pres_id_general">
                                 <div role="tabpanel">
                                     <!-- Nav tabs -->
                                     <ul class="nav nav-tabs" role="tablist">
