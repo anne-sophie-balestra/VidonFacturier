@@ -53,7 +53,40 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
             break;              
+
+        //Genere une ligne de tableau dans contenant la prestation dans createModel.php
+        case('genererInfosRemote'):
+            genererListePaysRemote(filter_input(INPUT_GET, 'q'));
+            break;              
     }
+}
+
+/*****
+ * genererListePaysRemote : genere les infos du select pour les types de dossier en fonction de l'entite (brevet ou juridique)
+ *
+ * @param String $p_term : chaine de recherche
+ ***/
+function genererListePaysRemote($p_term) {    
+    $pdo = new SPDO;
+    
+    /* On recupere les types de dossier en fonction de l'entite */
+    $stmt_pays = "SELECT pay_id, pay_nom FROM pays WHERE pay_nom LIKE :term ORDER BY pay_nom";
+    $result_pays = $pdo->prepare($stmt_pays);
+    $term = $p_term . "%";
+    $result_pays->bindParam(":term", $term);
+    $result_pays->execute();
+    
+    //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
+       
+    if($result_pays->rowcount() != 0) {
+        foreach($result_pays->fetchAll(PDO::FETCH_OBJ) as $pays) {
+            $json[] = array("id"=>$pays->pay_id,"text"=>$pays->pay_nom);
+        }
+    } else {
+        $json[] = array("id"=>"0","text"=>"Aucun r&eacute;sultat trouv&eacute;..");
+    }
+    
+    echo json_encode($json);
 }
 
 /*****

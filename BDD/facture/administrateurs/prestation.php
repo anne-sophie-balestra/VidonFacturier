@@ -218,7 +218,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 }
             }
             //On retourne a la page de la liste des prestations
-            returnToListePrestations();
+            returnToListePrestations("");
             break;
             
         case('changePrestation'):
@@ -296,7 +296,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 
             //On parcours ces prestations pour pouvoir les recuperer
             foreach($result_prestations->fetchAll(PDO::FETCH_OBJ) as $pres_id) {
-                echo $pres_id->pres_id . "<br />";
                 $libellesUp[$pres_id->pres_id] = "";
                 if (filter_input(INPUT_POST, 'libelle' . $pres_id->pres_id) != NULL) {
                     $libellesUp[$pres_id->pres_id] = filter_input(INPUT_POST, 'libelle' . $pres_id->pres_id);
@@ -462,7 +461,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     . "pres_rf_pay = :pays, pres_rf_typ_dossier = :type_dossier, pres_rf_typ_operation = :operation "
                     . "WHERE pres_id_general = :id_gen";
             
-            echo $update_gen_string . "<br />";
             $stmt_update_gen = $pdo->prepare($update_gen_string);
             
             //On lie les parametres recuperés via le formulaire pour les associer a la requete
@@ -487,7 +485,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                         . "pres_tarif_jr = :tarif_jr, pres_tarif_sr = :tarif_sr, pres_tarif_mgr = :tarif_mgr "
                         . "WHERE pres_id = :pres_id";
                 
-                echo $update_string . "<br />";
                 $stmt_update = $pdo->prepare($update_string);
                 
                 $libelle = $libellesUp[$pres_id->pres_id];
@@ -530,7 +527,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                         . ":tarif_jr, :tarif_sr, :tarif_mgr, :repartition, " 
                         . ":pays, :type_dossier, :operation)";
                 
-                echo $insert_string . "<br />";
                 $stmt_insert = $pdo->prepare($insert_string);
 
                 //On lie les parametres recuperés via le formulaire pour les associer a la requete
@@ -602,7 +598,7 @@ function returnToListePrestations($p_error){
     if($p_error != "") {
         echo "alert(\"" . $p_error . "\");";
     }
-    //echo "window.location.href='index.php?action=listePrestations';"
+    echo "window.location.href='index.php?action=listePrestations';";
     echo "</script>";
     exit;
 }

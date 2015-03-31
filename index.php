@@ -30,6 +30,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         
         /* Onglet Factures */
         
+        /* Factures */    
+        //Affichage des factures individuelles dans un tableau
+        case('listeFacturesInd'):
+            require_once("pages/facture/listeFacturesInd.php");
+            break;
+        
         /* Prestations */    
         //Affichage des prestations dans un tableau
         case('listePrestations'):
@@ -51,6 +57,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("BDD/facture/administrateurs/prestation.php");
             break;
         
+        /* Modele */
         //Formulaire de creation d'un modele de facture
         case('createModel'):
         	require_once("pages/facture/administrateurs/createModel.php");
