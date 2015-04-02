@@ -52,14 +52,53 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : 0);
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
-            break;              
-
+            break;     
+        
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('genererInfosRemote'):
             genererListePaysRemote(filter_input(INPUT_GET, 'q'));
+            break;           
+
+        //Genere les infos du dossier associé a la facture dans createFacture
+        case('genererInfosDossier'):
+            $dossier = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
+            genererInfosDossier($dossier);
             break;              
+
+        //Genere le modal pour ajouter ou modifier une ligne de facture dans create facture
+        case('genererModalLigneFacture'):
+            $ligneFac = (filter_input(INPUT_GET, 'lf') != NULL ? filter_input(INPUT_GET, 'lf') : 0);
+            genererModalLigneFacture($ligneFac);
+            break;            
+
+        //Genere le modal pour ajouter un reglement dans create facture
+        case('genererModalReglement'):
+            genererModalReglement();
+            break;            
     }
 }
+
+/*****
+ * genererInfosDossier : genere les infos du dossier associé a la facture que nous voulons créer
+ *
+ * @param String $p_dos : id du dossier
+ ***/
+function genererInfosDossier($p_dos) {    
+    $pdo = new SPDO;
+    
+    /* On recupere les infos du dossier en fonction de son id */
+    $stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_creadate, dos_titre, ent_raisoc FROM dossier, entite WHERE dos_rf_ent = ent_id AND dos_id = :dos";
+    $result_dossier = $pdo->prepare($stmt);
+    $result_dossier->bindParam(":dos", $p_dos);
+    $result_dossier->execute();
+    $dossier = $result_dossier->fetch(PDO::FETCH_OBJ);
+    ?>
+    <td><span class="badge"><?php echo $dossier->dos_numcomplet; ?></span></td>
+    <td><?php echo $dossier->dos_titre; ?></td>
+    <td><?php echo $dossier->ent_raisoc; ?></td>
+    <td><?php echo substr($dossier->dos_creadate, 0, 11); ?></td>
+    <td><?php echo $dossier->dos_type; ?></td>
+<?php }
 
 /*****
  * genererListePaysRemote : genere les infos du select pour les types de dossier en fonction de l'entite (brevet ou juridique)
@@ -533,3 +572,116 @@ function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
         }
     }
 }
+
+/*****
+ * genererModalLigneFacture : genere le modal pour ajouter ou modifier une ligne de facture dans createFacture
+ * 
+ * @param int $ligneFac : contient le numero de la ligne de facture si c'est une modification, 0 si c est un ajout
+ ***/
+function genererModalLigneFacture($ligneFac) {  
+    //Connexion a la base
+    $pdo = new SPDO();
+    
+    //On recupere les codes de nomenclatures auxquels on voudra associer des lignes de facture
+    $stmt_nom = "SELECT nom_id, nom_code FROM nomenclature ORDER BY nom_code";
+    $result_nom = $pdo->prepare($stmt_nom);
+    $result_nom->execute();
+    
+    //Definit l'action qui sera faite
+    $action = "Ajout";
+    $actionVerbe = "Ajouter";
+    if($ligneFac != 0){
+        $action = "Modification";
+        $actionVerbe = "Modifier";
+    }
+    ?>  
+    <!--Ajout ou modification des lignes de facture par modal-->
+    <div class="modal fade" role="dialog" aria-labelledby="modalInfoLigneFacture" aria-hidden="true" id="modalInfoLigneFacture">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalInfoLigneFactureLabel"><?php echo $action; ?> d'une ligne de facture</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">                               
+                        <div class="form-group">
+                            <label class="control-label" for="code">Code :</label>
+                            <select name="code" id="code" required class="form-control" onchange="checkLigneFacture('subAction');">
+                                <option value="" disabled selected>Choisissez un code...</option>
+                                <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $code) { ?>
+                                <option id='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="libelle">Libellé :</label>
+                            <input name="libelle" type="text" required onkeyup="checkLigneFacture('subAction');" class="form-control" id="libelle" maxlength="255">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="tarif">Tarif :</label>
+                            <div class="input-group">
+                                <input name="tarif" id="tarif" type="text" onkeyup="checkLigneFacture('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                <span class="input-group-addon">€</span>
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="Quantité">Quantité :</label>
+                            <input name="quantite" type="number" value="1" min='1' required onkeyup="checkLigneFacture('subAction');" class="form-control" id="quantite">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="Total">Total :</label>
+                            <div class="input-group">
+                                <input name="Total" value="0" type="text" required disabled class="form-control" id="total">
+                                <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($ligneFac != 0) { ?> onclick="modifierLigneFactureForm('ligne<?php echo $ligneFac; ?>', <?php echo $ligneFac; ?>, true);" <?php } else { ?> onclick="ajouterLigneFactureForm('listeLignesFacture', true);"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+<?php }
+
+/*****
+ * genererModalReglement : genere le modal pour ajouter un reglement dans createFacture
+ ***/
+function genererModalReglement() {  
+    ?>  
+    <!--Ajout des reglements par modal-->
+    <div class="modal fade" role="dialog" aria-labelledby="modalInfoReglement" aria-hidden="true" id="modalInfoReglement">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalInfoReglementLabel">Ajout d'une ligne de facture</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">                            
+                        <div class="form-group">
+                            <label class="control-label" for="date">Date :</label>
+                            <input class="datepicker form-control" data-date-format="mm/dd/yyyy" name="date" type="text" required onkeyup="checkReglement('subAction');" id="date">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="montant">Montant :</label>
+                            <div class="input-group">
+                                <input name="montant" id="montant" type="text" onkeyup="checkReglement('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                <span class="input-group-addon">€</span>
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" onclick="ajouterReglementForm('listeReglements', true);"  disabled >Ajouter</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+<?php }
