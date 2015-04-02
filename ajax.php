@@ -44,7 +44,13 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('genererModalPrestation'):
             $prestation = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : 0);
             genererModalPrestation($prestation);
-            break;     
+            break;
+
+        //Genere le modal pour modifier une prestation dans la liste des prestations
+        case('listClient'):
+            $term = (filter_input(INPUT_GET, 'q') != NULL ? filter_input(INPUT_GET, 'q') : "");
+            getListeClient($term);
+            break;
 
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('getPrestationTabFromID'):
@@ -52,7 +58,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : 0);
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
-            break;              
+            break;
 
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('genererInfosRemote'):
@@ -503,9 +509,9 @@ function genererModalPrestation($prestation) {
 <?php }
 
 /**
-*   getPrestationTabFromID : Retourne une ligne de tableau comprenant la prestation ajoutée dans createModel.php
-*   @param String $id_presta : id de la prestation à ajouter.
-*/
+ *   getPrestationTabFromID : Retourne une ligne de tableau comprenant la prestation ajoutée dans createModel.php
+ *   @param String $id_presta : id de la prestation à ajouter.
+ */
 function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
 
     $pdo = new SPDO;
@@ -517,19 +523,21 @@ function getPrestationTabFromID($id_presta, $nbInfos, $nbInfosTot) {
     $result_presta_list = $pdo->prepare($stmt_presta_tab_model);
     $result_presta_list->execute();
 
-    if($id_presta != null) { 
-        foreach($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) { ?>
+    if($id_presta != null) {
+        foreach ($result_presta_list->fetchAll(PDO::FETCH_OBJ) as $presta_list) { ?>
             <tr id="ligne<?php echo $nbInfosTot; ?>">
-            <input type="hidden" value="<?php echo $presta_list->pres_id; ?>" name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
-            <td><?php echo $presta_list->pres_libelle_ligne_fac; ?></td>
-            <td><?php echo $presta_list->pres_t_tarif; ?></td>
-            <td><?php echo $presta_list->pres_tarif_std; ?></td>
-            <td><?php echo $presta_list->pres_tarif_jr; ?></td>
-            <td><?php echo $presta_list->tarif_sr; ?></td>
-            <td><?php echo $presta_list->tarif_mgr; ?></td>
-            <td align="center"><a class='btn btn-danger btn-sm' onclick='supModelPresta(<?php echo $nbInfosTot; ?>)'><i class='icon-plus fa fa-edit'></i> Supprimer</a></td>
+                <input type="hidden" value="<?php echo $presta_list->pres_id; ?>"
+                       name="presta_id_<?php echo $nbInfosTot; ?>" id="presta_id_<?php echo $nbInfosTot; ?>"/>
+                <td id="pres_libelle_ligne_fac<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->pres_libelle_ligne_fac)) echo $presta_list->pres_libelle_ligne_fac; ?></td>
+                <td id="pres_t_tarif<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->pres_t_tarif)) echo $presta_list->pres_t_tarif; ?></td>
+                <td id="pres_tarif_std<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->pres_tarif_std)) echo $presta_list->pres_tarif_std; ?></td>
+                <td id="pres_tarif_jr<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->pres_tarif_jr)) echo $presta_list->pres_tarif_jr; ?></td>
+                <td id="pres_tarif_sr<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->tarif_sr)) echo $presta_list->tarif_sr; ?></td>
+                <td id="pres_tarif_mgr<?php echo $nbInfosTot; ?>"><?php if (isset($presta_list->tarif_mgr)) echo $presta_list->tarif_mgr; ?></td>
+                <td><a class='btn btn-danger btn-sm' onclick='supModelPresta(<?php echo $nbInfosTot; ?>)'><i
+                            class='icon-plus fa fa-edit'></i> Supprimer</a></td>
             </tr>
-            <?php 
+        <?php
         }
     }
 }

@@ -508,9 +508,9 @@ function isANumber(p_number) {
 }
 
 /**
-* ajouterPrestationModel : Permet d'ajouter des lignes de prestations aux modèles (type_facture).
-* @param String p_id : Contient l'ID du tableau ou les prestations seront ajoutées.
-*/
+ * ajouterPrestationModel : Permet d'ajouter des lignes de prestations aux modèles (type_facture).
+ * @param String p_id : Contient l'ID du tableau ou les prestations seront ajoutées.
+ */
 function ajouterPrestationModel(p_id){
 
     // On recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
@@ -520,11 +520,11 @@ function ajouterPrestationModel(p_id){
     var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
 
     // On augmente le nombre de prestations ajoutées
-    document.getElementById('nbInfos').value = parseInt(nbInfos+1); 
-    document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1); 
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);
+    document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1);
 
     // Appel la fonction qui crée un objet XmlHttp.
-    var xmlHttp = GetXmlHttpObject(); 
+    var xmlHttp = GetXmlHttpObject();
 
     // On recupere l'id de la prestation à ajouter.
     var id_pres = document.getElementById('select_presta').value;
@@ -547,7 +547,7 @@ function ajouterPrestationModel(p_id){
         };
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
-    xmlHttp.send(null); 
+    xmlHttp.send(null);
 }
 
 
@@ -559,10 +559,10 @@ function ajouterPrestationModel(p_id){
 function supModelPresta(p_lign_num) {
     //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
     var nbInfos = parseInt(document.getElementById('nbInfos').value);
-    
+
     //On decrement le nombre de prestations ajoutées
-    document.getElementById('nbInfos').value = parseInt(nbInfos+1);  
-    
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);
+
     //On cree la ligne dans la table
     var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + p_lign_num + "' id='supp" + p_lign_num + "'/>";
     document.getElementById('ligne'+p_lign_num).innerHTML = ligne;

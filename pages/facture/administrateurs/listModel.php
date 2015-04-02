@@ -1,33 +1,36 @@
 <?php
 /********************************************
-* listeDossiers.php                         *
-* Affiche tous les dossiers en liste        *
-*                                           *
-* Auteurs : Anne-Sophie Balestra            *
-*           Abdoul Wahab Haidara            *
-*           Yvan-Christian Maso             *
-*           Baptiste Quere                  *
-*           Yoann Le Taillanter             *
-*                                           *
-* Date de creation : 30/01/2015             *
-********************************************/
+ * listeDossiers.php                         *
+ * Affiche tous les dossiers en liste        *
+ *                                           *
+ * Auteurs : Anne-Sophie Balestra            *
+ *           Abdoul Wahab Haidara            *
+ *           Yvan-Christian Maso             *
+ *           Baptiste Quere                  *
+ *           Yoann Le Taillanter             *
+ *                                           *
+ * Date de creation : 30/01/2015             *
+ ********************************************/
 $pdo = new SPDO();
 
 $stmt = "SELECT t_fac_id, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope FROM type_facture";
 $result_model = $pdo->prepare($stmt);
 $result_model->execute();
+
+
 ?>
 
 <!-- Contenu principal de la page -->
-<div class="container" style="width:90%;">    
+<div class="container" style="width:90%;">
     <h2>Modèles</h2>
     <table class="table table-striped table-bordered table-condensed table-hover" id="list_models">
-    <thead>
+        <thead>
         <tr>
             <th scope="col">Id</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
+            <th scope="col">Ligne(s) de prestation(s)</th>
             <th scope="col">Modification</th>
         </tr>
         <tr>
@@ -35,28 +38,49 @@ $result_model->execute();
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
+            <th scope="col">Ligne(s) de prestation(s)</th>
             <th scope="col"></th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <?php /* On parcours les chantiers pour les inserer dans le tableau */
         foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $models) { ?>
-        <tr>
-            <td><?php echo $models->t_fac_id; ?></td>
-            <td><?php echo $models->t_fac_rf_ent; ?></td>
-            <td><?php echo $models->t_fac_rf_typdos; ?></td>
-            <td><?php echo $models->t_fac_rf_ope; ?></td>
-            <td><a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a></td>
-        </tr>
-        <?php } ?>
-    </tbody>
-        <tfoot>
+
+
             <tr>
+                <td><?php echo $models->t_fac_id; ?></td>
+                <td><?php echo $models->t_fac_rf_ent; ?></td>
+                <td><?php echo $models->t_fac_rf_typdos; ?></td>
+                <td><?php echo $models->t_fac_rf_ope; ?></td>
+                <td>
+                    <?php
+                    $query = "SELECT t_lig_id from type_ligne l, type_facture t WHERE t.t_fac_id = :id_fac"; // l.t_lig_rf_typ_fac = t.t_fac_id AND 
+                    $result_presta = $pdo->prepare($query);
+                    $result_presta->bindParam(':id_fac', $models->t_fac_id);
+                    $result_presta->execute();
+
+                    foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta)
+                        echo '<table class="table table-striped"><tr><td>'.$lig_presta->t_lig_id.'</td></tr></table>';
+
+                    ?>
+                </td>
+
+                <td align=center>
+                    <button class="btn btn-primary btn-sm" onclick="genererModalModelUpdate('modalPrestation','<?php echo $models->t_fac_id; ?>');">
+                        <i class="icon-plus fa fa-edit"></i> Modifier
+                    </button>
+                    <!--<a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a>-->
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+        <tfoot>
+        <tr>
             <th scope="col">Id</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
-            </tr>
+        </tr>
         </tfoot>
     </table>
 </div>
@@ -73,28 +97,28 @@ $result_model->execute();
             sSearch:       "Rechercher&nbsp;:",
             sUrl:          "",
             "oPaginate": {
-                    sFirst:    "Premier",
-                    sPrevious: "Pr&eacute;c&eacute;dent",
-                    sNext:     "Suivant",
-                    sLast:     "Dernier"
+                sFirst:    "Premier",
+                sPrevious: "Pr&eacute;c&eacute;dent",
+                sNext:     "Suivant",
+                sLast:     "Dernier"
             }
-        }    
-    }).columnFilter({        
+        }
+    }).columnFilter({
         sPlaceHolder: "head:after",
         aoColumns: [
-                        {
-                            type: "text"
-                        },
-                        {
-                            type: "text"
-                        },
-                        {
-                            type: "text"
-                        },
-                        {
-                            type: "text"
-                        }
-                    ]
+            {
+                type: "text"
+            },
+            {
+                type: "text"
+            },
+            {
+                type: "text"
+            },
+            {
+                type: "text"
+            }
+        ]
 
     });
 </script>
