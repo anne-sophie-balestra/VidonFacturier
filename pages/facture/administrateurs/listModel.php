@@ -114,10 +114,9 @@ $result_model->execute();
                 </td>
 
                 <td align=center>
-                    <button class="btn btn-primary btn-sm" onclick="genererModalModelUpdate('modalPrestation','<?php echo $models->t_fac_id; ?>');">
+                    <button class="btn btn-primary btn-sm" onclick="genererModalModelLigne('modalLigne','<?php echo $models->t_fac_id; ?>');">
                         <i class="icon-plus fa fa-edit"></i> Modifier
                     </button>
-                    <!--<a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a>-->
                 </td>
             </tr>
         <?php } ?>
@@ -136,6 +135,7 @@ $result_model->execute();
         </tr>
         </tfoot>
     </table>
+    <div id="modalLigne"></div>
 </div>
 <script type="text/javascript" charset="utf-8">
     $('#list_models').dataTable({

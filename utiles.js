@@ -258,6 +258,35 @@ function genererModalPrestation(p_id, p_presta) {
 }
 
 /*****
+ * genererModalModelLigne : genere le modal pour modifier une ligne (type_ligne) depuis la liste des Modeles.
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param t_ligne : Contient l'id general de la ligne à modifier.
+ ***/
+function genererModalModelLigne(p_id, t_ligne) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject();
+
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    }
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererModalModelLigne&lig=" + t_ligne;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            $('#modalInfoPrestationGenerale').modal('toggle');
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null);
+}
+
+/*****
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
  * @param p_id : Contient l'id de l'element a modifier.
@@ -557,6 +586,9 @@ function ajouterPrestationModel(p_id){
     // On recupere l'id de la prestation à ajouter.
     var id_pres = document.getElementById('select_presta').value;
 
+    // On recup le libelle de la ligne
+    var lig_libelle = document.getElementById('lig_libelle').value;
+
     // On récupère les éléments du tableau HTML
     var element = document.getElementById(p_id).innerHTML;
 
@@ -566,7 +598,7 @@ function ajouterPrestationModel(p_id){
         return;
     }
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
+    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot + "&lib=" + lig_libelle;
 
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
