@@ -69,11 +69,48 @@ $result_model->execute();
                 </td>-->
                 <td><?php $models->t_fac_objet; ?></td>
 
-                <td align=center>
-                    <button class="btn btn-primary btn-sm" onclick="genererModalModelView('modalPrestation','<?php echo $models->t_fac_id; ?>');">
-                        <i class="icon-plus fa fa-edit"></i> Afficher
+                <td align="center">
+                    <button class="btn btn-primary btn-sm" data-target="#modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>" data-toggle="modal">
+                        <i class="icon-plus fa fa-eye"></i> Afficher
                     </button>
-                    <!--<a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a>-->
+                    <?php //requete pour recuperer les lignes de prestations en fonction de l'id du modèle
+                    $query = "SELECT t_lig_id from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
+                    $result_presta = $pdo->prepare($query);
+                    $result_presta->bindParam(':id_fac', $models->t_fac_id);
+                    $result_presta->execute();
+                    ?>
+                    <!--Affichage des lignes de prestation-->
+                    <div class="modal fade" role="dialog" aria-labelledby="modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>; ?>" aria-hidden="true" id="modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
+                                    <div class="container-fluid">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Lignes de prestation</div>
+                                            <table class="table">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                              <!--      <th scope="col">Type tarification</th>
+                                                    <th scope="col">Tarif standard</th>
+                                                    <th scope="col">Tarif junior</th>
+                                                    <th scope="col">Tarif senior</th>
+                                                    <th scope="col">Tarif manager</th> -->
+                                                </tr>
+
+                                                <?php //On parcours les lignes pour les afficher
+                                                foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta) { ?>
+                                                    <tr>
+                                                        <td><?php echo $lig_presta->t_lig_id; ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
                 </td>
 
                 <td align=center>
