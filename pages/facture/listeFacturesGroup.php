@@ -1,7 +1,7 @@
 <?php
 /********************************************
-* listeFacturesInd.php                      *
-* Affiche toutes les factures individuelles *
+* listeFacturesGroup.php                    *
+* Affiche toutes les factures groupées      *
 *                                           *
 * Auteurs : Anne-Sophie Balestra            *
 *           Abdoul Wahab Haidara            *
@@ -9,14 +9,14 @@
 *           Baptiste Quere                  *
 *           Yoann Le Taillanter             *
 *                                           *
-* Date de creation : 31/03/2015             *
+* Date de creation : 02/04/2015             *
 ********************************************/
 
 //Connexion a la base de donnees
 $pdo = new SPDO();
 
-//On va chercher les factures depuis l'année derniere a aujourd'hui qui sont individuelles
-$stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_dos, fac_rf_ent, fac_objet, fac_date, fac_echeance, fac_impression, fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture WHERE fac_group IS NULL AND EXTRACT(YEAR FROM fac_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM fac_creadate) = " . (date('Y'));
+//On va chercher les factures depuis l'année derniere a aujourd'hui qui sont groupées
+$stmt = "SELECT fac_id, fac_group, fac_num, fac_type, fac_rf_dos, fac_rf_ent, fac_objet, fac_date, fac_echeance, fac_impression, fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture WHERE fac_group IS NOT NULL AND EXTRACT(YEAR FROM fac_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM fac_creadate) = " . (date('Y') . " ORDER BY fac_group");
 $result_fac = $pdo->prepare($stmt);
 $result_fac->execute();
 ?>
@@ -27,6 +27,7 @@ $result_fac->execute();
     <thead>
         <tr>
             <th scope="col">#/Type</th>
+            <th scope="col">Groupe</th>
             <th scope="col">Dossier/Client</th>
             <th scope="col">Objet</th>
             <th scope="col">Date facture/Date écheance</th>
@@ -38,6 +39,7 @@ $result_fac->execute();
         </tr>
         <tr>
             <th scope="col">#<br />Type</th>
+            <th scope="col">Groupe</th>
             <th scope="col">Dossier<br />Client</th>
             <th scope="col">Objet</th>
             <th scope="col">Date facture<br />Date écheance</th>
@@ -53,6 +55,7 @@ $result_fac->execute();
         foreach($result_fac->fetchAll(PDO::FETCH_OBJ) as $fac) { ?>
         <tr>
             <td><span class="badge"><?php echo $fac->fac_num; ?></span><br /><?php echo $fac->fac_type; ?></td>
+            <td><span class="badge"><?php echo $fac->fac_group; ?></span></td>
             <td><?php echo $fac->fac_rf_dos; ?><br />
                 <?php $entite = $pdo->prepare("SELECT ent_raisoc FROM entite WHERE ent_id = :ent");
                 $entite->bindParam(":ent", $fac->fac_rf_ent);
@@ -73,6 +76,7 @@ $result_fac->execute();
         <tfoot>
             <tr>
             <th scope="col">#<br />Type</th>
+            <th scope="col">Groupe</th>
             <th scope="col">Dossier<br />Client</th>
             <th scope="col">Objet</th>
             <th scope="col">Date facture<br />Date écheance</th>
@@ -107,6 +111,9 @@ $result_fac->execute();
     }).columnFilter({        
         sPlaceHolder: "head:after",
         aoColumns: [
+                        {
+                            type: "text"
+                        },
                         {
                             type: "text"
                         },

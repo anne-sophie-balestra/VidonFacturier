@@ -42,7 +42,7 @@ $result_pays_reg->execute();
         <h2>Nouvelle prestation</h2>        
         <div class="form-group">
             <label class="control-label" for="remote">Remote :</label>
-            <select name="remote" id="remote" required class="form-control select2">
+            <select name="remote" id="remote" required class="form-control select2" onkeyup="alert(jQuery('#remote').select2('val'));genererInfosRemote('#remote', this.value);">
                 <option></option> 
             </select>
         </div>
@@ -184,20 +184,8 @@ $result_pays_reg->execute();
         jQuery("#pays").select2({
             placeholder: "Choisissez un pays..."
         });
-        
         jQuery("#remote").select2({
-            placeholder: "Choisissez une option...", 
-            minimumInputLength: 2,
-            ajax: {
-                url: "ajax.php?action=genererInfosRemote",
-                dataType: 'json',
-                data: function (params) {
-                    return { q: params.term };
-                },
-                results: function (data) {
-                    return { results: data };
-                }
-            } 
+            placeholder: "Choisissez une option..."
         });
     });
     
