@@ -41,6 +41,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("pages/facture/listeFacturesGroup.php");
             break;
         
+        //Formulaire de creation d'une facture
+        case('createFacture'):
+            require_once("pages/facture/createFacture.php");
+            break;
+        
         /* Prestations */    
         //Affichage des prestations dans un tableau
         case('listePrestations'):

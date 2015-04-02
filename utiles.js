@@ -42,6 +42,34 @@ function GetXmlHttpObject() {
 }
 
 /*****
+ * genererInfosDossier : genere les infos du dossier choisi pour la création d'une facture
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_value : Contient l'id du dossier
+ ***/
+function genererInfosDossier(p_id, p_value) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererInfosDossier&dos=" + p_value;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
  * genererListeTypeDossier : genere le select contenant les types de dossier en fonction de l'entite
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *
@@ -403,7 +431,7 @@ function modifierPrestationForm(p_id, p_presta, p_modal){
                 +"</td>"
                 +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm'";
-    if(p_presta.substring(0,3)!= "PRE") {
+    if(isANumber(p_presta)) {
         ligne += " onclick='supprimerPrestationForm(" + p_presta + ")'";
     } else {
         ligne += "disabled";
@@ -566,4 +594,352 @@ function supModelPresta(p_lign_num) {
     //On cree la ligne dans la table
     var ligne = "<input type='hidden' value='" + p_lign_num + "' name='supp" + p_lign_num + "' id='supp" + p_lign_num + "'/>";
     document.getElementById('ligne'+p_lign_num).innerHTML = ligne;
+}
+
+/*****
+ * genererModalLigneFacture : genere le modal pour ajouter ou modifier une ligne de facture dans createFacture
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_ligneFac : Contient le numero de la ligne de facture si on modifie une ligne (0 si c est un ajout)
+ ***/
+function genererModalLigneFacture(p_id, p_ligneFac) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererModalLigneFacture&lf=" + p_ligneFac;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            //Si nous souhaitons modifier une ligne de prestation, nous allons preremplir le modal
+            if(p_ligneFac != 0) {
+                $('#code').val($('#code'+p_ligneFac).val());
+                $('#libelle').val($('#libelle'+p_ligneFac).val());
+                $('#tarif').val($('#tarif'+p_ligneFac).val());
+                $('#quantite').val($('#quantite'+p_ligneFac).val());
+                $('#total').val($('#total'+p_ligneFac).val());
+            }
+            $('#modalInfoLigneFacture').modal('toggle');
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * ajouterLigneFactureForm : cree les input d'une ligne de facture dans create facture (grace au modal)
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_modal : true si on fait avec un modal (false si on fait dans la modification d'une facture)
+ ***/
+function ajouterLigneFactureForm(p_id, p_modal){
+    //on recupere le nombre de lignes de facture qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbLignesFac = parseInt(document.getElementById('nbLignesFac').value);
+    //on recupere le nombre de lignes de facture qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+    var nbLignesFacTot = parseInt(document.getElementById('nbLignesFacTot').value);
+    
+    //on recupere le code de la ligne de facture
+    var code = document.getElementById('code').value;
+    //on recupere le libelle de la ligne de facture
+    var libelle = document.getElementById('libelle').value;
+    //on recupere le tarif
+    var tarif =  document.getElementById('tarif').value;
+    //on recupere la quantite
+    var quantite =  document.getElementById('quantite').value;
+    //on recupere le montant total
+    var total =  document.getElementById('total').value;
+    
+    //On augmente le nombre de prestations ajoutées
+    document.getElementById('nbLignesFac').value = parseInt(nbLignesFac+1); 
+    document.getElementById('nbLignesFacTot').value = parseInt(nbLignesFacTot+1); 
+    
+    //On recupere ce qu'il y avait deja dans la table pour ne pas l'ecraser
+    var element = document.getElementById(p_id).innerHTML;
+    
+    //On cree la ligne dans la table
+    var ligne = "<tr id='ligne" + document.getElementById('nbLignesFacTot').value + "'>" 
+                +"<td>" + code 
+                + "<input type='hidden' value='" + code + "' name='code" + document.getElementById('nbLignesFacTot').value + "' id='code" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                +"<td>" + libelle 
+                + "<input type='hidden' value='" + libelle + "' name='libelle" + document.getElementById('nbLignesFacTot').value + "' id='libelle" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                +"<td>" + tarif
+                + "<input type='hidden' value='" + tarif + "' name='tarif" + document.getElementById('nbLignesFacTot').value + "' id='tarif" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                +"<td>" + quantite
+                + "<input type='hidden' value='" + quantite + "' name='quantite" + document.getElementById('nbLignesFacTot').value + "' id='quantite" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                +"<td>" + total
+                + "<input type='hidden' value='" + total + "' name='total" + document.getElementById('nbLignesFacTot').value + "' id='total" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                +"<td>"
+                +"<a class='btn btn-primary btn-sm' onclick='";
+    if(p_modal) {
+        ligne += "genererModalLigneFacture(\"modalLigneFacture\"," + document.getElementById('nbLignesFacTot').value + ", " + p_modal + ")'>";
+    } else {
+        ligne += "modifierLigneFacture(" + document.getElementById('nbLignesFacTot').value + ")'>";
+    }
+    ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                +"</td>"
+                +"<td>"
+                    +"<a class='btn btn-danger btn-sm' onclick='supprimerLigneFactureForm(" + document.getElementById('nbLignesFacTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
+                +"</td>"
+            +"</tr>";
+    document.getElementById(p_id).innerHTML = element + ligne;
+    //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
+    if(p_modal) {
+        document.getElementById('modalLigneFacture').innerHTML = "";
+    } // sinon on vide les champs 
+    else {
+        $('#code').val("");
+        $('#libelle').val("");
+        $('#tarif').val("");                    
+        $('#quantite').val(1);
+        $('#total').val("");
+    }
+}
+
+/*****
+ * modifierLigneFactureForm : modifie les inputs de la ligne de facture dans create facture (grace au modal)
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_ligneFac : Contient le numero de la ligne a modifier.
+ * @param p_modal : true si on modifie via un modal
+ ***/
+function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){   
+    //on recupere le code de la ligne de facture
+    var code = document.getElementById('code').value;
+    //on recupere le libelle de la ligne de facture
+    var libelle = document.getElementById('libelle').value;
+    //on recupere le tarif
+    var tarif =  document.getElementById('tarif').value;
+    //on recupere la quantite
+    var quantite =  document.getElementById('quantite').value;
+    //on recupere le montant total
+    var total =  document.getElementById('total').value;
+    
+    //On modifier la ligne dans la table
+    var ligne = "<td>" + code 
+                + "<input type='hidden' value='" + code + "' name='code" + p_ligneFac + "' id='code" + p_ligneFac + "'/></td>"
+                +"<td>" + libelle
+                +"<input type='hidden' value='" + libelle + "' name='libelle" + p_ligneFac + "' id='libelle" + p_ligneFac + "'/></td>"
+                +"<td>" + tarif
+                +"<input type='hidden' value='" + tarif + "' name='tarif" + p_ligneFac + "' id='tarif" + p_ligneFac + "'/></td>"
+                +"<td>" + quantite
+                +"<input type='hidden' value='" + quantite + "' name='quantite" + p_ligneFac + "' id='quantite" + p_ligneFac + "'/></td>"
+                +"<td>" + total
+                +"<input type='hidden' value='" + total + "' name='total" + p_ligneFac + "' id='total" + p_ligneFac + "'/></td>"
+                +"<td align='center'>"
+                    +"<a class='btn btn-primary btn-sm' onclick='";
+    if(p_modal) {
+        ligne += "genererModalLigneFacture(\"modalLigneFacture\"," + p_ligneFac + ", " + p_modal + ")'>";
+    } else {
+        ligne += "modifierLigneFacture(\"" + p_ligneFac + "\")'>";
+    }
+    ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                +"</td>"
+                +"<td align='center'>"
+                    +"<a class='btn btn-danger btn-sm'";
+    if(isANumber(p_ligneFac)) {
+        ligne += " onclick='supprimerLigneFactureForm(" + p_ligneFac + ")'";
+    } else {
+        ligne += "disabled";
+    }
+    ligne += "><i class='icon- fa fa-remove'></i> Supprimer</a>";
+                +"</td>";
+        
+    document.getElementById(p_id).innerHTML = ligne;
+    //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
+    if(p_modal) {
+        document.getElementById('modalLigneFacture').innerHTML = "";
+    } else {
+        document.getElementById('button_action').innerHTML = "<button type='button' class='btn btn-default' disabled name='subAction' id='subAction' onclick='ajouterLigneFactureForm(\"listeLignesFacture\", false);'><i class='icon-plus fa fa-plus'></i> Ajouter une ligne de facture</button>";
+        document.getElementById('panel_action').innerHTML = "Ajout d'une ligne de facture";
+        //on remet ensuite les inputs a vide
+        $('#code').val("");
+        $('#libelle').val("");
+        $('#tarif').val("");                    
+        $('#quantite').val(1);
+        $('#total').val("");
+    }
+}
+
+/*****
+ * supprimerLigneFactureForm : supprime la ligne de facture choisie (cree grace au modal)
+ *
+ * @param p_num : Contient le numero de la ligne a supprimer
+ ***/
+function supprimerLigneFactureForm(p_num){
+    //on recupere le nombre de lignes de facture qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbLignesFac = parseInt(document.getElementById('nbLignesFac').value);
+    
+    //On decrement le nombre de lignes de facture ajoutées
+    document.getElementById('nbLignesFac').value = parseInt(nbLignesFac-1);  
+    
+    //On modifier la ligne dans la table en mode supprimé
+    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + p_num + "' id='supp" + p_num + "'/>";
+    document.getElementById('ligne'+p_num).innerHTML = ligne;
+}
+
+/*****
+ * checkLigneFacture : Verifie que les champs soient bien remplis pour ajouter ou modifier une ligne de facture
+ *
+ * @param p_id : Contient l'id du bouton de submit de la modal a bloquer ou non
+ ***/
+function checkLigneFacture(p_id){
+    //si tous les champs sont remplis correctement, alors le bouton de submit du modal sera activé
+    var buttonOk = true;
+    var totalOk = true;
+    
+    var code = document.getElementById('code').value;
+    if(code == "") {
+        buttonOk = false;
+    }
+    //on recupere le libelle de la ligne de facture
+    var libelle = document.getElementById('libelle').value;
+    if(libelle == "") {
+        buttonOk = false;
+    }
+    
+    //on recupere le tarif
+    var tarif =  document.getElementById('tarif').value;
+    if(!isANumber(tarif)) {
+        buttonOk = false;
+        totalOk = false;
+    }
+    
+    //on recupere la quantite
+    var quantite = document.getElementById('quantite').value;
+    if((quantite == "") || (!isANumber(quantite))) {
+        buttonOk = false;
+        totalOk = false;
+    }
+    
+    //on modifie le total
+    if(totalOk) {
+        document.getElementById('total').value = tarif*quantite;
+    } else {
+        document.getElementById('total').value = 0;
+    }
+    
+    if(buttonOk)
+        document.getElementById(p_id).disabled = false;
+    else
+        document.getElementById(p_id).disabled = true;    
+}
+
+/*****
+ * genererModalReglement : genere le modal pour ajouter un reglement dans createFacture
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ ***/
+function genererModalReglement(p_id) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererModalReglement";
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: '-6m',
+                endDate: 'd', 
+                autoclose: true
+            });
+            $('#modalInfoReglement').modal('toggle');
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * ajouterReglementForm : cree les input d'un reglement dans create facture (grace au modal)
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_modal : true si on fait avec un modal (false si on fait dans la modification d'une facture)
+ ***/
+function ajouterReglementForm(p_id, p_modal){
+    //on recupere le nombre de reglements qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+    var nbReglementsTot = parseInt(document.getElementById('nbReglementsTot').value);
+    
+    //on recupere la date
+    var date = document.getElementById('date').value;
+    //on recupere le montant
+    var montant = document.getElementById('montant').value;
+    
+    //On augmente le nombre de reglements ajoutées
+    document.getElementById('nbReglementsTot').value = parseInt(nbReglementsTot+1); 
+    
+    //On recupere ce qu'il y avait deja dans la table pour ne pas l'ecraser
+    var element = document.getElementById(p_id).innerHTML;
+    
+    //On cree la ligne dans la table
+    var ligne = "<tr id='ligne" + document.getElementById('nbReglementsTot').value + "'>" 
+                +"<td>" + date 
+                + "<input type='hidden' value='" + date + "' name='date" + document.getElementById('nbReglementsTot').value + "' id='date" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                +"<td>" + montant
+                + "<input type='hidden' value='" + montant + "' name='montant" + document.getElementById('nbReglementsTot').value + "' id='montant" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                +"<td>"
+                    +"<a class='btn btn-danger btn-sm' onclick='supprimerReglementForm(" + document.getElementById('nbReglementsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
+                +"</td>"
+            +"</tr>";
+    document.getElementById(p_id).innerHTML = element + ligne;
+    //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
+    if(p_modal) {
+        document.getElementById('modalReglement').innerHTML = "";
+    } // sinon on vide les champs 
+    else {
+        $('#date').val("");
+        $('#montant').val("");
+    }
+}
+
+/*****
+ * supprimerReglementForm : supprime la ligne du reglement choisi (cree grace au modal)
+ *
+ * @param p_num : Contient le numero de la ligne a supprimer
+ ***/
+function supprimerReglementForm(p_num){
+    //On modifier la ligne dans la table en mode supprimé
+    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + p_num + "' id='supp" + p_num + "'/>";
+    document.getElementById('ligne'+p_num).innerHTML = ligne;
+}
+
+/*****
+ * checkReglement : Verifie que les champs soient bien remplis pour ajouter un reglement
+ *
+ * @param p_id : Contient l'id du bouton de submit de la modal a bloquer ou non
+ ***/
+function checkReglement(p_id){
+    //si tous les champs sont remplis correctement, alors le bouton de submit du modal sera activé
+    var buttonOk = true;
+    
+    var date = document.getElementById('date').value;
+    if(date == "") {
+        buttonOk = false;
+    }
+    
+    //on recupere le montant
+    var montant =  document.getElementById('montant').value;
+    if(!isANumber(montant)) {
+        buttonOk = false;
+    }
+    
+    if(buttonOk)
+        document.getElementById(p_id).disabled = false;
+    else
+        document.getElementById(p_id).disabled = true;    
 }
