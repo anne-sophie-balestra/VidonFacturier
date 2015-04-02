@@ -107,19 +107,17 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 if(filter_input(INPUT_POST, 'supp' . $i) == NULL) {
 
                     $presta_id[$i] = "";
-                    if (filter_input(INPUT_POST, '$presta_id_' . $i) != NULL) {
-                        $presta_id[$i] = filter_input(INPUT_POST, '$presta_id_' . $i);
+                    if (filter_input(INPUT_POST, 'presta_id_' . $i) != NULL) {
+                        $presta_id[$i] = filter_input(INPUT_POST, 'presta_id_' . $i);
                     } else {
-                        var_dump($presta_id[$i]);
-//                        returnToCreateModel($error);
+                        returnToCreateModel($error);
                     }
 
                     $presta_lib[$i] = "";
                     if (filter_input(INPUT_POST, 'presta_lib_' . $i) != NULL) {
                         $presta_lib[$i] = filter_input(INPUT_POST, 'presta_lib_' . $i);
                     } else {
-                        var_dump($presta_lib[$i]);
-                        //returnToCreateModel($error);
+                        returnToCreateModel($error);
                     }
                 }
             }
