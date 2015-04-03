@@ -170,7 +170,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
 
             $stmt_insert = $pdo->prepare($insert_string);
 
-            for($i=0; $i<sizeof($presta_id);$i++){
+            for($i=0; $i<$nbInfosTot;$i++){
 
                 if(isset($presta_id[$i])) {
 
@@ -190,6 +190,9 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     $stmt_insert->execute();
                 }
             }
+
+        //var_dump(sizeof($presta_id));
+        //exit();
 
             // On retourne a la page d'accueil
             //returnToIndex();
