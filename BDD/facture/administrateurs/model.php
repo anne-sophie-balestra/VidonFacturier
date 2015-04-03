@@ -172,20 +172,23 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
 
             for($i=0; $i<sizeof($presta_id);$i++){
 
-                $id_lig = generateId("TLI", "re", "type_ligne");
+                if(isset($presta_id[$i])) {
 
-                // On lie les parametres recuperés via le formulaire pour les associer a la requete
-                $stmt_insert->bindParam(':id', $id_lig);
-                $stmt_insert->bindParam(':rf_pres', $presta_id[$i]);
-                $stmt_insert->bindParam(':creadate', $creadate);
-                $stmt_insert->bindParam(':moddate', $moddate);
-                $stmt_insert->bindParam(':creauser', $creauser);
-                $stmt_insert->bindParam(':moduser', $moduser);
-                $stmt_insert->bindParam(':rf_typ_fac', $id_fac);
-                $stmt_insert->bindParam(':libelle', $presta_lib[$i]);
+                    $id_lig = generateId("TLI", "re", "type_ligne");
 
-                // On execute la requete
-                $stmt_insert->execute();
+                    // On lie les parametres recuperés via le formulaire pour les associer a la requete
+                    $stmt_insert->bindParam(':id', $id_lig);
+                    $stmt_insert->bindParam(':rf_pres', $presta_id[$i]);
+                    $stmt_insert->bindParam(':creadate', $creadate);
+                    $stmt_insert->bindParam(':moddate', $moddate);
+                    $stmt_insert->bindParam(':creauser', $creauser);
+                    $stmt_insert->bindParam(':moduser', $moduser);
+                    $stmt_insert->bindParam(':rf_typ_fac', $id_fac);
+                    $stmt_insert->bindParam(':libelle', $presta_lib[$i]);
+
+                    // On execute la requete
+                    $stmt_insert->execute();
+                }
             }
 
             // On retourne a la page d'accueil
