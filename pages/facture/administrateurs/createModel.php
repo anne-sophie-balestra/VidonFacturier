@@ -13,20 +13,25 @@
  ********************************************/
 $pdo = new SPDO();
 
-//On recupere les types de dossiers existants
+// On recupere les types de dossiers existants
 $stmt_type_dossier = "SELECT DISTINCT(t_dos_type) FROM type_dossier ORDER BY t_dos_type";
 $result_type_dossier = $pdo->prepare ( $stmt_type_dossier );
 $result_type_dossier->execute();
 
-//On va chercher les entites possibles pour un dossier (brevet ou juridique)
+// On va chercher les entites possibles pour un dossier (brevet ou juridique)
 $stmt_t_dos_ent = "SELECT DISTINCT(t_dos_entite) FROM type_dossier ORDER BY t_dos_entite";
 $result_t_dos_ent = $pdo->prepare($stmt_t_dos_ent);
 $result_t_dos_ent->execute();
 
-//On recupere les types d'operations existantes
-$stmt_type_operation = "SELECT DISTINCT(t_ope_libelle) FROM type_operation ORDER BY t_ope_libelle";
+// On recupere les types d'operations existantes
+$stmt_type_operation = "SELECT t_ope_id, t_ope_libelle FROM type_operation ORDER BY t_ope_libelle";
 $result_type_operation = $pdo->prepare ( $stmt_type_operation );
 $result_type_operation->execute();
+
+// On recupere les nom des clients
+$stmt_entite = "SELECT ent_id, ent_raisoc FROM entite ORDER BY ent_raisoc";
+$result_entite = $pdo->prepare ( $stmt_entite );
+$result_entite->execute();
 
 ?>
 <!-- Contenu principal de la page -->
@@ -34,20 +39,33 @@ $result_type_operation->execute();
 
     <!--Creation d'un formulaire avec la validation Bootstrap-->
     <form id="formNewModel" action="index.php?action=insertModel" method="post" role="form" data-toggle="validator">
-		<h2>Nouveau Modèle</h2>
+        <h2>Nouveau Modèle</h2>
+
         <!--Renseignement du nom du modele-->
-		<div class="form-group">
-			<label class="control-label" for="name">Nom du modèle :</label>
-			<input name="name" type="text" required class="form-control" id="name" maxlength="255" data-error="Veuillez entrer le nom du modèle">
-			<div class="help-block with-errors"></div>
-		</div>
+        <div class="form-group">
+            <label class="control-label" for="name">Nom du modèle :</label>
+            <input name="name" type="text" required class="form-control" id="name" maxlength="255" data-error="Veuillez entrer le nom du modèle">
+            <div class="help-block with-errors"></div>
+        </div>
+
+        <!--Renseignement du client-->
+        <div class="form-group">
+            <label class="control-label" for="name">Client :</label>
+            <select name="client" id="client" required class="form-control select2">
+                <option></option>
+                <?php // On affiche les entites disponibles
+                foreach($result_entite->fetchAll(PDO::FETCH_OBJ) as $cli) { ?>
+                    <option value="<?php echo $cli->ent_id; ?>"><?php echo $cli->ent_raisoc; ?></option>
+                <?php } ?>
+            </select>
+        </div>
 
         <!--Renseignement de la zone geographique-->
-		<div class="form-group">
-			<label class="control-label" for="area">Zone géographique </label>
-			<input type="radio" name="area" value="France" checked> France
-            <input type="radio" name="area" value="Etranger"> Etranger
-		</div>
+        <div class="form-group">
+            <label class="control-label" for="area">Zone géographique </label>
+            <input type="radio" id="area" name="area" value="France" onchange="document.getElementById('TVA').disabled = false;" checked> France
+            <input type="radio" id="area" name="area" value="Etranger" onchange="document.getElementById('TVA').disabled = true;"> Etranger
+        </div>
 
         <!--On demande a l'utilisateur le type de dossier et l'opération pour le modele de facture-->
         <div class="form-group">
@@ -68,50 +86,54 @@ $result_type_operation->execute();
             </select>
         </div>
 
-
         <div class="form-group">
-			<!-- Operation -->
-			<label class="control-label" for="t_operation">Type d'opération :</label>
-			<select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('ent_dossier').value, document.getElementById('type_dossier').value, this.value);" class="form-control select2">
-				<option></option>
-            <?php 
-            foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
-                 <option value="<?php echo $type_ope->t_ope_libelle; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
-            <?php } ?>
+            <!-- Operation -->
+            <label class="control-label" for="t_operation">Type d'opération :</label>
+            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+                <option></option>
+                <?php
+                foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
+                    <option value="<?php echo $type_ope->t_ope_id; ?>"><?php echo $type_ope->t_ope_libelle; ?></option>
+                <?php } ?>
+            </select>
+        </div>
+
+
+        <!--Renseignement du type de la facture-->
+        <div class="form-group">
+            <label class="control-label" for="type">Type de la facture :</label>
+            <select name="type" id="type" required class="form-control">
+                <option></option>
+                <option value="avoir">Avoir</option>
+                <option value="facture">Facture</option>
             </select>
 
-		</div>
+            <div class="help-block with-errors"></div>
+        </div>
 
         <!--Renseignement de l'objet de la facture-->
-		<div class="form-group">
-			<label class="control-label" for="objet">Objet de la facture :</label>
-			<input name="objet" type="text" required class="form-control" id="objet" maxlength="255" data-error="Veuillez entrer l'objet de la facture">
-			<div class="help-block with-errors"></div>
-		</div>
+        <div class="form-group">
+            <label class="control-label" for="objet">Objet de la facture :</label>
+            <input name="objet" type="text" required class="form-control" id="objet" maxlength="255" data-error="Veuillez entrer l'objet de la facture">
+            <div class="help-block with-errors"></div>
+        </div>
 
         <!--Renseignement de la langue de la facture-->
-		<div class="form-group">
-			<label class="control-label" for="language">Langue de la facture :</label>
-			<input name="language" type="text" value="Français" required class="form-control" id="language" maxlength="255" data-error="Veuillez entrer la langue de la facture">
-			<div class="help-block with-errors"></div>
-		</div>
+        <div class="form-group">
+            <label class="control-label" for="language">Langue de la facture :</label>
+            <input name="language" type="text" value="fr" required class="form-control" id="language" maxlength="255" data-error="Veuillez entrer la langue de la facture">
+            <div class="help-block with-errors"></div>
+        </div>
 
-        <!--Renseignement du taux de TVA-->
-		<div class="form-group">
-			<label class="control-label" for="TVA">TVA :</label> 
-			<input name="TVA" type="number" value="20" required class="form-control" id="TVA" maxlength="255" data-error="Veuillez entrer le taux de TVA">
-			<div class="help-block with-errors"></div>
-		</div>
+        <!-- Bouton d'ajout d'une prestation au modèle -->
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPresta">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
+        </button>
 
-		<!-- Bouton d'ajout d'une prestation au modèle -->
-		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPresta">
-		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
-		</button>
-
-		<!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
+        <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
         <div class="form-group" hidden>
             <input name="nbInfos" id="nbInfos" type="number" value="0" min='1' required class="form-control" data-error="Veuillez ajouter au moins une prestation">
-            <div class="help-block with-errors"></div>            
+            <div class="help-block with-errors"></div>
         </div>
         <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
         <div class="form-group" hidden>
@@ -124,62 +146,86 @@ $result_type_operation->execute();
             <!-- Table -->
             <table class="table">
                 <thead>
-                    <tr>
-                        <th scope="col">Libellé</th>
-                        <th scope="col">Type tarification</th>
-                        <th scope="col">Tarif standard</th>
-                        <th scope="col">Tarif junior</th>
-                        <th scope="col">Tarif senior</th>
-                        <th scope="col">Tarif manager</th>
-                        <th scope="col">Supprimer</th>
-                    </tr>
+                <tr>
+                    <th scope="col">Libellé</th>
+                    <th scope="col">Type tarification</th>
+                    <th scope="col">Tarif standard</th>
+                    <th scope="col">Tarif junior</th>
+                    <th scope="col">Tarif senior</th>
+                    <th scope="col">Tarif manager</th>
+                    <th scope="col">Supprimer</th>
+                </tr>
                 </thead>
                 <tbody id='listePrestations'></tbody>
             </table>
         </div>
 
-		<!-- Modal -->
-		<div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
-		      </div>
-		      <div class="modal-body">
-		      	<div class="form-group">
-	        		<!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-				    <select name="select_presta" id="select_presta" required class="form-control select2">
-				    	<option></option>
-				    </select>
-		    	</div>
+        <!-- Modal -->
+        <div class="modal fade" id="modalPresta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Choisissez la prestation à ajouter</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+                            <select name="select_presta" id="select_presta" required class="form-control select2" onChange="document.getElementById('lig_libelle').value = this.options[this.selectedIndex].innerHTML;">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input name="lig_libelle" type="text" required class="form-control" id="lig_libelle" maxlength="255" data-error="Veuillez entrer le libelle de la ligne">
+                        </div>
 
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary" id="subAjout" data-dismiss="modal" onclick="ajouterPrestationModel('listePrestations');">Ajouter</button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="subAjout" data-dismiss="modal" onclick="ajouterPrestationModel('listePrestations');">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!--Validation du formulaire-->
-		<div>
-			<input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
+        <div>
+            <input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
             <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
-		</div>
-	</form>
+        </div>
+    </form>
 
 </div>
 
 
 <script type="text/javascript" charset="utf-8">
+    jQuery.noConflict()
     $(document).ready(function() {
-	    $("#type_dossier").select2({
-	        placeholder: "Choisissez un type de dossier..."
-	    });
-		$("#ent_dossier").select2({
-			placeholder: "Choisissez une entité..."
-		});
+        jQuery("#type_dossier").select2({
+            placeholder: "Choisissez un type de dossier..."
+        });
+        jQuery("#ent_dossier").select2({
+            placeholder: "Choisissez une entité..."
+        });
+        jQuery("#t_operation").select2({
+            placeholder: "Choisissez une opération..."
+        });
+        jQuery("#type").select2({
+            placeholder: "Choisissez un type de facture..."
+        });
+        /*jQuery("#remote").select2({
+         placeholder: "Choisissez une option...",
+         minimumInputLength: 2,
+         ajax: {
+         url: "ajax.php?action=listClient",
+         dataType: 'json',
+         data: function (params) {
+         return { q: params.term };
+         },
+         results: function (data) {
+         return { results: data };
+         }
+         }
+         });*/
     });
 </script>

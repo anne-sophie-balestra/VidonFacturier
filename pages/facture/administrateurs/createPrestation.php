@@ -41,6 +41,12 @@ $result_pays_reg->execute();
     <form id="formNewPrestation" action="index.php?action=insertPrestation" method="post" role="form" data-toggle="validator"> 
         <h2>Nouvelle prestation</h2>        
         <div class="form-group">
+            <label class="control-label" for="remote">Remote :</label>
+            <select name="remote" id="remote" required class="form-control select2" onkeyup="alert(jQuery('#remote').select2('val'));genererInfosRemote('#remote', this.value);">
+                <option></option> 
+            </select>
+        </div>
+        <div class="form-group">
             <label class="control-label" for="operation">Opération :</label>
             <select name="operation" id="operation" required class="form-control select2">
                 <option></option> 
@@ -129,6 +135,7 @@ $result_pays_reg->execute();
         <div class="form-group" hidden>
             <input name="nbInfosTot" id="nbInfosTot" type="number" value="0" required class="form-control">
         </div>
+        
         <!--div qui contiendra les prestations ajoutees-->
         <div class="panel panel-default">
             <div class="panel-heading">Liste des prestations</div>
@@ -177,5 +184,9 @@ $result_pays_reg->execute();
         jQuery("#pays").select2({
             placeholder: "Choisissez un pays..."
         });
+        jQuery("#remote").select2({
+            placeholder: "Choisissez une option..."
+        });
     });
+    
 </script>
