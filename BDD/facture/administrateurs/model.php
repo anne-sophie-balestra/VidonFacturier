@@ -195,8 +195,15 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         //exit();
 
             // On retourne a la page d'accueil
-            //returnToIndex();
-            //break;
+            returnToIndex();
+            break;
+
+        case('changePrestation'):
+
+
+
+
+
     }
 }
 

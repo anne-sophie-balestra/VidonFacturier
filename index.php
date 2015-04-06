@@ -82,6 +82,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('insertModel'):
             require_once("BDD/facture/administrateurs/model.php");
             break;
+
+        //Recuperation des infos envoyées par le formulaire de modification de modele avec verification php et modification/insertion dans la base de donnees
+        case('changeModele'):
+            require_once("BDD/facture/administrateurs/model.php");
+            break;
+
     }
 }
 

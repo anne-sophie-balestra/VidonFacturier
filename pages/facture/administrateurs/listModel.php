@@ -17,7 +17,6 @@ $stmt = "SELECT t_fac_id, t_fac_modelname, t_fac_type, t_fac_rf_ent, t_fac_rf_ty
 $result_model = $pdo->prepare($stmt);
 $result_model->execute();
 
-
 ?>
 
 <!-- Contenu principal de la page -->
@@ -55,6 +54,9 @@ $result_model->execute();
                 <td><?php echo $models->t_fac_rf_ent; ?></td>
                 <td><?php echo $models->t_fac_rf_typdos; ?></td>
                 <td><?php echo $models->t_fac_rf_ope; ?></td>
+
+
+
                 <!--<td>
                     <?php /*
                     $query = "SELECT t_lig_id from type_ligne l, type_facture t WHERE t.t_fac_id = :id_fac"; // l.t_lig_rf_typ_fac = t.t_fac_id AND 
@@ -67,14 +69,14 @@ $result_model->execute();
 
                     */?>
                 </td>-->
-                <td><?php $models->t_fac_objet; ?></td>
+                <td><?php echo $models->t_fac_objet; ?></td>
 
                 <td align="center">
                     <button class="btn btn-primary btn-sm" data-target="#modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>" data-toggle="modal">
                         <i class="icon-plus fa fa-eye"></i> Afficher
                     </button>
                     <?php //requete pour recuperer les lignes de prestations en fonction de l'id du modèle
-                    $query = "SELECT t_lig_id from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
+                    $query = "SELECT t_lig_id, t_lig_libelle, t_lig_rf_typ_fac from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
                     $result_presta = $pdo->prepare($query);
                     $result_presta->bindParam(':id_fac', $models->t_fac_id);
                     $result_presta->execute();
@@ -91,6 +93,8 @@ $result_model->execute();
                                             <table class="table">
                                                 <tr>
                                                     <th scope="col">ID</th>
+                                                    <th scope="col">Libellé</th>
+                                                    <th scope="col">ref type facture</th>
                                               <!--      <th scope="col">Type tarification</th>
                                                     <th scope="col">Tarif standard</th>
                                                     <th scope="col">Tarif junior</th>
@@ -102,6 +106,8 @@ $result_model->execute();
                                                 foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta) { ?>
                                                     <tr>
                                                         <td><?php echo $lig_presta->t_lig_id; ?></td>
+                                                        <td><?php echo $lig_presta->t_lig_libelle; ?></td>
+                                                        <td><?php echo $lig_presta->t_lig_rf_typ_fac; ?></td>
                                                     </tr>
                                                 <?php } ?>
                                             </table>
@@ -138,7 +144,9 @@ $result_model->execute();
     <div id="modalLigne"></div>
 </div>
 <script type="text/javascript" charset="utf-8">
-    $('#list_models').dataTable({
+
+    jQuery.noConflict();
+    jQuery('#list_models').dataTable({
         "language":{
             sProcessing:   "Traitement en cours...",
             sLengthMenu:   "Afficher _MENU_ &eacute;l&eacute;ments",

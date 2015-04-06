@@ -145,7 +145,7 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
             //on recupere la reference a l'element select que l'on veut peupler
             var $select = jQuery(p_id);
             $select.empty();    
-            //$select.select2('data', null);    
+            //$select.select2('data', null);
             $select.append('<option></option>');
             //$select.select2({placeholder:"Choisissez une prestation ..."});
             $.each(jsonData,function(key, value) 
@@ -261,8 +261,8 @@ function genererModalPrestation(p_id, p_presta) {
  * genererModalModelLigne : genere le modal pour modifier une ligne (type_ligne) depuis la liste des Modeles.
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *
- * @param p_id : Contient l'id de l'element a modifier.
- * @param t_ligne : Contient l'id general de la ligne à modifier.
+ * @param p_id : Contient l'id de l'element a modifier (le modal).
+ * @param t_ligne : Contient l'id du modele a modifier.
  ***/
 function genererModalModelLigne(p_id, t_ligne) {
     // Appel la fonction qui crée un objet XmlHttp.
@@ -279,7 +279,7 @@ function genererModalModelLigne(p_id, t_ligne) {
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             document.getElementById(p_id).innerHTML = xmlHttp.responseText;
-            $('#modalInfoPrestationGenerale').modal('toggle');
+            $('#modalInfoModel').modal('toggle');
         };
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url

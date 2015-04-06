@@ -76,7 +76,14 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('genererModalLigneFacture'):
             $ligneFac = (filter_input(INPUT_GET, 'lf') != NULL ? filter_input(INPUT_GET, 'lf') : 0);
             genererModalLigneFacture($ligneFac);
-            break;            
+            break;
+
+        //Genere le modal pour ajouter ou modifier une ligne de facture dans create facture
+        case('genererModalModelLigne'):
+            $model_id = (filter_input(INPUT_GET, 'lig') != NULL ? filter_input(INPUT_GET, 'lig') : 0);
+            genererModalModelLigne($model_id);
+            break;
+
 
         //Genere le modal pour ajouter un reglement dans create facture
         case('genererModalReglement'):
@@ -702,18 +709,18 @@ function genererModalReglement() {
  *
  * @param int $modele : contient l'id du modele a modifier
  ***/
-function genererModalModelLigne($modele) {
+function genererModalModelLigne($modele_id) {
 
     // Connexion a la base de donnees
     $pdo = new SPDO();
 
     //On cree la requete pour recupérer les infos générales du modele
     $stmt_model = "SELECT t_fac_id, t_fac_rf_typdos, t_fac_rf_ent, t_fac_creadate, t_fac_moddate, t_fac_creauser, t_fac_moduser, t_fac_type,"
-        ."t_fac_objet, t_fac_rf_ope, t_fac_devise, t_fac_tauxdevise, t_fac_tauxtva, t_fac_langue, t_fac_area, t_fac_modelname"
-        ."FROM type_facture"
-        ."WHERE t_fac_id = :modele_id";
+        ."t_fac_objet, t_fac_rf_ope, t_fac_langue, t_fac_area, t_fac_modelname, t_dos_entite, t_dos_id, t_ope_libelle, t_ope_id "
+        ."FROM type_facture, type_dossier, type_operation "
+        ."WHERE t_dos_id = t_fac_rf_typdos AND t_ope_id = t_fac_rf_ope AND t_fac_id = :modele_id";
     $result_model = $pdo->prepare($stmt_model);
-    $result_model->bindParam(":modele_id", $modele);
+    $result_model->bindParam(":modele_id", $modele_id);
     $result_model->execute();
 
     $modele = $result_model->fetch(PDO::FETCH_OBJ);
@@ -721,7 +728,7 @@ function genererModalModelLigne($modele) {
     //On cree la requete pour recupérer les lignes de presta (type_ligne) liées au modele
     $stmt_presta_ligne = "SELECT t_lig_id from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
     $result_presta_ligne = $pdo->prepare($stmt_presta_ligne);
-    $result_presta_ligne->bindParam(":id_fac",$modele);
+    $result_presta_ligne->bindParam(":id_fac",$modele_id);
     $result_presta_ligne->execute();
 
     //On recupere les differentes operations disponibles
@@ -737,57 +744,70 @@ function genererModalModelLigne($modele) {
     //On va chercher les types de dossier qui correspondent a l'entité de la prestation que nous voulons modifier
     $stmt_t_dos_type = "SELECT t_dos_id, t_dos_type FROM type_dossier WHERE t_dos_entite = :entite ORDER BY t_dos_type";
     $result_t_dos_type = $pdo->prepare($stmt_t_dos_type);
-    $result_t_dos_type->bindParam(":entite", $presta->t_dos_entite);
+    $result_t_dos_type->bindParam(":entite", $modele->t_dos_entite);
     $result_t_dos_type->execute();
 
-    //On recupere les codes de nomenclatures auxquels on voudra associer des prestations
-    $stmt_nom = "SELECT nom_id, nom_code FROM nomenclature ORDER BY nom_code";
-    $result_nom = $pdo->prepare($stmt_nom);
-    $result_nom->execute();
+    // On recupere les nom des clients
+    $stmt_entite = "SELECT ent_id, ent_raisoc FROM entite ORDER BY ent_raisoc";
+    $result_entite = $pdo->prepare ( $stmt_entite );
+    $result_entite->execute();
 
-    //On recupere tous les pays qui peuvent etre associés à une prestation
-    $stmt_pays_reg = "SELECT DISTINCT(pay_region) FROM pays ORDER BY pay_region";
-    $result_pays_reg = $pdo->prepare($stmt_pays_reg);
-    $result_pays_reg->execute();
+    // On recupere les types d'operations existantes
+    $stmt_type_operation = "SELECT t_ope_id, t_ope_libelle FROM type_operation ORDER BY t_ope_libelle";
+    $result_type_operation = $pdo->prepare ( $stmt_type_operation );
+    $result_type_operation->execute();
+
     ?>
     <!--Ajout des lignes de prestations par modal-->
     <!--Creation du formulaire pour afficher les infos de la prestation et la modifier-->
-    <form id="formUpdatePrestation" action="index.php?action=changePrestation" method="post" role="form" data-toggle="validator">
-        <div class="modal fade" role="dialog" aria-labelledby="modalInfoPrestationGenerale" aria-hidden="true" id="modalInfoPrestationGenerale">
+    <form id="formUpdateModele" action="index.php?action=changeModele" method="post" role="form" data-toggle="validator">
+        <div class="modal fade" role="dialog" aria-labelledby="modalInfoModel" aria-hidden="true" id="modalInfoModel">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalInfoPrestationGeneraleLabel">Modification d'une prestation</h4>
+                        <h4 class="modal-title" id="modalInfoModelLabel">Modification d'un Modèle</h4>
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
-                            <input name="pres_id_general" type="hidden" value="<?php echo $presta->pres_id_general; ?>" required class="form-control" id="pres_id_general">
+                            <input name="t_fac_id" type="hidden" value="<?php echo $modele->t_fac_id; ?>" required class="form-control" id="t_fac_id">
                             <div role="tabpanel">
                                 <!-- Nav tabs -->
                                 <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">Général</a></li>
+                                    <li role="presentation" class="active"><a href="#modele" aria-controls="modele" role="tab" data-toggle="tab">Modèle</a></li>
                                     <li role="presentation"><a href="#lignes" aria-controls="lignes" role="tab" data-toggle="tab">Lignes de prestation</a></li>
                                 </ul>
                                 <br />
                                 <div class="tab-content">
                                     <div role="tabpanel" class="tab-pane active" id="general">
+
                                         <div class="form-group">
-                                            <label class="control-label" for="operation">Opération :</label>
-                                            <select name="operation" id="operation" required class="form-control">
-                                                <?php //On affiche toutes les operations comme des options du select
-                                                foreach($result_ope->fetchAll(PDO::FETCH_OBJ) as $ope) { ?>
-                                                    <option value="<?php echo $ope->t_ope_id; ?>" <?php if($presta->pres_rf_typ_operation == $ope->t_ope_id) { echo "selected"; } ?>><?php echo $ope->t_ope_libelle; ?></option>
+                                            <label class="control-label" for="name">Nom du modèle :</label>
+                                            <!-- Nom du modèle -->
+                                            <input name="name" type="text" value="<?php echo $modele->t_fac_modelname; ?>" required class="form-control" id="name" maxlength="255" data-error="Veuillez entrer le nom du modèle">
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label" for="name">Client :</label>
+                                            <!-- Choix du client-->
+                                            <select name="client" id="client" required class="form-control">
+                                                <?php //On affiche tous les clients
+                                                foreach($result_entite->fetchAll(PDO::FETCH_OBJ) as $cli) { ?>
+                                                    <option value="<?php echo $cli->ent_raisoc; ?>" <?php if($modele->t_fac_rf_ent == $cli->ent_id) echo "selected"; ?>><?php echo $cli->ent_id; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </div>
+
+                                        <!--On demande a l'utilisateur le type de dossier et l'opération pour le modele de facture-->
                                         <div class="form-group">
                                             <label class="control-label" for="ent_dossier">Type de dossier :</label><br />
                                             <!--En changeant l'entite, nous allons charger le select type_dossier avec les types associés à l'entite choisie-->
-                                            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value, false);" class="form-control">
+                                            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value, false);" class="form-control select2">
+                                                <option></option>
                                                 <?php // On affiche les entites disponibles
                                                 foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
-                                                    <option value="<?php echo $t_dos_ent->t_dos_entite; ?>" <?php if($presta->t_dos_entite == $t_dos_ent->t_dos_entite) { echo "selected"; } ?>><?php echo $t_dos_ent->t_dos_entite; ?></option>
+                                                    <option value="<?php echo $t_dos_ent->t_dos_entite; ?>" <?php if($modele->t_dos_entite == $t_dos_ent->t_dos_entite) echo 'selected'; ?>><?php echo $t_dos_ent->t_dos_entite; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </div>
@@ -796,171 +816,44 @@ function genererModalModelLigne($modele) {
                                             <select name="type_dossier" id="type_dossier" required class="form-control">
                                                 <?php // On affiche les entites disponibles
                                                 foreach($result_t_dos_type->fetchAll(PDO::FETCH_OBJ) as $t_dos_type) { ?>
-                                                    <option value="<?php echo $t_dos_type->t_dos_id; ?>" <?php if($presta->pres_rf_typ_dossier == $t_dos_type->t_dos_id) { echo "selected"; } ?>><?php echo $t_dos_type->t_dos_type; ?></option>
+                                                    <option value="<?php echo $t_dos_type->t_dos_id; ?>" <?php if($modele->t_fac_rf_typdos == $t_dos_type->t_dos_id) echo 'selected';  ?>><?php echo $t_dos_type->t_dos_type; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </div>
+
                                         <div class="form-group">
-                                            <label class="control-label" for="nom_code">Code :</label>
-                                            <!--On affiche les codes de nomenclature dans le select-->
-                                            <select name="nom_code" id="nom_code" required class="form-control">
-                                                <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $nom) { ?>
-                                                    <option value="<?php echo $nom->nom_id; ?>" <?php if($presta->pres_rf_nom == $nom->nom_id) { echo "selected"; } ?>><?php echo $nom->nom_code; ?></option>
+                                            <!-- Operation -->
+                                            <label class="control-label" for="t_operation">Type d'opération :</label>
+                                            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+                                                <option></option>
+                                                <?php
+                                                foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
+                                                    <option value="<?php echo $type_ope->t_ope_id; ?>" <?php if($modele->t_ope_libelle == $type_ope->t_ope_libelle) echo 'selected'; ?> ><?php echo $type_ope->t_ope_libelle; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </div>
+
+
+                                        <!--Renseignement du type de la facture-->
                                         <div class="form-group">
-                                            <label class="control-label" for="pays">Pays :</label>
-                                            <!--On affiche les pays en les groupant par regions-->
-                                            <select name="pays" id="pays" required class="form-control">
-                                                <?php foreach($result_pays_reg->fetchAll(PDO::FETCH_OBJ) as $pays_reg) { ?>
-                                                    <optgroup label="<?php echo $pays_reg->pay_region; ?>">
-                                                        <?php $stmt_pays = "SELECT pay_id, pay_nom FROM pays WHERE pay_region = '" . $pays_reg->pay_region . "' ORDER BY pay_nom";
-                                                        $result_pays = $pdo->prepare($stmt_pays);
-                                                        $result_pays->execute();
-                                                        foreach($result_pays->fetchAll(PDO::FETCH_OBJ) as $pays) { ?>
-                                                            <option value="<?php echo $pays->pay_id; ?>" <?php if($presta->pres_rf_pay == $pays->pay_id) { echo "selected"; } ?>><?php echo $pays->pay_nom; ?></option>
-                                                        <?php } ?>
-                                                    </optgroup>
-                                                <?php } ?>
+                                            <label class="control-label" for="type">Type de la facture :</label>
+                                            <select name="type" id="type" required class="form-control">
+                                                <option></option>
+                                                <option value="avoir" <?php if($modele->t_fac_type == "avoir") echo 'selected'; ?> >Avoir</option>
+                                                <option value="facture" <?php if($modele->t_fac_type == "facture") echo 'selected'; ?> >Facture</option>
                                             </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label" for="prestation">Prestation :</label>
-                                            <!--on prend le nom general de la prestation, i.e. nom du modele-->
-                                            <input name="prestation" type="text" value="<?php echo $presta->pres_prestation; ?>" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
+
                                             <div class="help-block with-errors"></div>
                                         </div>
-                                        <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
+
                                         <div class="form-group">
-                                            <label class="control-label" for="repartition">Répartition des consultants :</label>
-                                            <div class="input-group">
-                                                    <span class="input-group-addon">
-                                                        <select id="pourcentage_select" class="form-inline" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('repartition').value=this.value;">
-                                                            <?php for($i=0; $i<=100; $i+=5) { ?>
-                                                                <option <?php if($i == $presta->pres_repartition_cons) { echo "selected"; } ?>><?php echo $i; ?></option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </span>
-                                                <input name="repartition" value="<?php echo $presta->pres_repartition_cons; ?>" id="repartition" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('pourcentage_select').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
-                                                <span id="pourcentage" class="input-group-addon"><?php echo $presta->pres_repartition_cons; ?>%</span>
-                                            </div>
+                                            <label class="control-label" for="objet">Objet de la facture :</label>
+                                            <!-- Objet de la facture -->
+                                            <input name="objet" type="text" value="<?php echo $modele->t_fac_objet; ?>" required class="form-control" id="objet" maxlength="255" data-error="Veuillez entrer l'objet de la facture">
+                                            <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
-                                    <div role="tabpanel" class="tab-pane" id="lignes">
-                                        <!--div qui contiendra le pseudo formulaire d'ajout d'une ligne de prestation -->
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading" id='panel_action'>Ajout d'une ligne de prestation</div>
-                                            <div class="form-group">
-                                                <label class="control-label" for="libelle">Libellé :</label>
-                                                <input name="libelle" type="text" onkeyup="checkLignePrestation('subAction');" class="form-control" id="libelle" maxlength="255">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="control-label" for="t_tarif">Type de tarification :</label>
-                                                <!--On choisit le type de tarification et on genere les champs qu'il faut en fonction-->
-                                                <select name="t_tarif" id="t_tarif" class="form-control" onchange="afficherTarifs(this.value);checkLignePrestation('subAction');">
-                                                    <option value="" disabled selected>Choisissez un type de tarification...</option>
-                                                    <option value="F">Forfaitaire</option>
-                                                    <option value="TH">Tarif Horaire</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group" id="tarif_std_div" style="display: none;">
-                                                <label class="control-label" for="tarif_std">Tarif :</label>
-                                                <div class="input-group">
-                                                    <input name="tarif_std" id="tarif_std" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' class="form-control">
-                                                    <span class="input-group-addon">€</span>
-                                                </div>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                            <div class="form-group" id="tarif_jr_div" style="display: none;">
-                                                <label class="control-label" for="tarif_jr">Tarif junior :</label>
-                                                <div class="input-group">
-                                                    <input name="tarif_jr" id="tarif_jr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' class="form-control">
-                                                    <span class="input-group-addon">€</span>
-                                                </div>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                            <div class="form-group" id="tarif_sr_div" style="display: none;">
-                                                <label class="control-label" for="tarif_sr">Tarif senior :</label>
-                                                <div class="input-group">
-                                                    <input name="tarif_sr" id="tarif_sr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' class="form-control">
-                                                    <span class="input-group-addon">€</span>
-                                                </div>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                            <div class="form-group" id="tarif_mgr_div" style="display: none;">
-                                                <label class="control-label" for="tarif_mgr">Tarif manager :</label>
-                                                <div class="input-group">
-                                                    <input name="tarif_mgr" id="tarif_mgr" type="text" onkeyup="checkLignePrestation('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' class="form-control">
-                                                    <span class="input-group-addon">€</span>
-                                                </div>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                            <!--Bouton pou ajouter ou modifier une ligne de prestation-->
-                                            <div class="form-group" id="button_action">
-                                                <button type="button" class="btn btn-default" disabled name="subAction" id="subAction" onclick="ajouterPrestationForm('listePrestations', false);"><i class='icon-plus fa fa-plus'></i> Ajouter une prestation</button>
-                                            </div>
-                                        </div>
-                                        <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
-                                        <div class="form-group">
-                                            <input name="nbInfos" id="nbInfos" style="display: none;" type="number" value="0" class="form-control" data-error="Veuillez ajouter au moins une ligne de prestation">
-                                        </div>
-                                        <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
-                                        <div class="form-group" hidden>
-                                            <input name="nbInfosTot" id="nbInfosTot" type="number" value="0" required class="form-control">
-                                        </div>
-                                        <!--div qui contiendra les prestations ajoutees-->
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">Liste des prestations</div>
-                                            <!-- Table -->
-                                            <table class="table">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col">Libellé</th>
-                                                    <th scope="col">Type tarification</th>
-                                                    <th scope="col">Tarif standard</th>
-                                                    <th scope="col">Tarif junior</th>
-                                                    <th scope="col">Tarif senior</th>
-                                                    <th scope="col">Tarif manager</th>
-                                                    <th scope="col">Modifier</th>
-                                                    <th scope="col">Supprimer</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody id='listePrestations'>
-                                                <?php foreach($result_presta_infos->fetchAll(PDO::FETCH_OBJ) as $info) { ?>
-                                                    <tr id='ligne<?php echo $info->pres_id; ?>'>
-                                                        <td> <?php echo $info->pres_libelle_ligne_fac; ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_libelle_ligne_fac; ?>' name='libelle<?php echo $info->pres_id; ?>' id='libelle<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td><?php if($info->pres_t_tarif == "F") { echo "Forfaitaire"; } else { echo "Tarif horaire"; } ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_t_tarif; ?>' name='t_tarif<?php echo $info->pres_id; ?>' id='t_tarif<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td><?php echo $info->pres_tarif_std; ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_tarif_std; ?>' name='tarif_std<?php echo $info->pres_id; ?>' id='tarif_std<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td><?php echo $info->pres_tarif_jr; ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_tarif_jr; ?>' name='tarif_jr<?php echo $info->pres_id; ?>' id='tarif_jr<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td><?php echo $info->pres_tarif_sr; ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_tarif_sr; ?>' name='tarif_sr<?php echo $info->pres_id; ?>' id='tarif_sr<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td><?php echo $info->pres_tarif_mgr; ?>
-                                                            <input type='hidden' value='<?php echo $info->pres_tarif_mgr; ?>' name='tarif_mgr<?php echo $info->pres_id; ?>' id='tarif_mgr<?php echo $info->pres_id; ?>'/>
-                                                        </td>
-                                                        <td align='center'>
-                                                            <a class='btn btn-primary btn-sm' onclick='modifierPrestation("<?php echo $info->pres_id; ?>")'><i class='icon-plus fa fa-edit'></i> Modifier</a>
-                                                        </td>
-                                                        <td align='center'>
-                                                            <a class='btn btn-danger btn-sm' disabled><i class='icon- fa fa-remove'></i> Supprimer</a>
-                                                        </td>
-                                                    </tr>
-                                                <?php } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <!--modal pour ajouter ou modifier une ligne de prestation-->
-                                        <div id="modalLignePrestation"></div>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
