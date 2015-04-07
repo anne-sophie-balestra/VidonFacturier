@@ -370,6 +370,49 @@ function ajouterPrestationForm(p_id, p_modal){
 }
 
 /*****
+ * ajouterLigneFormModel : creer les input pour ajouter une ligne dans update model
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_modal : true si on fait avec un modal
+ ***/
+function ajouterLigneFormModel(p_id, p_modal){
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbInfos = parseInt(document.getElementById('nbInfos').value);
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+    var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
+
+    // On recupere l'id de la prestation à ajouter.
+    var id_pres = document.getElementById('select_presta').value;
+
+    // On recup le libelle de la ligne
+    var lig_libelle = document.getElementById('lig_libelle').value;
+
+    // On récupère les éléments du tableau HTML
+    var element = document.getElementById(p_id).innerHTML;
+
+    //On augmente le nombre de prestations ajoutées
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);
+    document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1);
+
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    }
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot + "&lib=" + lig_libelle;
+
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = element + xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null);
+}
+
+/*****
  * modifierPrestation : permet de modifier la ligne de prestation ajouter dans le formulaire de modif dans listePrestations
  *
  * @param p_presta : Contient le numero de la ligne a modifier.
@@ -974,4 +1017,16 @@ function checkReglement(p_id){
         document.getElementById(p_id).disabled = false;
     else
         document.getElementById(p_id).disabled = true;    
+}
+
+/*****
+ * supModelPrestaUpdateEx : supprime une ligne de prestation existante dans la page modif des modeles
+ *
+ * @param String p_lign_id : id de la ligne a sup.
+ * @param String num_lig : numero de la ligne dans le tableau
+ ***/
+function supModelPrestaUpdateEx(p_lign_id) {
+    //On cree la ligne dans la table
+    var ligne = "<input type='hidden' value='" + p_lign_id + "' name='supp" + p_lign_id + "' id='supp" + p_lign_id + "'/>";
+    document.getElementById('ligne'+p_lign_id).innerHTML = ligne;
 }

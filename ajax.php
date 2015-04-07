@@ -59,8 +59,8 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             $lib = (filter_input(INPUT_GET, 'lib') != NULL ? filter_input(INPUT_GET, 'lib') : "");
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot,$lib);
-            break;     
-        
+            break;
+
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('genererInfosRemote'):
             genererListePaysRemote(filter_input(INPUT_GET, 'q'));
@@ -88,7 +88,9 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         //Genere le modal pour ajouter un reglement dans create facture
         case('genererModalReglement'):
             genererModalReglement();
-            break;            
+            break;
+
+
     }
 }
 
@@ -726,10 +728,13 @@ function genererModalModelLigne($modele_id) {
     $modele = $result_model->fetch(PDO::FETCH_OBJ);
 
     //On cree la requete pour recupérer les lignes de presta (type_ligne) liées au modele
-    $stmt_presta_ligne = "SELECT t_lig_id from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
+    $stmt_presta_ligne = "SELECT t_lig_id, t_lig_rf_pres, t_lig_creadate, t_lig_moddate, t_lig_creauser, t_lig_moduser, t_lig_rf_typ_fac, t_lig_libelle,"
+    ."p.pres_t_tarif, pres_tarif_std, pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr FROM type_ligne l, type_facture t, prestation p WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND l.t_lig_rf_pres=p.pres_id AND t.t_fac_id = :id_fac";
     $result_presta_ligne = $pdo->prepare($stmt_presta_ligne);
     $result_presta_ligne->bindParam(":id_fac",$modele_id);
     $result_presta_ligne->execute();
+
+    //$lignes = $result_presta_ligne->fetch(PDO::FETCH_OBJ);
 
     //On recupere les differentes operations disponibles
     $stmt_ope = "SELECT t_ope_id, t_ope_libelle FROM type_operation";
@@ -775,11 +780,11 @@ function genererModalModelLigne($modele_id) {
                                 <!-- Nav tabs -->
                                 <ul class="nav nav-tabs" role="tablist">
                                     <li role="presentation" class="active"><a href="#modele" aria-controls="modele" role="tab" data-toggle="tab">Modèle</a></li>
-                                    <li role="presentation"><a href="#lignes" aria-controls="lignes" role="tab" data-toggle="tab">Lignes de prestation</a></li>
+                                    <li role="presentation"><a href="#lignes" aria-controls="lignes" role="tab" data-toggle="tab">Lignes de prestations</a></li>
                                 </ul>
                                 <br />
                                 <div class="tab-content">
-                                    <div role="tabpanel" class="tab-pane active" id="general">
+                                    <div role="tabpanel" class="tab-pane active" id="modele">
 
                                         <div class="form-group">
                                             <label class="control-label" for="name">Nom du modèle :</label>
@@ -833,7 +838,6 @@ function genererModalModelLigne($modele_id) {
                                             </select>
                                         </div>
 
-
                                         <!--Renseignement du type de la facture-->
                                         <div class="form-group">
                                             <label class="control-label" for="type">Type de la facture :</label>
@@ -854,9 +858,88 @@ function genererModalModelLigne($modele_id) {
                                         </div>
                                     </div>
 
+                                    <!-- LIGNES DE PRESTATIONS #######################################
+                                    #################################################################
+                                    #################################################################
+                                    #################################################################
+                                    -->
+
+                                    <div role="tabpanel" class="tab-pane" id="lignes">
+                                        <!--div qui contiendra le pseudo formulaire d'ajout d'une ligne de prestation -->
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" id='panel_action'>Ajout d'une ligne de prestation</div>
+
+                                            <div class="form-group">
+                                                <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
+                                                <select name="select_presta" id="select_presta" required class="form-control select2" onChange="document.getElementById('lig_libelle').value = this.options[this.selectedIndex].innerHTML;">
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <input name="lig_libelle" type="text" required class="form-control" id="lig_libelle" maxlength="255" data-error="Veuillez entrer le libelle de la ligne">
+                                            </div>
+
+                                            <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
+                                            <div class="form-group">
+                                                <input name="nbInfos" id="nbInfos" style="display: none;" type="number" value=0 class="form-control" data-error="Veuillez ajouter au moins une ligne de prestation">
+                                            </div>
+                                            <!--input pour compter le nombre de prestations ajoutees en tout (meme si elles ont ete supprimees ensuite)-->
+                                            <div class="form-group" hidden>
+                                                <input name="nbInfosTot" id="nbInfosTot" type="number" value=0 required class="form-control">
+                                            </div>
+
+                                            <!--Bouton pou ajouter une ligne-->
+                                            <div class="form-group" id="button_action">
+                                                <button type="button" class="btn btn-default" name="subAction" id="subAction" onclick="ajouterPrestationModel('listePrestations');"><i class='icon-plus fa fa-plus'></i> Ajouter la ligne</button>
+                                            </div>
+
+                                            <!--div qui contiendra les prestations ajoutees-->
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">Liste des lignes de prestations</div>
+                                                <!-- Table -->
+                                                <table class="table">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">Libellé</th>
+                                                        <th scope="col">Type tarification</th>
+                                                        <th scope="col">Tarif standard</th>
+                                                        <th scope="col">Tarif junior</th>
+                                                        <th scope="col">Tarif senior</th>
+                                                        <th scope="col">Tarif manager</th>
+                                                        <th scope="col">Supprimer</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody id='listePrestations'>
+                                                        <?php foreach($result_presta_ligne->fetchAll(PDO::FETCH_OBJ) as $ligne) { ?>
+                                                            <tr id='ligne<?php echo $ligne->t_lig_id  ?>'>
+                                                                <td> <?php echo $ligne->t_lig_libelle; ?>
+                                                                </td>
+                                                                <td><?php if($ligne->pres_t_tarif == "F") { echo "Forfaitaire"; } else { echo "Tarif horaire"; } ?>
+                                                                </td>
+                                                                <td><?php echo $ligne->pres_tarif_std; ?>
+                                                                </td>
+                                                                <td><?php echo $ligne->pres_tarif_jr; ?>
+                                                                </td>
+                                                                <td><?php echo $ligne->pres_tarif_sr; ?>
+                                                                </td>
+                                                                <td><?php echo $ligne->pres_tarif_mgr; ?>
+                                                                </td>
+                                                                <td><a class='btn btn-danger btn-sm' onclick="supModelPrestaUpdateEx('<?php echo $ligne->t_lig_id; ?>')">
+                                                                        <i class='icon-plus fa fa-remove'></i> Supprimer</a>
+                                                                </td>
+                                                            </tr>
+                                                        <?php } ?>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <!--modal pour ajouter ou modifier une ligne de prestation-->
+                                        <div id="modalLignePrestation"></div>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

@@ -200,10 +200,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
 
         case('changePrestation'):
 
-
-
-
-
     }
 }
 
