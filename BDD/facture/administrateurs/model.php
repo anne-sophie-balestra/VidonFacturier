@@ -198,8 +198,82 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             returnToIndex();
             break;
 
-        case('changePrestation'):
+        case('changeModele'):
+            /* Erreur a retourner si besoin */
+            $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
 
+            //var_dump($_POST);
+            //exit();
+
+            $fac_id = "";
+            if (filter_input(INPUT_POST, 't_fac_id') != NULL) {
+                $fac_id = filter_input(INPUT_POST, 't_fac_id');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $name = "";
+            if (filter_input(INPUT_POST, 'name') != NULL) {
+                $name = filter_input(INPUT_POST, 'name');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $client = "";
+            if (filter_input(INPUT_POST, 'client') != NULL) {
+                $client = filter_input(INPUT_POST, 'client');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $ent_dossier = "";
+            if (filter_input(INPUT_POST, 'ent_dossier') != NULL) {
+                $ent_dossier = filter_input(INPUT_POST, 'ent_dossier');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type_dossier = "";
+            if (filter_input(INPUT_POST, 'type_dossier') != NULL) {
+                $type_dossier = filter_input(INPUT_POST, 'type_dossier');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type_operation = "";
+            if (filter_input(INPUT_POST, 'type_operation') != NULL) {
+                $type_operation = filter_input(INPUT_POST, 'type_operation');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type = "";
+            if (filter_input(INPUT_POST, 'type') != NULL) {
+                $type = filter_input(INPUT_POST, 'type');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $objet = "";
+            if (filter_input(INPUT_POST, 'objet') != NULL) {
+                $objet = filter_input(INPUT_POST, 'objet');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            // Champs non renseignes par le user.
+            // On recupere l'utilisateur qui a fait l'ajout (statique car pas encore de gestion de session + user)
+            $moddate = date(date("Y-m-d H:i:s"));
+            $creauser = "GLS";
+            $moduser = "GLS";
+
+            $req_update ="UPDATE type_facture SET t_fac_modelname = :modelname WHERE t_fac_id = :fac_id";
+
+            $stmt_update = $pdo->prepare($req_update);
+            $stmt_update->bindParam(':modelname', $name);
+            $stmt_update->bindParam(':fac_id', $fac_id);
+
+            $stmt_update->execute();
     }
 }
 
