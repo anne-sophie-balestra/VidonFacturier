@@ -871,12 +871,12 @@ function genererModalModelLigne($modele_id) {
 
                                             <div class="form-group">
                                                 <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-                                                <select name="select_presta" id="select_presta" required class="form-control select2" onChange="document.getElementById('lig_libelle').value = this.options[this.selectedIndex].innerHTML;">
+                                                <select name="select_presta" id="select_presta" class="form-control select2" onChange="document.getElementById('lig_libelle').value = this.options[this.selectedIndex].innerHTML;">
                                                     <option></option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <input name="lig_libelle" type="text" required class="form-control" id="lig_libelle" maxlength="255" data-error="Veuillez entrer le libelle de la ligne">
+                                                <input name="lig_libelle" type="text" class="form-control" id="lig_libelle" maxlength="255" data-error="Veuillez entrer le libelle de la ligne">
                                             </div>
 
                                             <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->

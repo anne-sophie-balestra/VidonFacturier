@@ -202,8 +202,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
 
+
             //var_dump($_POST);
             //exit();
+
+
+            // On recupere les champs du formulaire du modal.
 
             $fac_id = "";
             if (filter_input(INPUT_POST, 't_fac_id') != NULL) {
@@ -261,12 +265,19 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 returnToCreateModel($error);
             }
 
+            $nbInfosTot = 0;
+            if (filter_input(INPUT_POST, 'nbInfosTot') != NULL) {
+                $nbInfosTot = filter_input(INPUT_POST, 'nbInfosTot');
+            } else {
+                returnToCreatePrestation($error);
+            }
+
             // Champs non renseignes par le user.
-            // On recupere l'utilisateur qui a fait l'ajout (statique car pas encore de gestion de session + user)
             $moddate = date(date("Y-m-d H:i:s"));
             $creauser = "GLS";
             $moduser = "GLS";
 
+            // requete de mise à jour du modele (type_facture)
             $req_update ="UPDATE type_facture SET t_fac_modelname = :modelname WHERE t_fac_id = :fac_id";
 
             $stmt_update = $pdo->prepare($req_update);
@@ -274,6 +285,61 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_update->bindParam(':fac_id', $fac_id);
 
             $stmt_update->execute();
+
+            // On gere la suppression des lignes existantes
+
+            // On recupere les lignes existantes pour ce modele
+            $req_lig_existantes = "SELECT t_lig_id FROM type_ligne WHERE t_lig_rf_typ_fac = :fac_id";
+            $exist_lig = $pdo->prepare($req_lig_existantes);
+            $exist_lig->bindParam(':fac_id', $fac_id);
+            $exist_lig->execute();
+
+            // On prepare la req de suppression d'une ligne existante
+            $req_sup_lig = "DELETE FROM type_ligne WHERE t_lig_id = :lig_id";
+            $sup_lig = $pdo->prepare($req_sup_lig);
+
+            //Pour chaque ligne existante on test la presence d'un input de suppression
+            foreach($exist_lig->fetchAll(PDO::FETCH_OBJ) as $ligne) {
+                // Si l'input existe on bind l'id de la ligne puis on la supprime.
+                $id = (string)$ligne->t_lig_id;
+
+                if (filter_input(INPUT_POST, $id) != NULL) {
+                    $sup_lig->bindParam(':lig_id', $ligne->t_lig_id);
+                    $sup_lig->execute();
+                }
+            }
+
+            // Puis on traite de l'ajout des nouvelles lignes associées à ce modèle.
+
+            // Creation des requetes d'insertions et ajout dans la base des lignes
+            $insert_string = "INSERT INTO type_ligne "
+                . "(t_lig_id, t_lig_rf_pres, t_lig_creadate, t_lig_moddate,"
+                . "t_lig_creauser, t_lig_moduser, t_lig_rf_typ_fac, t_lig_libelle)"
+                . "VALUES"
+                . "(:id, :rf_pres, :creadate, :moddate,"
+                . ":creauser, :moduser, :rf_typ_fac, :libelle)";
+
+            $stmt_insert = $pdo->prepare($insert_string);
+
+            for($i=0; $i<$nbInfosTot;$i++){
+
+                if(isset($presta_id[$i])) {
+                    $id_lig = generateId("TLI", "re", "type_ligne");
+
+                    // On lie les parametres recuperés via le formulaire pour les associer a la requete
+                    $stmt_insert->bindParam(':id', $id_lig);
+                    $stmt_insert->bindParam(':rf_pres', $presta_id[$i]);
+                    $stmt_insert->bindParam(':creadate', $creadate);
+                    $stmt_insert->bindParam(':moddate', $moddate);
+                    $stmt_insert->bindParam(':creauser', $creauser);
+                    $stmt_insert->bindParam(':moduser', $moduser);
+                    $stmt_insert->bindParam(':rf_typ_fac', $fac_id);
+                    $stmt_insert->bindParam(':libelle', $presta_lib[$i]);
+
+                    // On execute la requete
+                    $stmt_insert->execute();
+                }
+            }
     }
 }
 

@@ -1027,6 +1027,6 @@ function checkReglement(p_id){
  ***/
 function supModelPrestaUpdateEx(p_lign_id) {
     //On cree la ligne dans la table
-    var ligne = "<input type='hidden' value='" + p_lign_id + "' name='supp" + p_lign_id + "' id='supp" + p_lign_id + "'/>";
+    var ligne = "<input type='hidden' value='" + p_lign_id + "' name='" + p_lign_id + "' id='" + p_lign_id + "'/>";
     document.getElementById('ligne'+p_lign_id).innerHTML = ligne;
 }
