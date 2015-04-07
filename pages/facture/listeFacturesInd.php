@@ -24,10 +24,11 @@ $result_fac->execute();
 //On va chercher toutes les repartitions liÈs ‡ la facture
 function get_all_repartitions($id_fac)
 {
+	$pdo = new SPDO();
 	$stmt_rep="select rep_id,rep_creadate,rep_moddate,rep_moduser,rep_pourcentage,
 			rep_rf_uti,rep_rf_fac,rep_type 
      from repartition where rep_rf_fac='".$id_fac."'";
-	$result=$pdo->prepare($stmt_dos);
+	$result=$pdo->prepare($stmt_rep);
 	
 	$list_rep=array();
 	$result->execute();
@@ -45,9 +46,10 @@ function get_all_repartitions($id_fac)
 
 function get_all_lignes($id_fac)
 {
+	$pdo = new SPDO();
 	$stmt_dos="select lig_id,lig_creadate,lig_moddate,lig_moduser,lig_rubrique,lig_code,
 			lig_libelle,lig_rf_fac,lig_tauxtva,lig_tva,lig_total_dev,lig_montant,
-			lig_nb,lig_rf_act,lig_rang from lignefacture	
+			lig_nb,lig_rf_act,lig_rang,lig_typeligne from lignefacture	
 		where lig_rf_fac='".$id_fac."'";
 	$result=$pdo->prepare($stmt_dos);
 	
@@ -64,7 +66,26 @@ function get_all_lignes($id_fac)
 	
 }
 
+//on va chercher le nom du bÈnÈficaire 
 
+function get_beneficiare_repartition($id_util)
+{
+	$pdo = new SPDO();
+	$stmt_benef="select uti_nom from utilisateur where uti_id='".$id_util."'";
+	$result=$pdo->prepare($stmt_benef);
+	
+	$list_benefi=null;
+	$result->execute();
+	
+	foreach($result->fetchAll(PDO::FETCH_OBJ) as $row)
+	
+	{
+		$list_benefi=$row;
+	
+	}
+	return $list_benefi;
+	
+}
 ?>
 <!-- Contenu principal de la page -->
 <div class="container" style="width:100%;">    
@@ -81,6 +102,7 @@ function get_all_lignes($id_fac)
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
+            <th scope="col">Afficher</th>
         </tr>
         <tr>
             <th scope="col">#<br />Type</th>
@@ -122,39 +144,79 @@ function get_all_lignes($id_fac)
                 <?php 
                 
                 ?>
-                <!--Affichage des lignes de facture-->
+               
                 <div class="modal fade" role="dialog" aria-labelledby="modalDetailsfact_<?php echo  $fac->fac_id; ?>" aria-hidden="true" id="modalDetailsfact_<?php echo $fac->fac_id;  ?>">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-body">                                    
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
                                 <div class="container-fluid">
+                                   <!-- Panel des Lignes de Factures -->
+                                   
                                     <div class="panel panel-default">
-                                        <div class="panel-heading">Lignes de factures</div>
+                                        <div class="panel-heading"> Details de Lignes de factures</div>
                                         <table class="table">
                                             <tr>
+                                                <th scope="col">Rubrique</th>
+                                                <th scope="col">Code</th>
                                                 <th scope="col">Libell√©</th>
-                                                <th scope="col">Type tarification</th>
-                                                <th scope="col">Tarif standard</th>
-                                                <th scope="col">Tarif junior</th>
-                                                <th scope="col">Tarif senior</th>
-                                                <th scope="col">Tarif manager</th>
+                                                 <th scope="col">Type</th>
+                                                <th scope="col">TVA</th>
+                                                <th scope="col">Montant</th>
+                                             
                                             </tr>
 
-                                            <?php //On parcours les lignes pour les afficher
+                                            <?php 
 											$lignes_fact=get_all_lignes($fac->fac_id);
-                							foreach($lignes_fact as $ligne) { ?>
+                							foreach($lignes_fact as $ligne) 
+												  { ?>
                                                 <tr>
-                                                    <td><?php echo $ligne->pres_libelle_ligne_fac; ?></td>
-                                                    <td><?php if($ligne->pres_t_tarif == "F") { echo "Forfaitaire"; } else { echo "Tarif horaire"; } ?></td>
-                                                    <td><?php echo $ligne->pres_tarif_std; ?></td>
-                                                    <td><?php echo $ligne->pres_tarif_jr; ?></td>
-                                                    <td><?php echo $ligne->pres_tarif_sr; ?></td>
-                                                    <td><?php echo $ligne->pres_tarif_mgr; ?></td>
+                                                    <td><?php echo $ligne->lig_rubrique; ?></td>
+                                                    <td><?php echo $ligne->lig_code; ?></td>
+                                                    <td><?php echo $ligne->lig_libelle; ?></td>
+                                                     <td><?php if ($ligne->lig_typeligne=="honos") echo"honoraires";else echo $ligne->lig_typeligne; ?></td>
+                                                    <td><?php echo $ligne->lig_tva; ?></td>
+                                                    <td><?php echo $ligne->lig_montant; ?></td>
                                                 </tr>   
                                             <?php } ?>
                                         </table>
                                     </div>
+                                    
+                                    <!-- Panel des Repartitions -->
+                                    
+                                    
+                                              <div class="panel panel-default">
+                                        <div class="panel-heading"> Details des Repartitions</div>
+                                        <table class="table">
+                                            <tr>
+                                               
+                                                <th scope="col">Pourcentage</th>
+                                                <th scope="col">Libell√©</th>
+                                                 <th scope="col">B√©n√©ficiaires</th>
+             
+                                            </tr>
+
+                                            <?php //On parcours des Repatitions pour les afficher
+											$lignes_rep=get_all_repartitions($fac->fac_id);
+                							foreach($lignes_rep as $ligne) 
+												  { ?>
+                                                <tr>
+                                                 <td>  
+                                                   <div class="progress">
+                   					 <div class="progress-bar progress-bar-primary " role="progressbar" aria-valuenow="<?php echo $ligne->rep_pourcentage; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ligne->rep_pourcentage; ?>%; min-width: 2em;">
+                      				  <span><?php echo $ligne->rep_pourcentage; ?>%</span>
+                   				 </div>
+               							 </div>
+               							 	 	 </td>
+                                                  <td><?php echo $ligne->rep_type; ?></td>
+                                                    <td><?php 
+                                                    $list_benef=get_beneficiare_repartition($ligne->rep_rf_uti);
+                                                   echo $list_benef; ?></td>                            
+                                                </tr>   
+                                            <?php } ?>
+                                        </table>
+                                    </div>      
+                             
                                 </div>
                             </div>
                         </div><!-- /.modal-content -->
