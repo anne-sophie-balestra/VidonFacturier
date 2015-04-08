@@ -916,7 +916,7 @@ function genererModalModelLigne($modele_id) {
     $result_t_dos_type->execute();
 
     // On recupere les nom des clients
-    $stmt_entite = "SELECT ent_id, ent_raisoc FROM entite ORDER BY ent_raisoc";
+    $stmt_entite = "SELECT ent_id, ent_raisoc, ent_nature FROM entite WHERE ent_nature LIKE '%client%' OR ent_nature LIKE '%Client%'ORDER BY ent_raisoc";
     $result_entite = $pdo->prepare ( $stmt_entite );
     $result_entite->execute();
 
