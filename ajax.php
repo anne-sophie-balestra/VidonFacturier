@@ -799,7 +799,7 @@ function genererModalModelLigne($modele_id) {
                                             <select name="client" id="client" required class="form-control">
                                                 <?php //On affiche tous les clients
                                                 foreach($result_entite->fetchAll(PDO::FETCH_OBJ) as $cli) { ?>
-                                                    <option value="<?php echo $cli->ent_raisoc; ?>" <?php if($modele->t_fac_rf_ent == $cli->ent_id) echo "selected"; ?>><?php echo $cli->ent_id; ?></option>
+                                                    <option value="<?php echo $cli->ent_id; ?>" <?php if($modele->t_fac_rf_ent == $cli->ent_id) echo "selected"; ?>><?php echo $cli->ent_raisoc; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </div>
@@ -858,11 +858,7 @@ function genererModalModelLigne($modele_id) {
                                         </div>
                                     </div>
 
-                                    <!-- LIGNES DE PRESTATIONS #######################################
-                                    #################################################################
-                                    #################################################################
-                                    #################################################################
-                                    -->
+                                    <!-- LIGNES DE PRESTATIONS -->
 
                                     <div role="tabpanel" class="tab-pane" id="lignes">
                                         <!--div qui contiendra le pseudo formulaire d'ajout d'une ligne de prestation -->

@@ -13,7 +13,7 @@
  ********************************************/
 $pdo = new SPDO();
 
-$stmt = "SELECT t_fac_id, t_fac_modelname, t_fac_type, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope, t_fac_objet FROM type_facture";
+$stmt = "SELECT t_fac_id, t_fac_modelname, t_fac_type, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope, t_fac_objet, ent_raisoc FROM type_facture f, entite e WHERE f.t_fac_rf_ent=e.ent_id ";
 $result_model = $pdo->prepare($stmt);
 $result_model->execute();
 
@@ -26,21 +26,21 @@ $result_model->execute();
         <thead>
         <tr>
             <th scope="col">Nom</th>
-            <th scope="col">Type</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
             <th scope="col">Objet</th>
+            <th scope="col">Type</th>
             <th scope="col"></th>
             <th scope="col"></th>
         </tr>
         <tr>
             <th scope="col">Nom</th>
-            <th scope="col">Type</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
             <th scope="col">Objet</th>
+            <th scope="col">Type</th>
             <th scope="col">Afficher</th>
             <th scope="col">Modifier</th>
         </tr>
@@ -50,10 +50,11 @@ $result_model->execute();
         foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $models) { ?>
             <tr>
                 <td><?php echo $models->t_fac_modelname; ?></td>
-                <td><?php echo $models->t_fac_type; ?></td>
-                <td><?php echo $models->t_fac_rf_ent; ?></td>
+                <td><?php echo $models->ent_raisoc; ?></td>
                 <td><?php echo $models->t_fac_rf_typdos; ?></td>
                 <td><?php echo $models->t_fac_rf_ope; ?></td>
+                <td><?php echo $models->t_fac_objet; ?></td>
+                <td><?php echo $models->t_fac_type; ?></td>
 
 
 
@@ -69,7 +70,6 @@ $result_model->execute();
 
                     */?>
                 </td>-->
-                <td><?php echo $models->t_fac_objet; ?></td>
 
                 <td align="center">
                     <button class="btn btn-primary btn-sm" data-target="#modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>" data-toggle="modal">
@@ -130,11 +130,11 @@ $result_model->execute();
         <tfoot>
         <tr>
             <th scope="col">Nom</th>
-            <th scope="col">Type</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
             <th scope="col">Objet</th>
+            <th scope="col">Type</th>
             <th></th>
             <th></th>
 
