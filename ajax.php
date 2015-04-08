@@ -58,12 +58,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfos = (filter_input(INPUT_GET, 'nbInfos') != NULL ? filter_input(INPUT_GET, 'nbInfos') : 0);
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot);
-            break;     
-        
-        //Genere une ligne de tableau dans contenant la prestation dans createModel.php
-        case('genererInfosRemote'):
-            genererListePaysRemote(filter_input(INPUT_GET, 'q'));
-            break;           
+            break;       
 
         //Genere les infos du dossier associé a la facture dans createFacture
         case('genererInfosDossier'):
@@ -71,10 +66,28 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             genererInfosDossier($dossier);
             break;              
 
+        //Genere l'objet de la facture en fonction du dossier dans createFacture
+        case('genererObjetFacture'):
+            $dossier = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
+            genererObjetFacture($dossier);
+            break;              
+
         //Genere le modal pour ajouter ou modifier une ligne de facture dans create facture
         case('genererModalLigneFacture'):
             $ligneFac = (filter_input(INPUT_GET, 'lf') != NULL ? filter_input(INPUT_GET, 'lf') : 0);
             genererModalLigneFacture($ligneFac);
+            break;            
+
+        //Genere le modal pour ajouter ou modifier une ligne de facture dans create facture
+        case('genererLibelleCode'):
+            $code = (filter_input(INPUT_GET, 'code') != NULL ? filter_input(INPUT_GET, 'code') : "");
+            genererLibelleCode($code);
+            break;            
+
+        //Genere le modal pour ajouter ou modifier un achat dans create facture
+        case('genererModalAchat'):
+            $achat = (filter_input(INPUT_GET, 'ac') != NULL ? filter_input(INPUT_GET, 'ac') : 0);
+            genererModalAchat($achat);
             break;            
 
         //Genere le modal pour ajouter un reglement dans create facture
@@ -107,31 +120,38 @@ function genererInfosDossier($p_dos) {
 <?php }
 
 /*****
- * genererListePaysRemote : genere les infos du select pour les types de dossier en fonction de l'entite (brevet ou juridique)
+ * genererObjetFacture : genere l'objet de la facture en fonction de celui du dossier
  *
- * @param String $p_term : chaine de recherche
+ * @param String $p_dos : id du dossier
  ***/
-function genererListePaysRemote($p_term) {    
+function genererObjetFacture($p_dos) {    
     $pdo = new SPDO;
     
-    /* On recupere les types de dossier en fonction de l'entite */
-    $stmt_pays = "SELECT pay_id, pay_nom FROM pays WHERE pay_nom LIKE :term ORDER BY pay_nom";
-    $result_pays = $pdo->prepare($stmt_pays);
-    $term = $p_term . "%";
-    $result_pays->bindParam(":term", $term);
-    $result_pays->execute();
+    /* On recupere les infos du dossier en fonction de son id */
+    $stmt = "SELECT dos_titre FROM dossier WHERE dos_id = :dos";
+    $result_dossier = $pdo->prepare($stmt);
+    $result_dossier->bindParam(":dos", $p_dos);
+    $result_dossier->execute();
+    $dossier = $result_dossier->fetch(PDO::FETCH_OBJ);
+    echo $dossier->dos_titre;
+}
+
+/*****
+ * genererLibelleCode : genere le libelle associé au code de nomenclature choisi
+ *
+ * @param String $p_code : code de nomenclature
+ ***/
+function genererLibelleCode($p_code) {    
+    //Connexion a la base
+    $pdo = new SPDO;
     
-    //On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
-       
-    if($result_pays->rowcount() != 0) {
-        foreach($result_pays->fetchAll(PDO::FETCH_OBJ) as $pays) {
-            $json[] = array("id"=>$pays->pay_id,"text"=>$pays->pay_nom);
-        }
-    } else {
-        $json[] = array("id"=>"0","text"=>"Aucun r&eacute;sultat trouv&eacute;..");
-    }
-    
-    echo json_encode($json);
+    //On recupere les codes de nomenclatures auxquels on voudra associer des lignes de facture
+    $stmt_nom = "SELECT nom_libelle FROM nomenclature WHERE nom_id = :code";
+    $result_nom = $pdo->prepare($stmt_nom);
+    $result_nom->bindParam(":code", $p_code);
+    $result_nom->execute();
+    $code = $result_nom->fetch(PDO::FETCH_OBJ);
+    echo $code->nom_libelle;
 }
 
 /*****
@@ -615,16 +635,29 @@ function genererModalLigneFacture($ligneFac) {
                     <div class="container-fluid">                               
                         <div class="form-group">
                             <label class="control-label" for="code">Code :</label>
-                            <select name="code" id="code" required class="form-control" onchange="checkLigneFacture('subAction');">
+                            <select name="code" id="code" required class="form-control" onchange="checkLigneFacture('subAction');genererLibelleCode('#libelleAchat',this.value);">
                                 <option value="" disabled selected>Choisissez un code...</option>
                                 <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $code) { ?>
-                                <option id='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
+                                <option value='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
                                 <?php } ?>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="libelle">Libellé :</label>
-                            <input name="libelle" type="text" required onkeyup="checkLigneFacture('subAction');" class="form-control" id="libelle" maxlength="255">
+                            <label class="control-label" for="libelleAchat">Libellé :</label>
+                            <input name="libelleAchat" type="text" required onkeyup="checkLigneFacture('subAction');" class="form-control" id="libelleAchat">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="type_ligne">Type : </label><br />
+                            <input type="radio" id="honos" name="type_ligne" value="H" required onchange="checkLigneFacture('subAction');"> Honoraires
+                            <input type="radio" id="frais" name="type_ligne" value="F" required onchange="checkLigneFacture('subAction');"> Frais
+                            <input type="radio" id="taxes" name="type_ligne" value="T" required onchange="checkLigneFacture('subAction');"> Taxes
+                        </div>                    
+                        <div class="form-group">
+                            <label class="control-label" for="tva">TVA :</label>
+                            <select name="tva" id="tva" required class="form-control" onchange="checkLigneFacture('subAction');">
+                                <option value="0" selected>0</option>
+                                <option value="20">20</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="tarif">Tarif :</label>
@@ -657,9 +690,127 @@ function genererModalLigneFacture($ligneFac) {
 <?php }
 
 /*****
+ * genererModalAchat : genere le modal pour ajouter ou modifier un achat dans createFacture
+ * 
+ * @param int $achat : contient le numero de l'achat si c'est une modification, 0 si c est un ajout
+ ***/
+function genererModalAchat($achat) {  
+    //Connexion a la base
+    $pdo = new SPDO();
+    
+    //On recupere les codes de nomenclatures auxquels on voudra associer des achats
+    $stmt_nom = "SELECT nom_id, nom_code FROM nomenclature ORDER BY nom_code";
+    $result_nom = $pdo->prepare($stmt_nom);
+    $result_nom->execute();
+    
+    //On recupere les utilisateurs
+    $stmt_cons = "SELECT uti_id, uti_nom, uti_prenom FROM utilisateur ORDER BY uti_initial";
+    $result_cons = $pdo->prepare($stmt_cons);
+    $result_cons->execute();
+    
+    //On recupere les entites de nature Fournisseur
+    $stmt_fournisseurs = "SELECT ent_id, ent_raisoc FROM entite WHERE ent_nature LIKE '%Fournisseur%' OR ent_nature LIKE '%fournisseur%' ORDER BY ent_raisoc";
+    $result_fournisseurs = $pdo->prepare($stmt_fournisseurs);
+    $result_fournisseurs->execute();
+    
+    //Definit l'action qui sera faite
+    $action = "Ajout";
+    $actionVerbe = "Ajouter";
+    if($achat != 0){
+        $action = "Modification";
+        $actionVerbe = "Modifier";
+    }
+    ?>  
+    <!--Ajout ou modification des achats par modal-->
+    <div class="modal fade" role="dialog" aria-labelledby="modalInfoAchat" aria-hidden="true" id="modalInfoAchat">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalInfoAchatLabel"><?php echo $action; ?> d'un achat</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">     
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label" for="code">Code :</label>
+                                <select name="code" id="code" required class="form-control" onchange="checkAchat('subAction');genererLibelleCode('#libelle', this.value)">
+                                    <option value="" disabled selected>Choisissez un code...</option>
+                                    <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $code) { ?>
+                                    <option value='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label" for="libelle">Libellé :</label>
+                                <input name="libelle" type="text" required onkeyup="checkAchat('subAction');" class="form-control" id="libelle" maxlength="255">
+                            </div>
+                        </div>
+                        <!--On choisit le consultant sur cet achat-->
+                        <div class="form-group">
+                            <label class="control-label" for="cpv">CPV :</label>
+                            <select name="cpv" id="cpv" required class="form-control" onchange="checkAchat('subAction');">
+                                <option value="" disabled selected>Choisissez un CPV...</option>
+                            <?php //On affiche tous les utilisateurs comme des options du select
+                            foreach($result_cons->fetchAll(PDO::FETCH_OBJ) as $cons) { ?>
+                                <option value="<?php echo $cons->uti_id; ?>"><?php echo $cons->uti_prenom . " " . $cons->uti_nom; ?></option>
+                            <?php } ?>
+                            </select>
+                        </div>
+                        <!--On choisit le fournisseur sur cet achat-->
+                        <div class="form-group">
+                            <label class="control-label" for="fournisseur">Fournisseur :</label>
+                            <select name="fournisseur" id="fournisseur" required class="form-control" onchange="checkAchat('subAction');">
+                                <option value="" disabled selected>Choisissez un fournisseur...</option>
+                            <?php //On affiche tous les fournisseurs comme des options du select
+                            foreach($result_fournisseurs->fetchAll(PDO::FETCH_OBJ) as $fournisseur) { ?>
+                                <option value="<?php echo $fournisseur->ent_id; ?>"><?php echo $fournisseur->ent_raisoc; ?></option>
+                            <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="tarif">Tarif :</label>
+                            <div class="input-group">
+                                <input name="tarif" id="tarif" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                <span class="input-group-addon">€</span>
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="Quantité">Quantité :</label>
+                            <input name="quantite" type="number" value="1" min='1' required onkeyup="checkAchat('subAction');" class="form-control" id="quantite">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="Total">Total :</label>
+                            <div class="input-group">
+                                <input name="Total" value="0" type="text" required disabled class="form-control" id="total">
+                                <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($achat != 0) { ?> onclick="modifierAchatForm('ligne<?php echo $achat; ?>', <?php echo $achat; ?>, true);" <?php } else { ?> onclick="ajouterAchatForm('listeAchats', true);"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+<?php }
+
+/*****
  * genererModalReglement : genere le modal pour ajouter un reglement dans createFacture
  ***/
 function genererModalReglement() {  
+    //Connexion a la base
+    $pdo = new SPDO();
+    
+    //On recupere les differentes devises possibles
+    $stmt_dev = "SELECT dev_iso FROM devise WHERE dev_iso <> '' ORDER BY dev_iso";
+    $result_dev = $pdo->prepare($stmt_dev);
+    $result_dev->execute();
     ?>  
     <!--Ajout des reglements par modal-->
     <div class="modal fade" role="dialog" aria-labelledby="modalInfoReglement" aria-hidden="true" id="modalInfoReglement">
@@ -667,7 +818,7 @@ function genererModalReglement() {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modalInfoReglementLabel">Ajout d'une ligne de facture</h4>
+                    <h4 class="modal-title" id="modalInfoReglementLabel">Ajout d'un réglement</h4>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">                            
@@ -679,7 +830,13 @@ function genererModalReglement() {
                             <label class="control-label" for="montant">Montant :</label>
                             <div class="input-group">
                                 <input name="montant" id="montant" type="text" onkeyup="checkReglement('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                <span class="input-group-addon">€</span>
+                                <span class="input-group-addon">
+                                    <select id="devise" class="form-inline">
+                                        <?php foreach($result_dev->fetchAll(PDO::FETCH_OBJ) as $devise) { ?>
+                                        <option <?php if($devise->dev_iso == 'EUR') { echo "selected"; } ?> value="<?php echo $devise->dev_iso; ?>"><?php echo $devise->dev_iso; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </span>
                             </div>
                             <div class="help-block with-errors"></div>
                         </div>
