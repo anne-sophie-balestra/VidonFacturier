@@ -63,8 +63,8 @@ $result_entite->execute();
         <!--Renseignement de la zone geographique-->
         <div class="form-group">
             <label class="control-label" for="area">Zone géographique </label>
-            <input type="radio" name="area" value="France" onchange="document.getElementById('TVA').disabled = false;" checked> France
-            <input type="radio" name="area" value="Etranger" onchange="document.getElementById('TVA').disabled = true;"> Etranger
+            <input type="radio" id="area" name="area" value="France" onchange="document.getElementById('TVA').disabled = false;" checked> France
+            <input type="radio" id="area" name="area" value="Etranger" onchange="document.getElementById('TVA').disabled = true;"> Etranger
         </div>
 
         <!--On demande a l'utilisateur le type de dossier et l'opération pour le modele de facture-->
@@ -89,7 +89,7 @@ $result_entite->execute();
         <div class="form-group">
             <!-- Operation -->
             <label class="control-label" for="t_operation">Type d'opération :</label>
-            <select name="type_operation" id="t_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
                 <option></option>
                 <?php
                 foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
@@ -122,13 +122,6 @@ $result_entite->execute();
         <div class="form-group">
             <label class="control-label" for="language">Langue de la facture :</label>
             <input name="language" type="text" value="fr" required class="form-control" id="language" maxlength="255" data-error="Veuillez entrer la langue de la facture">
-            <div class="help-block with-errors"></div>
-        </div>
-
-        <!--Renseignement du taux de TVA-->
-        <div class="form-group">
-            <label class="control-label" for="TVA">TVA :</label>
-            <input name="TVA" type="number" value="20" required class="form-control" id="TVA" maxlength="255" data-error="Veuillez entrer le taux de TVA">
             <div class="help-block with-errors"></div>
         </div>
 
@@ -178,9 +171,12 @@ $result_entite->execute();
                     <div class="modal-body">
                         <div class="form-group">
                             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-                            <select name="select_presta" id="select_presta" required class="form-control select2">
+                            <select name="select_presta" id="select_presta" required class="form-control select2" onChange="document.getElementById('lig_libelle').value = this.options[this.selectedIndex].innerHTML;">
                                 <option></option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <input name="lig_libelle" type="text" required class="form-control" id="lig_libelle" maxlength="255" data-error="Veuillez entrer le libelle de la ligne">
                         </div>
 
                         <div class="modal-footer">

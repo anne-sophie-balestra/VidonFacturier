@@ -64,3 +64,11 @@ function returnToIndex(){
     echo "<script>window.location.href='index.php';</script>";
     exit;
 }
+
+/*****
+ * returnToIndex : renvoie l'utilisateur sur la page d'accueil
+ ***/
+function returnToListModel(){
+    echo "<script>window.location.href='index.php?action=updateModel';</script>";
+    exit;
+}

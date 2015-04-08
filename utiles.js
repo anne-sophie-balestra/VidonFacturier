@@ -188,7 +188,7 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
             //on recupere la reference a l'element select que l'on veut peupler
             var $select = jQuery(p_id);
             $select.empty();    
-            //$select.select2('data', null);    
+            //$select.select2('data', null);
             $select.append('<option></option>');
             //$select.select2({placeholder:"Choisissez une prestation ..."});
             $.each(jsonData,function(key, value) 
@@ -301,6 +301,35 @@ function genererModalPrestation(p_id, p_presta) {
 }
 
 /*****
+ * genererModalModelLigne : genere le modal pour modifier une ligne (type_ligne) depuis la liste des Modeles.
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier (le modal).
+ * @param t_ligne : Contient l'id du modele a modifier.
+ ***/
+function genererModalModelLigne(p_id, t_ligne) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject();
+
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    }
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererModalModelLigne&lig=" + t_ligne;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            $('#modalInfoModel').modal('toggle');
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null);
+}
+
+/*****
  * ajouterPrestationForm : cree les input d'une ligne de prestation dans create prestation (grace au modal)
  *
  * @param p_id : Contient l'id de l'element a modifier.
@@ -381,6 +410,49 @@ function ajouterPrestationForm(p_id, p_modal){
         $('#tarif_mgr').val("");
         afficherTarifs($('#t_tarif').val());
     }
+}
+
+/*****
+ * ajouterLigneFormModel : creer les input pour ajouter une ligne dans update model
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_modal : true si on fait avec un modal
+ ***/
+function ajouterLigneFormModel(p_id, p_modal){
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (moins celles qui ont ete supprimées)
+    var nbInfos = parseInt(document.getElementById('nbInfos').value);
+    //on recupere le nombre de prestations qui ont été ajoutées jusqu'a maintenant (y compris celles supprimées)
+    var nbInfosTot = parseInt(document.getElementById('nbInfosTot').value);
+
+    // On recupere l'id de la prestation à ajouter.
+    var id_pres = document.getElementById('select_presta').value;
+
+    // On recup le libelle de la ligne
+    var lig_libelle = document.getElementById('lig_libelle').value;
+
+    // On récupère les éléments du tableau HTML
+    var element = document.getElementById(p_id).innerHTML;
+
+    //On augmente le nombre de prestations ajoutées
+    document.getElementById('nbInfos').value = parseInt(nbInfos+1);
+    document.getElementById('nbInfosTot').value = parseInt(nbInfosTot+1);
+
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    }
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot + "&lib=" + lig_libelle;
+
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = element + xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null);
 }
 
 /*****
@@ -600,6 +672,9 @@ function ajouterPrestationModel(p_id){
     // On recupere l'id de la prestation à ajouter.
     var id_pres = document.getElementById('select_presta').value;
 
+    // On recup le libelle de la ligne
+    var lig_libelle = document.getElementById('lig_libelle').value;
+
     // On récupère les éléments du tableau HTML
     var element = document.getElementById(p_id).innerHTML;
 
@@ -609,7 +684,7 @@ function ajouterPrestationModel(p_id){
         return;
     }
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot;
+    var url= "ajax.php?action=getPrestationTabFromID&presta=" + id_pres + "&nbInfos=" + nbInfos + "&nbInfosTot=" + nbInfosTot + "&lib=" + lig_libelle;
 
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
@@ -1199,4 +1274,16 @@ function checkReglement(p_id){
         document.getElementById(p_id).disabled = false;
     else
         document.getElementById(p_id).disabled = true;    
+}
+
+/*****
+ * supModelPrestaUpdateEx : supprime une ligne de prestation existante dans la page modif des modeles
+ *
+ * @param String p_lign_id : id de la ligne a sup.
+ * @param String num_lig : numero de la ligne dans le tableau
+ ***/
+function supModelPrestaUpdateEx(p_lign_id) {
+    //On cree la ligne dans la table
+    var ligne = "<input type='hidden' value='" + p_lign_id + "' name='" + p_lign_id + "' id='" + p_lign_id + "'/>";
+    document.getElementById('ligne'+p_lign_id).innerHTML = ligne;
 }

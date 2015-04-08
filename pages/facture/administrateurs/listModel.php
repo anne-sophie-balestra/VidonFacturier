@@ -13,10 +13,9 @@
  ********************************************/
 $pdo = new SPDO();
 
-$stmt = "SELECT t_fac_id, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope FROM type_facture";
+$stmt = "SELECT t_fac_id, t_fac_modelname, t_fac_type, t_fac_rf_ent, t_fac_rf_typdos, t_fac_rf_ope, t_fac_objet, ent_raisoc FROM type_facture f, entite e WHERE f.t_fac_rf_ent=e.ent_id ";
 $result_model = $pdo->prepare($stmt);
 $result_model->execute();
-
 
 ?>
 
@@ -26,34 +25,41 @@ $result_model->execute();
     <table class="table table-striped table-bordered table-condensed table-hover" id="list_models">
         <thead>
         <tr>
-            <th scope="col">Id</th>
+            <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
-            <th scope="col">Ligne(s) de prestation(s)</th>
-            <th scope="col">Modification</th>
+            <th scope="col">Objet</th>
+            <th scope="col">Type</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         <tr>
-            <th scope="col">Id</th>
+            <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
-            <th scope="col">Ligne(s) de prestation(s)</th>
-            <th scope="col"></th>
+            <th scope="col">Objet</th>
+            <th scope="col">Type</th>
+            <th scope="col">Afficher</th>
+            <th scope="col">Modifier</th>
         </tr>
         </thead>
         <tbody>
         <?php /* On parcours les chantiers pour les inserer dans le tableau */
         foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $models) { ?>
-
-
             <tr>
-                <td><?php echo $models->t_fac_id; ?></td>
-                <td><?php echo $models->t_fac_rf_ent; ?></td>
+                <td><?php echo $models->t_fac_modelname; ?></td>
+                <td><?php echo $models->ent_raisoc; ?></td>
                 <td><?php echo $models->t_fac_rf_typdos; ?></td>
                 <td><?php echo $models->t_fac_rf_ope; ?></td>
-                <td>
-                    <?php
+                <td><?php echo $models->t_fac_objet; ?></td>
+                <td><?php echo $models->t_fac_type; ?></td>
+
+
+
+                <!--<td>
+                    <?php /*
                     $query = "SELECT t_lig_id from type_ligne l, type_facture t WHERE t.t_fac_id = :id_fac"; // l.t_lig_rf_typ_fac = t.t_fac_id AND 
                     $result_presta = $pdo->prepare($query);
                     $result_presta->bindParam(':id_fac', $models->t_fac_id);
@@ -62,30 +68,85 @@ $result_model->execute();
                     foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta)
                         echo '<table class="table table-striped"><tr><td>'.$lig_presta->t_lig_id.'</td></tr></table>';
 
+                    */?>
+                </td>-->
+
+                <td align="center">
+                    <button class="btn btn-primary btn-sm" data-target="#modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>" data-toggle="modal">
+                        <i class="icon-plus fa fa-eye"></i> Afficher
+                    </button>
+                    <?php //requete pour recuperer les lignes de prestations en fonction de l'id du modèle
+                    $query = "SELECT t_lig_id, t_lig_libelle, t_lig_rf_typ_fac from type_ligne l, type_facture t WHERE l.t_lig_rf_typ_fac = t.t_fac_id AND t.t_fac_id = :id_fac";
+                    $result_presta = $pdo->prepare($query);
+                    $result_presta->bindParam(':id_fac', $models->t_fac_id);
+                    $result_presta->execute();
                     ?>
+                    <!--Affichage des lignes de prestation-->
+                    <div class="modal fade" role="dialog" aria-labelledby="modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>; ?>" aria-hidden="true" id="modalModelLignesPrestation_<?php echo $models->t_fac_id; ?>">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
+                                    <div class="container-fluid">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Lignes de prestation</div>
+                                            <table class="table">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">Libellé</th>
+                                                    <th scope="col">ref type facture</th>
+                                              <!--      <th scope="col">Type tarification</th>
+                                                    <th scope="col">Tarif standard</th>
+                                                    <th scope="col">Tarif junior</th>
+                                                    <th scope="col">Tarif senior</th>
+                                                    <th scope="col">Tarif manager</th> -->
+                                                </tr>
+
+                                                <?php //On parcours les lignes pour les afficher
+                                                foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta) { ?>
+                                                    <tr>
+                                                        <td><?php echo $lig_presta->t_lig_id; ?></td>
+                                                        <td><?php echo $lig_presta->t_lig_libelle; ?></td>
+                                                        <td><?php echo $lig_presta->t_lig_rf_typ_fac; ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
                 </td>
 
                 <td align=center>
-                    <button class="btn btn-primary btn-sm" onclick="genererModalModelUpdate('modalPrestation','<?php echo $models->t_fac_id; ?>');">
+                    <button class="btn btn-primary btn-sm" onclick="genererModalModelLigne('modalLigne','<?php echo $models->t_fac_id; ?>');">
                         <i class="icon-plus fa fa-edit"></i> Modifier
                     </button>
-                    <!--<a href="createModel.php?id=<?php echo $models->t_fac_id; ?>"><i class="icon-plus fa fa-pencil"></i></a>-->
                 </td>
             </tr>
         <?php } ?>
         </tbody>
         <tfoot>
         <tr>
-            <th scope="col">Id</th>
+            <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
             <th scope="col">Opération</th>
+            <th scope="col">Objet</th>
+            <th scope="col">Type</th>
+            <th></th>
+            <th></th>
+
         </tr>
         </tfoot>
     </table>
+    <div id="modalLigne"></div>
 </div>
 <script type="text/javascript" charset="utf-8">
-    $('#list_models').dataTable({
+
+    jQuery.noConflict();
+    jQuery('#list_models').dataTable({
         "language":{
             sProcessing:   "Traitement en cours...",
             sLengthMenu:   "Afficher _MENU_ &eacute;l&eacute;ments",
@@ -106,6 +167,12 @@ $result_model->execute();
     }).columnFilter({
         sPlaceHolder: "head:after",
         aoColumns: [
+            {
+                type: "text"
+            },
+            {
+                type: "text"
+            },
             {
                 type: "text"
             },
