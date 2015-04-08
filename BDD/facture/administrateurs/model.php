@@ -1,8 +1,8 @@
 <?php
-/********************************************
- * model.php                            *
+/*********************************************
+ * model.php                                 *
  * Gère les modifications dans la BD         *
- * pour les modeles                      *
+ * pour les modeles                          *
  *                                           *
  * Auteurs : Anne-Sophie Balestra            *
  *           Abdoul Wahab Haidara            *
@@ -195,8 +195,176 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         //exit();
 
             // On retourne a la page d'accueil
-            //returnToIndex();
-            //break;
+            returnToListModel();
+            break;
+
+        case('changeModele'):
+            /* Erreur a retourner si besoin */
+            $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
+
+
+            //var_dump($_POST);
+            //exit();
+
+            // On recupere les champs du formulaire du modal.
+            $fac_id = "";
+            if (filter_input(INPUT_POST, 't_fac_id') != NULL) {
+                $fac_id = filter_input(INPUT_POST, 't_fac_id');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $name = "";
+            if (filter_input(INPUT_POST, 'name') != NULL) {
+                $name = filter_input(INPUT_POST, 'name');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $client = "";
+            if (filter_input(INPUT_POST, 'client') != NULL) {
+                $client = filter_input(INPUT_POST, 'client');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $ent_dossier = "";
+            if (filter_input(INPUT_POST, 'ent_dossier') != NULL) {
+                $ent_dossier = filter_input(INPUT_POST, 'ent_dossier');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type_dossier = "";
+            if (filter_input(INPUT_POST, 'type_dossier') != NULL) {
+                $type_dossier = filter_input(INPUT_POST, 'type_dossier');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type_operation = "";
+            if (filter_input(INPUT_POST, 'type_operation') != NULL) {
+                $type_operation = filter_input(INPUT_POST, 'type_operation');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $type = "";
+            if (filter_input(INPUT_POST, 'type') != NULL) {
+                $type = filter_input(INPUT_POST, 'type');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $objet = "";
+            if (filter_input(INPUT_POST, 'objet') != NULL) {
+                $objet = filter_input(INPUT_POST, 'objet');
+            } else {
+                returnToCreateModel($error);
+            }
+
+            $nbInfosTot = 0;
+            if (filter_input(INPUT_POST, 'nbInfosTot') != NULL) {
+                $nbInfosTot = filter_input(INPUT_POST, 'nbInfosTot');
+            } else {
+                returnToCreatePrestation($error);
+            }
+
+            // Champs non renseignes par le user.
+            $creadate = date(date("Y-m-d H:i:s"));
+            $moddate = date(date("Y-m-d H:i:s"));
+            $creauser = "GLS";
+            $moduser = "GLS";
+            $presta_id = array();
+            $presta_lib = array();
+
+            // On recupere dans une boucle les infos concernant les lignes de presta. du modele.
+            for($i=0; $i<$nbInfosTot;$i++) {
+                //On verifie que la ligne n'a pas ete supprimée en dynamique
+                if(filter_input(INPUT_POST, 'supp' . $i) == NULL) {
+
+                    $presta_id[$i] = "";
+                    if (filter_input(INPUT_POST, 'presta_id_' . $i) != NULL) {
+                        $presta_id[$i] = filter_input(INPUT_POST, 'presta_id_' . $i);
+                    } else {
+                        returnToCreateModel($error);
+                    }
+
+                    $presta_lib[$i] = "";
+                    if (filter_input(INPUT_POST, 'presta_lib_' . $i) != NULL) {
+                        $presta_lib[$i] = filter_input(INPUT_POST, 'presta_lib_' . $i);
+                    } else {
+                        returnToCreateModel($error);
+                    }
+                }
+            }
+
+            // requete de mise à jour du modele (type_facture)
+            $req_update ="UPDATE type_facture SET t_fac_modelname = :modelname, t_fac_objet = :objet, t_fac_rf_ent = :rf_ent WHERE t_fac_id = :fac_id";
+
+            $stmt_update = $pdo->prepare($req_update);
+            $stmt_update->bindParam(':modelname', $name);
+            $stmt_update->bindParam(':objet', $objet);
+            $stmt_update->bindParam(':rf_ent', $client);
+            $stmt_update->bindParam(':fac_id', $fac_id);
+
+            $stmt_update->execute();
+
+            // On gere la suppression des lignes existantes, On recupere les lignes existantes pour ce modele
+            $req_lig_existantes = "SELECT t_lig_id FROM type_ligne WHERE t_lig_rf_typ_fac = :fac_id";
+            $exist_lig = $pdo->prepare($req_lig_existantes);
+            $exist_lig->bindParam(':fac_id', $fac_id);
+            $exist_lig->execute();
+
+            // On prepare la req de suppression d'une ligne existante
+            $req_sup_lig = "DELETE FROM type_ligne WHERE t_lig_id = :lig_id";
+            $sup_lig = $pdo->prepare($req_sup_lig);
+
+            //Pour chaque ligne existante on test la presence d'un input de suppression
+            foreach($exist_lig->fetchAll(PDO::FETCH_OBJ) as $ligne) {
+
+                // Si l'input existe on bind l'id de la ligne puis on la supprime en executant.
+                $id = (string)$ligne->t_lig_id;
+
+                if (filter_input(INPUT_POST, $id) != NULL) {
+                    $sup_lig->bindParam(':lig_id', $ligne->t_lig_id);
+                    $sup_lig->execute();
+                }
+            }
+
+            // Puis on traite de l'ajout des nouvelles lignes associées à ce modèle.
+
+            // Creation des requetes d'insertions et ajout dans la base des lignes
+            $insert_string = "INSERT INTO type_ligne "
+                . "(t_lig_id, t_lig_rf_pres, t_lig_creadate, t_lig_moddate,"
+                . "t_lig_creauser, t_lig_moduser, t_lig_rf_typ_fac, t_lig_libelle)"
+                . "VALUES"
+                . "(:id, :rf_pres, :creadate, :moddate,"
+                . ":creauser, :moduser, :rf_typ_fac, :libelle)";
+
+            $stmt_insert = $pdo->prepare($insert_string);
+
+            for($i=0; $i<$nbInfosTot;$i++){
+
+                if(isset($presta_id[$i])) {
+                    $id_lig = generateId("TLI", "re", "type_ligne");
+
+                    // On lie les parametres recuperés via le formulaire pour les associer a la requete
+                    $stmt_insert->bindParam(':id', $id_lig);
+                    $stmt_insert->bindParam(':rf_pres', $presta_id[$i]);
+                    $stmt_insert->bindParam(':creadate', $creadate);
+                    $stmt_insert->bindParam(':moddate', $moddate);
+                    $stmt_insert->bindParam(':creauser', $creauser);
+                    $stmt_insert->bindParam(':moduser', $moduser);
+                    $stmt_insert->bindParam(':rf_typ_fac', $fac_id);
+                    $stmt_insert->bindParam(':libelle', $presta_lib[$i]);
+
+                    // On execute la requete
+                    $stmt_insert->execute();
+                }
+            }
+            returnToListModel();
+            break;
     }
 }
 
@@ -209,4 +377,4 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
 function returnToCreateModel($p_error){
     echo "<script>alert(\"" . $p_error . "\");window.location.href='index.php?action=createModel';</script>";
     exit;
-    }
+}

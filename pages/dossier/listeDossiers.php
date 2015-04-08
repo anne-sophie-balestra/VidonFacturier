@@ -13,7 +13,7 @@
 ********************************************/
 
 $pdo = new SPDO();
-$stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_responsable, dos_titre, dos_refclient, dos_rf_int, dos_statut FROM dossier WHERE EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
+$stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_responsable, dos_titre, ent_raisoc, dos_rf_int, dos_statut FROM dossier, entite WHERE dos_rf_ent = ent_id AND EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
 $result_dossiers = $pdo->prepare($stmt);
 $result_dossiers->execute();
 ?>
@@ -47,12 +47,19 @@ $result_dossiers->execute();
         <tr>
             <td><?php echo $dossier->dos_type; ?></td>
             <td>
-            <a  href="createFacture.php?id=<?php echo$dossier->dos_id; ?>"> 
-            
-            <?php echo $dossier->dos_numcomplet; ?></a></td>
+                <ul class="dropdown">
+                    <a href="#menuDossier<?php echo $dossier->dos_id; ?>" class="dropdown-toggle" data-toggle="dropdown" title="Dossier_<?php echo $dossier->dos_id; ?>"><?php echo $dossier->dos_numcomplet; ?> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#dossier"> Voir le dossier</a></li>
+                        <li class="dropdown-header">Factures</li>
+                        <li><a href="index.php?action=createFacture&id=<?php echo $dossier->dos_id; ?>"><i class="icon-plus fa fa-plus"></i> Nouvelle facture manuelle...</a></li>
+                        <li><a href="index.php?action=createFactureMod&id=<?php echo $dossier->dos_id; ?>"><i class="icon-plus fa fa-plus"></i> Nouvelle facture automatique...</a></li>
+                    </ul>
+                </ul>
+            </td>
             <td><?php echo $dossier->dos_responsable; ?></td>
             <td><?php echo $dossier->dos_titre; ?></td>
-            <td><?php echo $dossier->dos_refclient; ?></td>
+            <td><?php echo $dossier->ent_raisoc; ?></td>
             <td><?php echo $dossier->dos_rf_int; ?></td>
             <td><?php echo $dossier->dos_statut; ?></td>
         </tr>

@@ -27,7 +27,7 @@
         <link href="librairies/select2-4.0.0-rc.2/dist/css/select2-bootstrap.min.css" rel="stylesheet" />
         <link href="librairies/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" rel="stylesheet" />
         <link href="librairies/select2-4.0.0-rc.2/dist/css/select2.css" rel="stylesheet" />
-        <!-- JQuery -->  
+        <!-- JQuery -->
         <script type="text/javascript" src="librairies/jQuery/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="librairies/jQuery/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
         <!-- Bootstrap -->  

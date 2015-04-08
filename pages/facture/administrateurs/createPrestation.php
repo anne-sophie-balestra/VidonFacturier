@@ -41,12 +41,6 @@ $result_pays_reg->execute();
     <form id="formNewPrestation" action="index.php?action=insertPrestation" method="post" role="form" data-toggle="validator"> 
         <h2>Nouvelle prestation</h2>        
         <div class="form-group">
-            <label class="control-label" for="remote">Remote :</label>
-            <select name="remote" id="remote" required class="form-control select2" onkeyup="alert(jQuery('#remote').select2('val'));genererInfosRemote('#remote', this.value);">
-                <option></option> 
-            </select>
-        </div>
-        <div class="form-group">
             <label class="control-label" for="operation">Opération :</label>
             <select name="operation" id="operation" required class="form-control select2">
                 <option></option> 
@@ -108,17 +102,25 @@ $result_pays_reg->execute();
         </div>
         <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
         <div class="form-group">
-            <label class="control-label" for="repartition">Répartition des consultants :</label>
+            <label class="control-label" for="repartition">Répartition des consultants (reste pour l'administrafif):</label>
             <div class="input-group">
                 <span class="input-group-addon">
-                    <select id="pourcentage_select" class="form-inline" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('repartition').value=this.value;">
+                    <select id="pourcentage_select" class="form-inline" onchange="checkRepartition(this.value);">
                         <?php for($i=0; $i<=100; $i+=5) { ?>
-                            <option <?php if($i == 50) { echo "selected"; } ?>><?php echo $i; ?></option>
+                            <option <?php if($i == 50) { echo "selected"; } ?> value="<?php echo $i; ?>"><?php echo $i; ?></option>
                         <?php } ?>
                     </select>
                 </span>
-                <input name="repartition" id="repartition" onchange="document.getElementById('pourcentage').innerHTML=this.value+'%';document.getElementById('pourcentage_select').value=this.value;" type="range" min="0" max="100" step="5" required class="form-control">
+                <input name="repartition" id="repartition" onchange="checkRepartition(this.value);" type="range" min="0" max="100" step="5" required class="form-control">
                 <span id="pourcentage" class="input-group-addon">50%</span>
+            </div>
+        </div>
+        <div class="progress">
+            <div class="progress-bar progress-bar-primary" id="pourcentage_cons_div" style="width: 50%;">
+                <span id="pourcentage_cons">50%</span>
+            </div>
+            <div class="progress-bar progress-bar-info" id="pourcentage_admin_div" style="width: 50%;">
+                <span id="pourcentage_admin">50%</span>
             </div>
         </div>
         
@@ -183,9 +185,6 @@ $result_pays_reg->execute();
         });
         jQuery("#pays").select2({
             placeholder: "Choisissez un pays..."
-        });
-        jQuery("#remote").select2({
-            placeholder: "Choisissez une option..."
         });
     });
     
