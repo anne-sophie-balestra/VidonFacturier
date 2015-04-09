@@ -1287,3 +1287,14 @@ function supModelPrestaUpdateEx(p_lign_id) {
     var ligne = "<input type='hidden' value='" + p_lign_id + "' name='" + p_lign_id + "' id='" + p_lign_id + "'/>";
     document.getElementById('ligne'+p_lign_id).innerHTML = ligne;
 }
+
+/******
+ * emptyTabPresta : Vide le tableau lorsque le user change de type d'operation afin d'eviter les incoherences entre type d'ope et presta.
+ *
+ * @param String id : id du tableau a vider
+ *****/
+function emptyTabPresta(id_tab) {
+    document.getElementById(id_tab).innerHTML  = "";
+    document.getElementById("nbInfos").value = 0;
+    document.getElementById("nbInfosTot").value = 0;
+}

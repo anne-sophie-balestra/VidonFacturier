@@ -74,6 +74,7 @@ CREATE TABLE type_facture
     t_fac_id VARCHAR (11) NOT NULL PRIMARY KEY,
     t_fac_rf_typdos VARCHAR (11),
     t_fac_rf_ent VARCHAR(11),
+    t_fac_modelname VARCHAR(255),
     t_fac_creadate TIMESTAMP WITH TIME ZONE,
     t_fac_moddate TIMESTAMP WITH TIME ZONE,
     t_fac_creauser VARCHAR(3),
