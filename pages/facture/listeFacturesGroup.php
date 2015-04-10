@@ -1,7 +1,7 @@
 <?php
 /********************************************
-* listeFacturesGroup.php                    *
-* Affiche toutes les factures group√©es     *
+* listeFacturesInd.php                      *
+* Affiche toutes les factures individuelles *
 *                                           *
 * Auteurs : Anne-Sophie Balestra            *
 *           Abdoul Wahab Haidara            *
@@ -9,22 +9,24 @@
 *           Baptiste Quere                  *
 *           Yoann Le Taillanter             *
 *                                           *
-* Date de creation : 02/04/2015             *
+* Date de creation : 31/03/2015             *
 ********************************************/
 
 //Connexion a la base de donnees
 $pdo = new SPDO();
 
-////On va chercher les factures depuis l'ann√©e derniere a aujourd'hui qui sont groupÈes cad les valeurs de client.cli_libellefact=2
+//On va chercher les factures depuis l'ann√©e derniere a aujourd'hui qui sont individuelles cad les valeurs de client.cli_libellefact=1
 $stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression, 
 fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture 
 		Join entite on facture.fac_rf_ent=entite.ent_id 
 		Join client on entite.ent_id=client.cli_rf_ent
-		WHERE client.cli_libellefact=2 AND EXTRACT(YEAR FROM fac_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM fac_creadate) = " . (date('Y') . " ORDER BY fac_group");
+		WHERE client.cli_libellefact=2 
+		AND EXTRACT(YEAR FROM fac_creadate) between " . (date('Y')-1) . " and  ". (date('Y'));
+		
 $result_fac = $pdo->prepare($stmt);
 $result_fac->execute();
 
-
+/*
 //On va chercher toutes les repartitions liÈs ‡ la facture
 function get_all_repartitions($id_fac)
 {
@@ -90,11 +92,15 @@ function get_beneficiare_repartition($id_util)
 	return $list_benefi;
 
 }
-
+*/
 ?>
 <!-- Contenu principal de la page -->
+<head>
+ <link rel="stylesheet" type="text/css" href="librairies//DataTables-1.10.5/media/css/jquery.dataTables.css">
+</head>
 <div class="container" style="width:100%;">    
     <h2>Factures Group&eacute;es</h2>
+    <!-- Ajout d'une partie du css  de datatable...pour ne pas impacter les autres fichiers ??en peu mais efficace -->
     <table class="table table-striped table-bordered table-condensed table-hover" id="lfacturesInd"
     style="
     
@@ -102,7 +108,7 @@ function get_beneficiare_repartition($id_util)
  * Table styles
  */
 table.dataTable {
-  width: 100%;
+  width: 80%;
   margin: 0 auto;
   clear: both;
   border-collapse: separate;
@@ -334,8 +340,7 @@ table.dataTable td {
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date √©cheance</th>
             <th scope="col">Impression/Export compta</th>
-            <th scope="col">Afficher</th>
-           
+            <th scope="col"></th>       
         </tr>
     </thead>
     <tbody>
@@ -350,7 +355,7 @@ table.dataTable td {
                 $ent = $entite->fetch(PDO::FETCH_OBJ);
                 echo $ent->ent_raisoc; ?>
             </td>
-             <td><?php echo $fac->fac_num; ?></td>
+             <td><?php echo $fac->fac_id; ?></td>
             <td><?php echo $fac->fac_objet; ?></td>
             <td><span class="badge"><?php echo $fac->fac_num; ?></span><br /><?php echo $fac->fac_type; ?></td>
               <td>
@@ -359,7 +364,7 @@ table.dataTable td {
 				{
               	case 0:echo "Prof &agrave; Valider";break;
               	case 1:echo "Prof Valid&eacute;e CPV";break;
-              	case 2:echo "Prof Envoy&eacute;e au Client";break;
+              	case 2:echo "Prof Envoy&eacute;e ‡ Client";break;
               	case 3:echo "Prof accept&eacute;e";break;
               	case 4:echo "Facture imprim&eacute;e";break;
               	case 5:echo "Facture export&eacute;e";break;
@@ -402,11 +407,8 @@ table.dataTable td {
                                                  <td><?php echo $fac->fac_honoraires; ?></td>
            										  <td><?php echo $fac->fac_retro; ?></td>
             									  <td><?php echo $fac->fac_taxes; ?></td>
-           										 <td><?php echo $fac->fac_montantht; ?></td>
-            
-           										 
-                                                </tr>   
-                                           
+           										 <td><?php echo $fac->fac_montantht; ?></td>       										 
+                                                </tr>                      
                                         </table>
                                     </div>
                                 
@@ -467,9 +469,7 @@ table.dataTable td {
                                                 <th scope="col">Libell√©</th>
                                             </tr>
 
-                                            <?php //On parcours des Repartitions pour les afficher
-											
-                                                    
+                                            <?php //On parcours des Repartitions pour les afficher                                                
                                                   $result_rep= $pdo->prepare("select rep_pourcentage,rep_rf_uti,rep_rf_fac,rep_type
                                                           from repartition where rep_rf_fac=:id_facture");
                                                      $result_rep->bindParam(":id_facture", $fac->fac_id);
@@ -550,7 +550,7 @@ table.dataTable td {
                             type: "text"
                         },
                         {
-                            type: "select"
+                            type: "text"
                         },
                         {
                             type: "select"
