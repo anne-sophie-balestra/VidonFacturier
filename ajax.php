@@ -27,6 +27,13 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             genererListeTypeDossier($entite);
             break;
 
+
+            case('genererListeNomModele'):
+            	$model = (filter_input(INPUT_GET, 'mod') != NULL ? filter_input(INPUT_GET, 'mod') : "");
+            	genererListeNomModele($model);
+            	break;
+            
+            
         // Genere la liste des prestations piour la page createModel.php suivant l'entite, le dossier et l'operation.
         case('genererListePresta'):
             $dos = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
@@ -190,6 +197,26 @@ function genererListeTypeDossier($p_entite) {
         $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
+}
+/*
+ * Fonction Abdoul
+ */
+
+function genererListeNomModele($t_dossier)
+{
+	$pdo = new SPDO;
+
+	/* On recupere les types de dossier en fonction de l'entite */
+	$stmt_model = "SELECT t_fac_id, t_fac_modelname FROM type_facture JOIN type_dossier ON type_facture.t_fac_rf_typdos=type_dossier.t_dos_id WHERE  t_dos_type= :t_dossier";
+	$result_model = $pdo->prepare($stmt_model);
+	$result_model->bindParam(":t_dossier", $t_dossier);
+	$result_model->execute();
+	//On cree un array avec l'id et le nom du type de dossier que l'on va retourner en JSON
+	$array_model = array();
+	foreach($result_model->fetchAll(PDO::FETCH_OBJ) as $model) {
+		$array_model[$model->t_fac_id] = $model->t_fac_modelname;
+	}
+	echo json_encode($array_model);
 }
 
 /*****
