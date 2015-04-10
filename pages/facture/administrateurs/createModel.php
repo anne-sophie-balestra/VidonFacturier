@@ -213,6 +213,9 @@ $result_entite->execute();
         jQuery("#type").select2({
             placeholder: "Choisissez un type de facture..."
         });
+        jQuery("#client").select2({
+            placeholder: "Choisissez un client..."
+        });
         /*jQuery("#remote").select2({
          placeholder: "Choisissez une option...",
          minimumInputLength: 2,

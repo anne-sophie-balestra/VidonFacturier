@@ -925,6 +925,12 @@ function genererModalModelLigne($modele_id) {
     $result_type_operation = $pdo->prepare ( $stmt_type_operation );
     $result_type_operation->execute();
 
+    // On recupere les lignes de presta possible depuis ce modele
+    $stmt_ligne_presta = "SELECT pres_libelle_ligne_fac FROM prestation p, type_facture t WHERE p.pres_rf_typ_dossier = t.t_fac_rf_typdos AND p.pres_rf_typ_operation = t.t_fac_rf_ope AND t_fac_id = :id";
+    $result_t_presta = $pdo->prepare($stmt_ligne_presta);
+    $result_t_presta->bindParam(":id", $modele->t_fac_id);
+    $result_t_presta->execute();
+    
     ?>
     <!--Ajout des lignes de prestations par modal-->
     <!--Creation du formulaire pour afficher les infos de la prestation et la modifier-->
@@ -952,14 +958,14 @@ function genererModalModelLigne($modele_id) {
                                         <div class="form-group">
                                             <label class="control-label" for="name">Nom du modèle :</label>
                                             <!-- Nom du modèle -->
-                                            <input name="name" type="text" value="<?php echo $modele->t_fac_modelname; ?>" required class="form-control" id="name" maxlength="255" data-error="Veuillez entrer le nom du modèle">
+                                            <input name="name" type="text" value="<?php echo $modele->t_fac_modelname; ?>"  class="form-control" id="name" maxlength="255" data-error="Veuillez entrer le nom du modèle">
                                             <div class="help-block with-errors"></div>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="control-label" for="name">Client :</label>
                                             <!-- Choix du client-->
-                                            <select name="client" id="client" required class="form-control">
+                                            <select name="client" id="client"  class="form-control">
                                                 <?php //On affiche tous les clients
                                                 foreach($result_entite->fetchAll(PDO::FETCH_OBJ) as $cli) { ?>
                                                     <option value="<?php echo $cli->ent_id; ?>" <?php if($modele->t_fac_rf_ent == $cli->ent_id) echo "selected"; ?>><?php echo $cli->ent_raisoc; ?></option>
@@ -971,7 +977,7 @@ function genererModalModelLigne($modele_id) {
                                         <div class="form-group">
                                             <label class="control-label" for="ent_dossier">Type de dossier :</label><br />
                                             <!--En changeant l'entite, nous allons charger le select type_dossier avec les types associés à l'entite choisie-->
-                                            <select name="ent_dossier" id="ent_dossier" required onchange="genererListeTypeDossier('#type_dossier', this.value, false);" class="form-control select2">
+                                            <select name="ent_dossier" id="ent_dossier"  disabled onchange="genererListeTypeDossier('#type_dossier', this.value, false);" class="form-control select2">
                                                 <option></option>
                                                 <?php // On affiche les entites disponibles
                                                 foreach($result_t_dos_ent->fetchAll(PDO::FETCH_OBJ) as $t_dos_ent) { ?>
@@ -981,7 +987,7 @@ function genererModalModelLigne($modele_id) {
                                         </div>
                                         <div class="form-group">
                                             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-                                            <select name="type_dossier" id="type_dossier" required class="form-control">
+                                            <select name="type_dossier" id="type_dossier" disabled class="form-control">
                                                 <?php // On affiche les entites disponibles
                                                 foreach($result_t_dos_type->fetchAll(PDO::FETCH_OBJ) as $t_dos_type) { ?>
                                                     <option value="<?php echo $t_dos_type->t_dos_id; ?>" <?php if($modele->t_fac_rf_typdos == $t_dos_type->t_dos_id) echo 'selected';  ?>><?php echo $t_dos_type->t_dos_type; ?></option>
@@ -992,7 +998,7 @@ function genererModalModelLigne($modele_id) {
                                         <div class="form-group">
                                             <!-- Operation -->
                                             <label class="control-label" for="t_operation">Type d'opération :</label>
-                                            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+                                            <select name="type_operation" id="type_operation" disabled onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
                                                 <option></option>
                                                 <?php
                                                 foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
@@ -1004,7 +1010,7 @@ function genererModalModelLigne($modele_id) {
                                         <!--Renseignement du type de la facture-->
                                         <div class="form-group">
                                             <label class="control-label" for="type">Type de la facture :</label>
-                                            <select name="type" id="type" required class="form-control">
+                                            <select name="type" id="type" class="form-control">
                                                 <option></option>
                                                 <option value="avoir" <?php if($modele->t_fac_type == "avoir") echo 'selected'; ?> >Avoir</option>
                                                 <option value="facture" <?php if($modele->t_fac_type == "facture") echo 'selected'; ?> >Facture</option>
@@ -1016,7 +1022,7 @@ function genererModalModelLigne($modele_id) {
                                         <div class="form-group">
                                             <label class="control-label" for="objet">Objet de la facture :</label>
                                             <!-- Objet de la facture -->
-                                            <input name="objet" type="text" value="<?php echo $modele->t_fac_objet; ?>" required class="form-control" id="objet" maxlength="255" data-error="Veuillez entrer l'objet de la facture">
+                                            <input name="objet" type="text" value="<?php echo $modele->t_fac_objet; ?>" class="form-control" id="objet" maxlength="255" data-error="Veuillez entrer l'objet de la facture">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
