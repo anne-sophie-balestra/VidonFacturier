@@ -100,7 +100,7 @@ $result_fac->execute();
            
             <td><?php echo substr($fac->fac_date, 0, 11); ?><br /><?php echo substr($fac->fac_echeance, 0, 11); ?></td>
             <td><?php echo substr($fac->fac_impression, 0, 11); ?><br /><?php echo substr($fac->fac_export, 0, 11); ?></td>
-         
+          
             <td align="center">
                 <a class="btn btn-primary btn-sm" 
                  href="index.php?action=details_facture&facid=<?php echo $fac->fac_id;?>&honos=<?php echo $fac->fac_honoraires;

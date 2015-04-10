@@ -56,6 +56,59 @@ function checkRepartition(p_value){
     document.getElementById('pourcentage_admin_div').style.width=(100-parseInt(p_value)+'%');
 }
 
+/*
+ * checkTypePrestation : Si le code commence par X, c est forcement une taxe, sinon on laisse choisir entre honos ou frais
+ *
+ * @param p_value : Contient le code
+ ***/
+function checkTypePrestation(p_value){
+    if(p_value.substr(0,1) == "X") {
+        document.getElementById('taxes').checked = true;
+        document.getElementById('taxes').disabled = false;
+        document.getElementById('honos').disabled = true;
+        document.getElementById('frais').disabled = true;
+    } else {
+        document.getElementById('taxes').checked = false;
+        document.getElementById('taxes').disabled = true;
+        document.getElementById('honos').disabled = false;
+        document.getElementById('frais').disabled = false;
+    }
+}
+
+/*
+ * changeDevise : Permet de changer la devise pour un achat et de mettre le taux de la devise automatiquement
+ *
+ * @param p_id : Contient l'id pour le taux de la devise
+ * @param p_value : Contient l'iso de la devise
+ * @param p_button : nom du bouton pour faire un check
+ ***/
+function changeDevise(p_id, p_value, p_button){    
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=changeDevise&dev=" + p_value;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            $(p_id).val(xmlHttp.responseText);
+            checkAchat(p_button);
+            var items = document.getElementsByClassName('devise');
+            var i, len;
+            for (i = 0, len = items.length; i < len; i++) {
+                items[i].innerHTML = p_value;
+            }
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
 /*****
  * genererInfosDossier : genere les infos du dossier choisi pour la création d'une facture
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
@@ -78,6 +131,70 @@ function genererInfosDossier(p_id, p_value) {
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+            //On reactive le bouton pour ajouter un achat puisque qu'on doit avoir un numero de dossier pour créer un achat
+            document.getElementById("modalAjoutAchat").disabled = false;
+            //On vide egalement les données des achats si on a changé de dossier (puisque les factures des fournisseurs associées ne seront plus les memes)
+            document.getElementById("listeAchats").innerHTML = "";
+            document.getElementById("nbAchatsTot").value = 0;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * genererFacturesAchat : genere les factures liées au dossier pour lié un achat
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_value : Contient l'id du dossier
+ * @param p_fac : Contient l'id de la facture si modif, null sinon
+ ***/
+function genererFacturesAchat(p_id, p_value, p_fac) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererFacturesAchat&dos=" + p_value + "&fac=" + p_fac;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).innerHTML = xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * genererDateFacture : genere la date de la facture en fonction de son id
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_value : Contient l'id de la facture
+ ***/
+function genererDateFacture(p_id, p_value) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererDateFacture&fac=" + p_value;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            $(p_id).val(xmlHttp.responseText);
+            checkAchat('subAction');
+            
         };
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
@@ -199,6 +316,21 @@ function genererListePresta(p_id, type_dossier, type_ope ) {
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
     xmlHttp.send(null); 
+}
+
+/*
+ * changerPanelAchat : change le panel a afficher en fonction de si l'achat est provisionnel ou reel
+ *
+ * @param String p_value : Contient le type d'achat (provisionnel ou reel)
+ ***/
+function changerPanelAchat(p_value){
+    if(p_value == "R") {
+        document.getElementById('panel_provisionnel').style.display = "none";
+        document.getElementById('panel_reel').style.display = "block";
+    } else {
+        document.getElementById('panel_provisionnel').style.display = "block";
+        document.getElementById('panel_reel').style.display = "none";
+    }
 }
 
 /*
@@ -774,7 +906,8 @@ function ajouterLigneFactureForm(p_id, p_modal){
     var nbLignesFacTot = parseInt(document.getElementById('nbLignesFacTot').value);
     
     //on recupere le code de la ligne de facture
-    var code = document.getElementById('code').value;
+    var code = document.getElementById('code');
+    var code_nom = code.options[code.selectedIndex].text;
     //on recupere le libelle de la ligne de facture
     var libelle = document.getElementById('libelle').value;
     //on recupere le type
@@ -812,21 +945,21 @@ function ajouterLigneFactureForm(p_id, p_modal){
     var element = document.getElementById(p_id).innerHTML;
     
     //On cree la ligne dans la table
-    var ligne = "<tr id='ligne" + document.getElementById('nbLignesFacTot').value + "'>" 
-                +"<td>" + code 
-                + "<input type='hidden' value='" + code + "' name='code" + document.getElementById('nbLignesFacTot').value + "' id='code" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+    var ligne = "<tr id='ligneLigne" + document.getElementById('nbLignesFacTot').value + "'>" 
+                +"<td>" + code_nom
+                + "<input type='hidden' value='" + code.value + "' name='codeLigne" + document.getElementById('nbLignesFacTot').value + "' id='codeLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>" + libelle 
-                + "<input type='hidden' value=\"" +  libelle + "\" name='libelle" + document.getElementById('nbLignesFacTot').value + "' id='libelle" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value=\"" +  libelle + "\" name='libelleLigne" + document.getElementById('nbLignesFacTot').value + "' id='libelleLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>" + type_lib
-                + "<input type='hidden' value='" + type + "' name='type" + document.getElementById('nbLignesFacTot').value + "' id='type" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value='" + type + "' name='typeLigne" + document.getElementById('nbLignesFacTot').value + "' id='typeLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>" + tva + "%"
-                + "<input type='hidden' value='" + tva + "' name='tva" + document.getElementById('nbLignesFacTot').value + "' id='tva" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value='" + tva + "' name='tvaLigne" + document.getElementById('nbLignesFacTot').value + "' id='tvaLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>" + tarif
-                + "<input type='hidden' value='" + tarif + "' name='tarif" + document.getElementById('nbLignesFacTot').value + "' id='tarif" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value='" + tarif + "' name='tarifLigne" + document.getElementById('nbLignesFacTot').value + "' id='tarifLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>" + quantite
-                + "<input type='hidden' value='" + quantite + "' name='quantite" + document.getElementById('nbLignesFacTot').value + "' id='quantite" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value='" + quantite + "' name='quantiteLigne" + document.getElementById('nbLignesFacTot').value + "' id='quantiteLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                +"<td>" + total
-                + "<input type='hidden' value='" + total + "' name='total" + document.getElementById('nbLignesFacTot').value + "' id='total" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value='" + total + "' name='totalLigne" + document.getElementById('nbLignesFacTot').value + "' id='totalLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                 +"<td>"
                 +"<a class='btn btn-primary btn-sm' onclick='";
     if(p_modal) {
@@ -865,7 +998,8 @@ function ajouterLigneFactureForm(p_id, p_modal){
  ***/
 function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){   
     //on recupere le code de la ligne de facture
-    var code = document.getElementById('code').value;
+    var code = document.getElementById('code');
+    var code_nom = code.options[code.selectedIndex].text;
     //on recupere le libelle de la ligne de facture
     var libelle = document.getElementById('libelle').value;
     //on recupere le type
@@ -897,20 +1031,20 @@ function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){
     var total =  document.getElementById('total').value;
     
     //On modifier la ligne dans la table
-    var ligne = "<td>" + code 
-                + "<input type='hidden' value='" + code + "' name='code" + p_ligneFac + "' id='code" + p_ligneFac + "'/></td>"
+    var ligne = "<td>" + code_nom
+                + "<input type='hidden' value='" + code.value + "' name='codeLigne" + p_ligneFac + "' id='codeLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + libelle
-                +"<input type='hidden' value=\"" + libelle + "\" name='libelle" + p_ligneFac + "' id='libelle" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value=\"" + libelle + "\" name='libelleLigne" + p_ligneFac + "' id='libelleLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + type_lib
-                +"<input type='hidden' value='" + type + "' name='type" + p_ligneFac + "' id='type" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value='" + type + "' name='typeLigne" + p_ligneFac + "' id='typeLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + tva
-                +"<input type='hidden' value='" + tva + "' name='tva" + p_ligneFac + "' id='tva" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value='" + tva + "' name='tvaLigne" + p_ligneFac + "' id='tvaLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + tarif
-                +"<input type='hidden' value='" + tarif + "' name='tarif" + p_ligneFac + "' id='tarif" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value='" + tarif + "' name='tarifLigne" + p_ligneFac + "' id='tarifLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + quantite
-                +"<input type='hidden' value='" + quantite + "' name='quantite" + p_ligneFac + "' id='quantite" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value='" + quantite + "' name='quantiteLigne" + p_ligneFac + "' id='quantiteLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + total
-                +"<input type='hidden' value='" + total + "' name='total" + p_ligneFac + "' id='total" + p_ligneFac + "'/></td>"
+                +"<input type='hidden' value='" + total + "' name='totalLigne" + p_ligneFac + "' id='totalLigne" + p_ligneFac + "'/></td>"
                 +"<td align='center'>"
                     +"<a class='btn btn-primary btn-sm' onclick='";
     if(p_modal) {
@@ -961,8 +1095,8 @@ function supprimerLigneFactureForm(p_num){
     document.getElementById('nbLignesFac').value = parseInt(nbLignesFac-1);  
     
     //On modifier la ligne dans la table en mode supprimé
-    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + p_num + "' id='supp" + p_num + "'/>";
-    document.getElementById('ligne'+p_num).innerHTML = ligne;
+    var ligne = "<input type='hidden' value='" + p_num + "' name='suppLigne" + p_num + "' id='suppLigne" + p_num + "'/>";
+    document.getElementById('ligneLigne'+p_num).innerHTML = ligne;
 }
 
 /*****
@@ -1051,9 +1185,10 @@ function genererLibelleCode(p_id, p_value) {
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *
  * @param p_id : Contient l'id de l'element a modifier.
- * @param p_ligneFac : Contient le numero de l'achat si on modifie une ligne (0 si c est un ajout)
+ * @param p_achat : Contient le numero de l'achat si on modifie une ligne (0 si c est un ajout)
+ * @param p_dossier : Contient le numero de dossier actuel
  ***/
-function genererModalAchat(p_id, p_achat) {
+function genererModalAchat(p_id, p_achat, p_dossier) {
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
     
@@ -1063,19 +1198,77 @@ function genererModalAchat(p_id, p_achat) {
         return;
     } 
     // Création de l'url envoyee à l'aiguilleur.
-    var url= "ajax.php?action=genererModalAchat&ac=" + p_achat;
+    var url= "ajax.php?action=genererModalAchat&ac=" + p_achat + "&dos=" + p_dossier;
     // Création de la fonction qui sera appelé au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             document.getElementById(p_id).innerHTML = xmlHttp.responseText;
             //Si nous souhaitons modifier une ligne de prestation, nous allons preremplir le modal
             if(p_achat != 0) {
-                $('#code').val($('#code'+p_achat).val());
-                $('#libelle').val($('#libelle'+p_achat).val());
-                $('#tarif').val($('#tarif'+p_achat).val());
-                $('#quantite').val($('#quantite'+p_achat).val());
-                $('#total').val($('#total'+p_achat).val());
+                $('#code').val($('#codeAchat'+p_achat).val());
+                $('#libelleAchat').val($('#libelleAchat'+p_achat).val());
+                $('#cpv').val($('#cpvAchat'+p_achat).val());
+                if($('#litigeAchat'+p_achat).val() == 'true') {
+                    $('#litige').prop('checked', true); 
+                }
+                if($('#complementAchat'+p_achat).val() == 'true') {
+                    $('#complement').prop('checked', true); 
+                }
+                $('#fournisseur').val($('#fournisseurAchat'+p_achat).val());
+                $('#devise').val($('#deviseAchat'+p_achat).val());
+                $('#taux').val($('#tauxAchat'+p_achat).val());
+                $('#R').prop('checked',$('#reelAchat'+p_achat).val());
+                $('#P').prop('checked',$('#provAchat'+p_achat).val());
+                //si c est un achat provisionnel
+                if($('#provAchat'+p_achat).val() == true) {
+                    document.getElementById('panel_provisionnel').style.display = 'block';
+                    $('#P').prop('checked', true); 
+                    $('#tarif_u_prov').val($('#tarif_uAchat'+p_achat).val());                    
+                    $('#quantite_prov').val($('#quantiteAchat'+p_achat).val());                    
+                    $('#montant_prov').val($('#montantAchat'+p_achat).val());                    
+                    $('#tarif_u_prov_marge').val($('#tarif_u_margeAchat'+p_achat).val());                    
+                    $('#montant_prov_marge').val($('#montant_margeAchat'+p_achat).val());                    
+                    $('#marge_prov').val($('#margeAchat'+p_achat).val());                    
+                    $('#dateEcheance_prov').val($('#dateEcheanceAchat'+p_achat).val());                    
+                    $('#tarif_u_revente_prov').val($('#tarifReventeAchat'+p_achat).val());                    
+                    $('#quantite_revente_prov').val($('#quantiteAchat'+p_achat).val());                    
+                    $('#montant_revente_prov').val($('#montantReventeAchat'+p_achat).val());                    
+                    $('#date_fac_rf_prov').val($('#datePrefacturationAchat'+p_achat).val());                    
+                } else {    
+                    document.getElementById('panel_reel').style.display = 'block';
+                    $('#R').prop('checked', true);
+                    $('#tarif_u_reel').val($('#tarif_uAchat'+p_achat).val());                    
+                    $('#quantite_reel').val($('#quantiteAchat'+p_achat).val());                    
+                    $('#montant_reel').val($('#montantAchat'+p_achat).val());                    
+                    $('#tarif_u_reel_marge').val($('#tarif_u_margeAchat'+p_achat).val());                    
+                    $('#montant_reel_marge').val($('#montant_margeAchat'+p_achat).val());                    
+                    $('#marge_reel').val($('#margeAchat'+p_achat).val());                    
+                    $('#num_ffo').val($('#num_ffoAchat'+p_achat).val());                    
+                    $('#dateFacture_reel').val($('#dateFactureAchat'+p_achat).val());                    
+                    $('#dateEcheance_reel').val($('#dateEcheanceAchat'+p_achat).val());                    
+                    $('#dateReglement_reel').val($('#dateReglementAchat'+p_achat).val());     
+                    if($('#bapAchat'+p_achat).val() == 'true') {
+                        $('#bap').prop('checked', true); 
+                    }                                  
+                    $('#bap_date').val($('#bap_dateAchat'+p_achat).val());                    
+                    $('#bap_cpv').val($('#bap_cpvAchat'+p_achat).val());                    
+                    $('#tarif_u_revente_reel').val($('#tarifReventeAchat'+p_achat).val());                    
+                    $('#quantite_revente_reel').val($('#quantiteAchat'+p_achat).val());                    
+                    $('#montant_revente_reel').val($('#montantReventeAchat'+p_achat).val());    
+                    if($('#visaAchat'+p_achat).val() == 'true') {
+                        $('#visa').prop('checked', true); 
+                        genererFacturesAchat('fac_rf_div', p_dossier, $('#fac_rfAchat'+p_achat).val());
+                    }                 
+                    $('#date_fac_rf_reel').val($('#datePrefacturationAchat'+p_achat).val());   
+                    
+                } 
             }
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                startDate: '-6m',
+                endDate: '+1y', 
+                autoclose: true
+            });
             $('#modalInfoAchat').modal('toggle');
         };
     };
@@ -1088,66 +1281,272 @@ function genererModalAchat(p_id, p_achat) {
  *
  * @param p_id : Contient l'id de l'element a modifier.
  * @param p_modal : true si on fait avec un modal (false si on fait dans la modification d'une facture)
+ * @param p_dossier : id du dossier associé
  ***/
-function ajouterAchatForm(p_id, p_modal){
+function ajouterAchatForm(p_id, p_modal, p_dossier){
     //on recupere le nombre d'achats qui ont été ajoutées jusqu'a maintenant (y compris ceux supprimées)
-    var nbAchatsTot = parseInt(document.getElementById('nbLignesFacTot').value);
+    var nbAchatsTot = parseInt(document.getElementById('nbAchatsTot').value);
     
-    //on recupere le code de l'achat
-    var code = document.getElementById('code').value;
-    //on recupere le libelle de l'achat
-    var libelle = document.getElementById('libelle').value;
-    //on recupere le tarif
-    var tarif =  document.getElementById('tarif').value;
-    //on recupere la quantite
-    var quantite =  document.getElementById('quantite').value;
-    //on recupere le montant total
-    var total =  document.getElementById('total').value;
+    //On recupere toutes les données
+    var code = document.getElementById('code');
+    var code_nom = code.options[code.selectedIndex].text;
+    var libelle = document.getElementById('libelleAchat').value;
+    var cpv = document.getElementById('cpv');
+    var cpv_nom = cpv.options[cpv.selectedIndex].text;
+    var litige = document.getElementById('litige').checked;
+    var complement = document.getElementById('complement').checked;
+    var fournisseur = document.getElementById('fournisseur');
+    var fournisseur_nom = fournisseur.options[fournisseur.selectedIndex].text;
+    var devise = document.getElementById('devise').value;
+    var taux =  document.getElementById('taux').value;
+    var reel = document.getElementById('R').checked;
+    var prov = document.getElementById('P').checked;
+    var reelOuProv = (reel ? "Réel" : "Provisionnel");
+        
+    var tarif_u, quantite, montant, tarif_u_marge, montant_marge, marge, dateEcheance, tarif_revente, datePrefacturation, montant_revente;
+    var numFFO, dateFacture, dateReglement, bap, bap_date, bap_cpv, visa, fac_rf;
     
-    //On augmente le nombre de prestations ajoutées
-    document.getElementById('nbLignesFac').value = parseInt(nbLignesFac+1); 
-    document.getElementById('nbLignesFacTot').value = parseInt(nbLignesFacTot+1); 
+    if(prov) {
+        tarif_u =  document.getElementById('tarif_u_prov').value;
+        quantite =  document.getElementById('quantite_prov').value;
+        montant = document.getElementById('montant_prov').value;
+        tarif_u_marge = document.getElementById('tarif_u_prov_marge').value;
+        montant_marge = document.getElementById('montant_prov_marge').value;
+        marge = document.getElementById('marge_prov').value;
+        dateEcheance = document.getElementById('dateEcheance_prov').value;
+        tarif_revente = document.getElementById('tarif_u_revente_prov').value;
+        montant_revente = document.getElementById('montant_revente_prov').value;
+        datePrefacturation = document.getElementById('date_fac_rf_prov').value;
+    } else {
+        tarif_u =  document.getElementById('tarif_u_reel').value;
+        quantite =  document.getElementById('quantite_reel').value;
+        montant = document.getElementById('montant_reel').value;
+        tarif_u_marge = document.getElementById('tarif_u_reel_marge').value;
+        montant_marge = document.getElementById('montant_reel_marge').value;
+        marge = document.getElementById('marge_reel').value;
+        numFFO =  document.getElementById('num_ffo').value;
+        bap = document.getElementById('bap').checked;
+        bap_date = document.getElementById('bap_date').value;
+        bap_cpv = document.getElementById('bap_cpv').value;
+        dateFacture = document.getElementById('dateFacture_reel').value;
+        dateEcheance = document.getElementById('dateEcheance_reel').value;
+        dateReglement = document.getElementById('dateReglement_reel').value;
+        tarif_revente = document.getElementById('tarif_u_revente_reel').value;
+        montant_revente = document.getElementById('montant_revente_reel').value;
+        visa = document.getElementById('visa').checked;
+        fac_rf = document.getElementById('fac_rf').value;
+        datePrefacturation = document.getElementById('date_fac_rf_reel').value;        
+    }
+    
+    
+    //On augmente le nombre d'achats
+    document.getElementById('nbAchatsTot').value = parseInt(nbAchatsTot+1); 
     
     //On recupere ce qu'il y avait deja dans la table pour ne pas l'ecraser
     var element = document.getElementById(p_id).innerHTML;
     
     //On cree la ligne dans la table
-    var ligne = "<tr id='ligne" + document.getElementById('nbLignesFacTot').value + "'>" 
-                +"<td>" + code 
-                + "<input type='hidden' value='" + code + "' name='code" + document.getElementById('nbLignesFacTot').value + "' id='code" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+    var ligne = "<tr id='ligneAchat" + document.getElementById('nbAchatsTot').value + "'>" 
+                +"<td>" + code_nom
+                + "<input type='hidden' value='" + code.value + "' name='codeAchat" + document.getElementById('nbAchatsTot').value + "' id='codeAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
                 +"<td>" + libelle 
-                + "<input type='hidden' value='" + libelle + "' name='libelle" + document.getElementById('nbLignesFacTot').value + "' id='libelle" + document.getElementById('nbLignesFacTot').value + "'/></td>"
-                +"<td>" + tarif
-                + "<input type='hidden' value='" + tarif + "' name='tarif" + document.getElementById('nbLignesFacTot').value + "' id='tarif" + document.getElementById('nbLignesFacTot').value + "'/></td>"
+                + "<input type='hidden' value=\"" +  libelle + "\" name='libelleAchat" + document.getElementById('nbAchatsTot').value + "' id='libelleAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + cpv_nom
+                + "<input type='hidden' value=\"" +  cpv.value + "\" name='cpvAchat" + document.getElementById('nbAchatsTot').value + "' id='cpvAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  litige + "\" name='litigeAchat" + document.getElementById('nbAchatsTot').value + "' id='litigeAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  complement + "\" name='complementAchat" + document.getElementById('nbAchatsTot').value + "' id='complementAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + fournisseur_nom
+                + "<input type='hidden' value=\"" +  fournisseur.value + "\" name='fournisseurAchat" + document.getElementById('nbAchatsTot').value + "' id='fournisseurAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  numFFO + "\" name='num_ffoAchat" + document.getElementById('nbAchatsTot').value + "' id='num_ffoAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + devise
+                + "<input type='hidden' value=\"" +  devise + "\" name='deviseAchat" + document.getElementById('nbAchatsTot').value + "' id='deviseAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  taux + "\" name='tauxAchat" + document.getElementById('nbAchatsTot').value + "' id='tauxAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + tarif_u
+                + "<input type='hidden' value=\"" +  tarif_u + "\" name='tarif_uAchat" + document.getElementById('nbAchatsTot').value + "' id='tarif_uAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  tarif_u_marge + "\" name='tarif_u_margeAchat" + document.getElementById('nbAchatsTot').value + "' id='tarif_u_margeAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
                 +"<td>" + quantite
-                + "<input type='hidden' value='" + quantite + "' name='quantite" + document.getElementById('nbLignesFacTot').value + "' id='quantite" + document.getElementById('nbLignesFacTot').value + "'/></td>"
-                +"<td>" + total
-                + "<input type='hidden' value='" + total + "' name='total" + document.getElementById('nbLignesFacTot').value + "' id='total" + document.getElementById('nbLignesFacTot').value + "'/></td>"
-                +"<td>"
-                +"<a class='btn btn-primary btn-sm' onclick='";
+                + "<input type='hidden' value=\"" +  quantite + "\" name='quantiteAchat" + document.getElementById('nbAchatsTot').value + "' id='quantiteAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  bap + "\" name='bapAchat" + document.getElementById('nbAchatsTot').value + "' id='bapAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  bap_date + "\" name='bap_dateAchat" + document.getElementById('nbAchatsTot').value + "' id='bap_dateAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  bap_cpv + "\" name='bap_cpvAchat" + document.getElementById('nbAchatsTot').value + "' id='bap_cpvAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + montant
+                + "<input type='hidden' value=\"" +  montant + "\" name='montantAchat" + document.getElementById('nbAchatsTot').value + "' id='montantAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  montant_marge + "\" name='montant_margeAchat" + document.getElementById('nbAchatsTot').value + "' id='montant_margeAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  dateFacture + "\" name='dateFactureAchat" + document.getElementById('nbAchatsTot').value + "' id='dateFactureAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  dateEcheance + "\" name='dateEcheanceAchat" + document.getElementById('nbAchatsTot').value + "' id='dateEcheanceAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  dateReglement + "\" name='dateReglementAchat" + document.getElementById('nbAchatsTot').value + "' id='dateReglementAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  datePrefacturation + "\" name='datePrefacturationAchat" + document.getElementById('nbAchatsTot').value + "' id='datePrefacturationAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  marge + "\" name='margeAchat" + document.getElementById('nbAchatsTot').value + "' id='margeAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + montant_revente
+                + "<input type='hidden' value=\"" +  tarif_revente + "\" name='tarifReventeAchat" + document.getElementById('nbAchatsTot').value + "' id='tarifReventeAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  visa + "\" name='visaAchat" + document.getElementById('nbAchatsTot').value + "' id='visaAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  fac_rf + "\" name='fac_rfAchat" + document.getElementById('nbAchatsTot').value + "' id='fac_rfAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  montant_revente + "\" name='montantReventeAchat" + document.getElementById('nbAchatsTot').value + "' id='montantReventeAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td>" + reelOuProv
+                + "<input type='hidden' value=\"" +  reel + "\" name='reelAchat" + document.getElementById('nbAchatsTot').value + "' id='reelAchat" + document.getElementById('nbAchatsTot').value + "'/>"
+                + "<input type='hidden' value=\"" +  prov + "\" name='provAchat" + document.getElementById('nbAchatsTot').value + "' id='provAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
+                +"<td><a class='btn btn-primary btn-sm' onclick='";
     if(p_modal) {
-        ligne += "genererModalLigneFacture(\"modalLigneFacture\"," + document.getElementById('nbLignesFacTot').value + ", " + p_modal + ")'>";
+        ligne += "genererModalAchat(\"modalAchat\"," + document.getElementById('nbAchatsTot').value + ", \"" + p_dossier + "\")'>";
     } else {
-        ligne += "modifierLigneFacture(" + document.getElementById('nbLignesFacTot').value + ")'>";
+        ligne += "modifierAchat(" + document.getElementById('nbAchatsTot').value + ")'>";
     }
     ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
                 +"<td>"
-                    +"<a class='btn btn-danger btn-sm' onclick='supprimerLigneFactureForm(" + document.getElementById('nbLignesFacTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
+                    +"<a class='btn btn-danger btn-sm' onclick='supprimerAchatForm(" + document.getElementById('nbAchatsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
     //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
     if(p_modal) {
-        document.getElementById('modalLigneFacture').innerHTML = "";
+        document.getElementById('modalAchat').innerHTML = "";
     } // sinon on vide les champs 
     else {
-        $('#code').val("");
-        $('#libelle').val("");
-        $('#tarif').val("");                    
-        $('#quantite').val(1);
-        $('#total').val("");
+        //vider les champs si pas en modal
     }
+   
+}
+
+/*****
+ * modifierAchatForm : modifie les inputs de l'achat dans create facture (grace au modal)
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_achat : Contient le numero de la ligne a modifier.
+ * @param p_modal : true si on modifie via un modal
+ * @param p_dossier : id du dossier associé
+ ***/
+function modifierAchatForm(p_id, p_achat, p_modal, p_dossier){      
+    //On recupere toutes les données
+    var code = document.getElementById('code');
+    var code_nom = code.options[code.selectedIndex].text;
+    var libelle = document.getElementById('libelleAchat').value;
+    var cpv = document.getElementById('cpv');
+    var cpv_nom = cpv.options[cpv.selectedIndex].text;
+    var litige = document.getElementById('litige').checked;
+    var complement = document.getElementById('complement').checked;
+    var fournisseur = document.getElementById('fournisseur');
+    var fournisseur_nom = fournisseur.options[fournisseur.selectedIndex].text;
+    var devise = document.getElementById('devise').value;
+    var taux =  document.getElementById('taux').value;
+    var reel = document.getElementById('R').checked;
+    var prov = document.getElementById('P').checked;
+    var reelOuProv = (reel ? "Réel" : "Provisionnel");
+        
+    var tarif_u, quantite, montant, tarif_u_marge, montant_marge, marge, dateEcheance, tarif_revente, datePrefacturation, montant_revente;
+    var numFFO, dateFacture, dateReglement, bap, bap_date, bap_cpv, visa, fac_rf;
+    
+    if(prov) {
+        tarif_u =  document.getElementById('tarif_u_prov').value;
+        quantite =  document.getElementById('quantite_prov').value;
+        montant = document.getElementById('montant_prov').value;
+        tarif_u_marge = document.getElementById('tarif_u_prov_marge').value;
+        montant_marge = document.getElementById('montant_prov_marge').value;
+        marge = document.getElementById('marge_prov').value;
+        dateEcheance = document.getElementById('dateEcheance_prov').value;
+        tarif_revente = document.getElementById('tarif_u_revente_prov').value;
+        montant_revente = document.getElementById('montant_revente_prov').value;
+        datePrefacturation = document.getElementById('date_fac_rf_prov').value;
+    } else {
+        tarif_u =  document.getElementById('tarif_u_reel').value;
+        quantite =  document.getElementById('quantite_reel').value;
+        montant = document.getElementById('montant_reel').value;
+        tarif_u_marge = document.getElementById('tarif_u_reel_marge').value;
+        montant_marge = document.getElementById('montant_reel_marge').value;
+        marge = document.getElementById('marge_reel').value;
+        numFFO =  document.getElementById('num_ffo').value;
+        bap = document.getElementById('bap').checked;
+        bap_date = document.getElementById('bap_date').value;
+        bap_cpv = document.getElementById('bap_cpv').value;
+        dateFacture = document.getElementById('dateFacture_reel').value;
+        dateEcheance = document.getElementById('dateEcheance_reel').value;
+        dateReglement = document.getElementById('dateReglement_reel').value;
+        tarif_revente = document.getElementById('tarif_u_revente_reel').value;
+        montant_revente = document.getElementById('montant_revente_reel').value;
+        visa = document.getElementById('visa').checked;
+        fac_rf = document.getElementById('fac_rf').value;
+        datePrefacturation = document.getElementById('date_fac_rf_reel').value;        
+    }
+    
+    //On cree la ligne dans la table
+    var ligne = "<tr id='ligneAchat" + p_achat + "'>" 
+                +"<td>" + code_nom
+                + "<input type='hidden' value='" + code.value + "' name='codeAchat" + p_achat + "' id='codeAchat" + p_achat + "'/></td>"
+                +"<td>" + libelle 
+                + "<input type='hidden' value=\"" +  libelle + "\" name='libelleAchat" + p_achat + "' id='libelleAchat" + p_achat + "'/></td>"
+                +"<td>" + cpv_nom
+                + "<input type='hidden' value=\"" +  cpv.value + "\" name='cpvAchat" + p_achat + "' id='cpvAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  litige + "\" name='litigeAchat" + p_achat + "' id='litigeAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  complement + "\" name='complementAchat" + p_achat + "' id='complementAchat" + p_achat + "'/></td>"
+                +"<td>" + fournisseur_nom
+                + "<input type='hidden' value=\"" +  fournisseur.value + "\" name='fournisseurAchat" + p_achat + "' id='fournisseurAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  numFFO + "\" name='num_ffoAchat" + p_achat + "' id='num_ffoAchat" + p_achat + "'/></td>"
+                +"<td>" + devise
+                + "<input type='hidden' value=\"" +  devise + "\" name='deviseAchat" + p_achat + "' id='deviseAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  taux + "\" name='tauxAchat" + p_achat + "' id='tauxAchat" + p_achat + "'/></td>"
+                +"<td>" + tarif_u
+                + "<input type='hidden' value=\"" +  tarif_u + "\" name='tarif_uAchat" + p_achat + "' id='tarif_uAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  tarif_u_marge + "\" name='tarif_u_margeAchat" + p_achat + "' id='tarif_u_margeAchat" + p_achat + "'/></td>"
+                +"<td>" + quantite
+                + "<input type='hidden' value=\"" +  quantite + "\" name='quantiteAchat" + p_achat + "' id='quantiteAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  bap + "\" name='bapAchat" + p_achat + "' id='bapAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  bap_date + "\" name='bap_dateAchat" + p_achat + "' id='bap_dateAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  bap_cpv + "\" name='bap_cpvAchat" + p_achat + "' id='bap_cpvAchat" + p_achat + "'/></td>"
+                +"<td>" + montant
+                + "<input type='hidden' value=\"" +  montant + "\" name='montantAchat" + p_achat + "' id='montantAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  montant_marge + "\" name='montant_margeAchat" + p_achat + "' id='montant_margeAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  dateFacture + "\" name='dateFactureAchat" + p_achat + "' id='dateFactureAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  dateEcheance + "\" name='dateEcheanceAchat" + p_achat + "' id='dateEcheanceAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  dateReglement + "\" name='dateReglementAchat" + p_achat + "' id='dateReglementAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  datePrefacturation + "\" name='datePrefacturationAchat" + p_achat + "' id='datePrefacturationAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  marge + "\" name='margeAchat" + p_achat + "' id='margeAchat" + p_achat + "'/></td>"
+                +"<td>" + montant_revente
+                + "<input type='hidden' value=\"" +  tarif_revente + "\" name='tarifReventeAchat" + p_achat + "' id='tarifReventeAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  visa + "\" name='visaAchat" + p_achat + "' id='visaAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  fac_rf + "\" name='fac_rfAchat" + p_achat + "' id='fac_rfAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  montant_revente + "\" name='montantReventeAchat" + p_achat + "' id='montantReventeAchat" + p_achat + "'/></td>"
+                +"<td>" + reelOuProv
+                + "<input type='hidden' value=\"" +  reel + "\" name='reelAchat" + p_achat + "' id='reelAchat" + p_achat + "'/>"
+                + "<input type='hidden' value=\"" +  prov + "\" name='provAchat" + p_achat + "' id='provAchat" + p_achat + "'/></td>"
+                +"<td align='center'>"
+                    +"<a class='btn btn-primary btn-sm' onclick='";
+    if(p_modal) {
+        ligne += "genererModalAchat(\"modalAchat\"," + p_achat + ", \"" + p_dossier + "\")'>";
+    } else {
+        ligne += "modifierAchat(\"" + p_achat + "\")'>";
+    }
+    ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
+                +"</td>"
+                +"<td align='center'>"
+                    +"<a class='btn btn-danger btn-sm'";
+    if(isANumber(p_achat)) {
+        ligne += " onclick='supprimerAchatForm(" + p_achat + ")'";
+    } else {
+        ligne += "disabled";
+    }
+    ligne += "><i class='icon- fa fa-remove'></i> Supprimer</a>";
+                +"</td>";
+        
+    document.getElementById(p_id).innerHTML = ligne;
+    //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
+    if(p_modal) {
+        document.getElementById('modalAchat').innerHTML = "";
+    } else {
+        document.getElementById('button_action').innerHTML = "<button type='button' class='btn btn-default' disabled name='subAction' id='subAction' onclick='ajouterAchatForm(\"listeAchats\", false, '" + p_dossier + "');'><i class='icon-plus fa fa-plus'></i> Ajouter un achat</button>";
+        document.getElementById('panel_action').innerHTML = "Ajout d'un achat";
+        //on remet ensuite les inputs a vide
+    }
+}
+
+/*****
+ * supprimerAchatForm : supprime l'achat choisi (cree grace au modal)
+ *
+ * @param p_num : Contient le numero de la ligne a supprimer
+ ***/
+function supprimerAchatForm(p_num){
+    //On modifier la ligne dans la table en mode supprimé
+    var ligne = "<input type='hidden' value='" + p_num + "' name='suppAchat" + p_num + "' id='suppAchat" + p_num + "'/>";
+    document.getElementById('ligneAchat'+p_num).innerHTML = ligne;
 }
 
 /*****
@@ -1156,7 +1555,179 @@ function ajouterAchatForm(p_id, p_modal){
  * @param p_id : Contient l'id du bouton de submit de la modal a bloquer ou non
  ***/
 function checkAchat(p_id){
-    alert("check");
+    //si tous les champs sont remplis correctement, alors le bouton de submit du modal sera activé
+    var buttonOk = true;
+    var totalAchatOk = true;
+    var totalVenteOk = true;
+    
+    var code = document.getElementById('code').value;
+    if(code == "") {
+        buttonOk = false;
+    }
+    //on recupere le libelle de la ligne de facture
+    var libelle = document.getElementById('libelleAchat').value;
+    if(libelle == "") {
+        buttonOk = false;
+    }
+    
+    var cpv = document.getElementById('cpv').value;
+    if(cpv == ""){        
+        buttonOk = false;
+    }
+    
+    var fournisseur = document.getElementById('fournisseur').value;
+    if(fournisseur == "") {
+        buttonOk = false;
+    }
+    
+    var taux =  document.getElementById('taux').value;
+    if((taux == "") || (!isANumber(taux))) {
+        buttonOk = false;
+        totalAchatOk = false;
+    }
+    
+    //On regarde si c est un achat provisionnel ou reel
+    var reel = document.getElementById('R').checked;
+    var prov = document.getElementById('P').checked;
+    if(!reel && !prov) {
+        buttonOk = false;
+    }
+    
+    //Pour un achat provisionnel
+    if(prov) {
+        var tarif_u =  document.getElementById('tarif_u_prov').value;
+        if((tarif_u == "") || (!isANumber(tarif_u))) {
+            buttonOk = false;
+            totalAchatOk = false;
+        }    
+        
+        var quantite =  document.getElementById('quantite_prov').value;
+        if((quantite == "") || (!isANumber(quantite))) {
+            buttonOk = false;
+            totalAchatOk = false;
+        }        
+        
+        var dateEcheance =  document.getElementById('dateEcheance_prov').value;
+        if(dateEcheance == "") {
+            buttonOk = false;
+        }   
+        
+        var tarif_revente =  document.getElementById('tarif_u_revente_prov').value;
+        if((tarif_revente == "") || (!isANumber(tarif_revente))) {
+            buttonOk = false;
+            totalVenteOk = false;
+        }    
+        
+        var datePrefacturation =  document.getElementById('date_fac_rf_prov').value;
+        if(datePrefacturation == "") {
+            buttonOk = false;
+        }              
+        
+        //on modifie les montants
+        if(totalAchatOk) {
+            document.getElementById('montant_prov').value = tarif_u*quantite;
+            document.getElementById('tarif_u_prov_marge').value = tarif_u*taux*1.25;
+            document.getElementById('montant_prov_marge').value = tarif_u*taux*1.25*quantite;
+            document.getElementById('quantite_revente_prov').value = quantite;
+        } else {
+            document.getElementById('montant_prov').value = 0;
+            document.getElementById('tarif_u_prov_marge').value = 0;
+            document.getElementById('montant_prov_marge').value = 0;
+            document.getElementById('quantite_revente_prov').value = 0;
+        }
+        
+        if(totalVenteOk) {
+            document.getElementById('montant_revente_prov').value = tarif_revente*quantite;
+        } else {
+            document.getElementById('montant_revente_prov').value = 0;
+        }
+        
+        document.getElementById('marge_prov').value = ((document.getElementById('montant_revente_prov').value-document.getElementById('montant_prov_marge').value)/document.getElementById('montant_revente_prov').value)*100;
+        if(!isANumber(document.getElementById('marge_prov').value)) {
+            document.getElementById('marge_prov').value = 0;
+        }
+    } // pour un achat reel 
+    else if(reel) {
+        var tarif_u =  document.getElementById('tarif_u_reel').value;
+        if((tarif_u == "") || (!isANumber(tarif_u))) {
+            buttonOk = false;
+            totalAchatOk = false;
+        }    
+        
+        var quantite =  document.getElementById('quantite_reel').value;
+        if((quantite == "") || (!isANumber(quantite))) {
+            buttonOk = false;
+            totalAchatOk = false;
+        }        
+        
+        var numFFO =  document.getElementById('num_ffo').value;
+        if(numFFO == "") {
+            buttonOk = false;
+        }  
+        
+        var dateFacture =  document.getElementById('dateFacture_reel').value;
+        if(dateFacture == "") {
+            buttonOk = false;
+        }   
+        
+        var dateEcheance =  document.getElementById('dateEcheance_reel').value;
+        if(dateEcheance == "") {
+            buttonOk = false;
+        }   
+        
+        var dateReglement =  document.getElementById('dateReglement_reel').value;
+        if(dateReglement == "") {
+            buttonOk = false;
+        }   
+        
+        var tarif_revente =  document.getElementById('tarif_u_revente_reel').value;
+        if((tarif_revente == "") || (!isANumber(tarif_revente))) {
+            buttonOk = false;
+            totalVenteOk = false;
+        }    
+        
+        var visa =  document.getElementById('visa').checked;
+        if(visa) {            
+            var fac_rf =  document.getElementById('fac_rf').value;
+            if(fac_rf == "") {
+                buttonOk = false;
+            }  
+        }    
+        
+        var datePrefacturation =  document.getElementById('date_fac_rf_reel').value;
+        if(datePrefacturation == "") {
+            buttonOk = false;
+        }              
+        
+        //on modifie les montants
+        if(totalAchatOk) {
+            document.getElementById('montant_reel').value = tarif_u*quantite;
+            document.getElementById('tarif_u_reel_marge').value = tarif_u*taux*1.25;
+            document.getElementById('montant_reel_marge').value = tarif_u*taux*1.25*quantite;
+            document.getElementById('quantite_revente_reel').value = quantite;
+        } else {
+            document.getElementById('montant_reel').value = 0;
+            document.getElementById('tarif_u_reel_marge').value = 0;
+            document.getElementById('montant_reel_marge').value = 0;
+            document.getElementById('quantite_revente_reel').value = 0;
+        }
+        
+        if(totalVenteOk) {
+            document.getElementById('montant_revente_reel').value = tarif_revente*quantite;
+        } else {
+            document.getElementById('montant_revente_reel').value = 0;
+        }
+        
+        document.getElementById('marge_reel').value = ((document.getElementById('montant_revente_reel').value-document.getElementById('montant_reel_marge').value)/document.getElementById('montant_revente_reel').value)*100;
+        if(!isANumber(document.getElementById('marge_prov').value)) {
+            document.getElementById('marge_prov').value = 0;
+        }
+    }
+    
+    if(buttonOk)
+        document.getElementById(p_id).disabled = false;
+    else
+        document.getElementById(p_id).disabled = true; 
 }
 
 /*****
@@ -1217,13 +1788,13 @@ function ajouterReglementForm(p_id, p_modal){
     var element = document.getElementById(p_id).innerHTML;
     
     //On cree la ligne dans la table
-    var ligne = "<tr id='ligne" + document.getElementById('nbReglementsTot').value + "'>" 
+    var ligne = "<tr id='ligneReg" + document.getElementById('nbReglementsTot').value + "'>" 
                 +"<td>" + date 
-                + "<input type='hidden' value='" + date + "' name='date" + document.getElementById('nbReglementsTot').value + "' id='date" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                + "<input type='hidden' value='" + date + "' name='dateReg" + document.getElementById('nbReglementsTot').value + "' id='dateReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>" + montant
-                + "<input type='hidden' value='" + montant + "' name='montant" + document.getElementById('nbReglementsTot').value + "' id='montant" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                + "<input type='hidden' value='" + montant + "' name='montantReg" + document.getElementById('nbReglementsTot').value + "' id='montantReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>" + devise
-                + "<input type='hidden' value='" + devise + "' name='devise" + document.getElementById('nbReglementsTot').value + "' id='devise" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                + "<input type='hidden' value='" + devise + "' name='deviseReg" + document.getElementById('nbReglementsTot').value + "' id='deviseReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerReglementForm(" + document.getElementById('nbReglementsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
@@ -1246,8 +1817,8 @@ function ajouterReglementForm(p_id, p_modal){
  ***/
 function supprimerReglementForm(p_num){
     //On modifier la ligne dans la table en mode supprimé
-    var ligne = "<input type='hidden' value='" + p_num + "' name='supp" + p_num + "' id='supp" + p_num + "'/>";
-    document.getElementById('ligne'+p_num).innerHTML = ligne;
+    var ligne = "<input type='hidden' value='" + p_num + "' name='suppReg" + p_num + "' id='suppReg" + p_num + "'/>";
+    document.getElementById('ligneReg'+p_num).innerHTML = ligne;
 }
 
 /*****

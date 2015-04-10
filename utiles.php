@@ -72,3 +72,11 @@ function returnToListModel(){
     echo "<script>window.location.href='index.php?action=updateModel';</script>";
     exit;
 }
+
+/*****
+ * returnToListIndiv : renvoie l'utilisateur sur la page de liste des factures.
+ ***/
+function returnToListIndiv(){
+    echo "<script>window.location.href='index.php?action=listeFacturesInd';</script>";
+    exit;
+}

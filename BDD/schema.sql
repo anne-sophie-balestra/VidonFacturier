@@ -52,6 +52,7 @@ CREATE TABLE prestation
     pres_id_general VARCHAR(11),
     pres_rf_nom VARCHAR(11),
     pres_prestation VARCHAR(255),
+    pres_type VARCHAR(5),
     pres_libelle_ligne_fac VARCHAR(255),
     pres_t_tarif VARCHAR(10),
     pres_tarif_std NUMERIC(10,2) DEFAULT 0,

@@ -21,7 +21,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
     /* En fonction de la page passee en action, on se dirige vers la page correspondante */
     switch (filter_input(INPUT_GET, 'action')) {
         /* Ajout d'une nouvelle prestation */
-        case('insertPrestation'):            
+        case('insertPrestation'):                        
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
             
@@ -48,16 +48,31 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 returnToCreatePrestation($error);
             }
             
-            $pays = "";
-            if (filter_input(INPUT_POST, 'pays') != NULL) {
-                $pays = filter_input(INPUT_POST, 'pays');
+            $type = "";
+            if (filter_input(INPUT_POST, 'type') != NULL) {
+                $type = filter_input(INPUT_POST, 'type');
             } else {
                 returnToCreatePrestation($error);
+            }
+            
+            //On fais un switch pour donner un libelle a la lettre du type choisi
+            $type_lib = "";
+            switch($type) {
+                case "H": $type_lib = "honos"; break;
+                case "F": $type_lib = "frais"; break;
+                case "T": $type_lib = "taxes"; break;
             }
             
             $prestation = "";
             if (filter_input(INPUT_POST, 'prestation') != NULL) {
                 $prestation = filter_input(INPUT_POST, 'prestation');
+            } else {
+                returnToCreatePrestation($error);
+            }
+            
+            $pays = "";
+            if (filter_input(INPUT_POST, 'pays') != NULL) {
+                $pays = filter_input(INPUT_POST, 'pays');
             } else {
                 returnToCreatePrestation($error);
             }
@@ -162,11 +177,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             /* Creation des requetes d'insertions et ajout dans la base */
             $insert_string = "INSERT INTO prestation " 
                     . "(pres_id, pres_creadate, pres_moddate, pres_creauser, pres_moduser, " 
-                    . "pres_rf_nom, pres_id_general, pres_prestation, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, " 
+                    . "pres_id_general, pres_rf_nom, pres_type, pres_prestation, pres_libelle_ligne_fac, pres_t_tarif, pres_tarif_std, " 
                     . "pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr, pres_repartition_cons, " 
                     . "pres_rf_pay, pres_rf_typ_dossier, pres_rf_typ_operation) VALUES "
                     . "(:id, :creadate, :moddate, :creauser, :moduser, " 
-                    . ":nom_code, :id_gen, :prestation, :libelle, :type_tarif, :tarif_std, " 
+                    . ":id_gen, :nom_code, :type, :prestation, :libelle, :type_tarif, :tarif_std, " 
                     . ":tarif_jr, :tarif_sr, :tarif_mgr, :repartition, " 
                     . ":pays, :type_dossier, :operation)";
             $stmt_insert = $pdo->prepare($insert_string);
@@ -177,8 +192,9 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_insert->bindParam(':moddate', $date);
             $stmt_insert->bindParam(':creauser', $user);
             $stmt_insert->bindParam(':moduser', $user);
-            $stmt_insert->bindParam(':nom_code', $nom_code);
             $stmt_insert->bindParam(':id_gen', $id_gen);
+            $stmt_insert->bindParam(':nom_code', $nom_code);
+            $stmt_insert->bindParam(':type', $type_lib);
             $stmt_insert->bindParam(':prestation', $prestation);
             $stmt_insert->bindParam(':libelle', $libelle);
             $stmt_insert->bindParam(':type_tarif', $type_tarif);
@@ -256,16 +272,31 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                 returnToListePrestations($error);
             }
             
-            $pays = "";
-            if (filter_input(INPUT_POST, 'pays') != NULL) {
-                $pays = filter_input(INPUT_POST, 'pays');
+            $type = "";
+            if (filter_input(INPUT_POST, 'type') != NULL) {
+                $type = filter_input(INPUT_POST, 'type');
             } else {
                 returnToListePrestations($error);
+            }
+            
+            //On fais un switch pour donner un libelle a la lettre du type choisi
+            $type_lib = "";
+            switch($type) {
+                case "H": $type_lib = "honos"; break;
+                case "F": $type_lib = "frais"; break;
+                case "T": $type_lib = "taxes"; break;
             }
             
             $prestation = "";
             if (filter_input(INPUT_POST, 'prestation') != NULL) {
                 $prestation = filter_input(INPUT_POST, 'prestation');
+            } else {
+                returnToListePrestations($error);
+            }
+            
+            $pays = "";
+            if (filter_input(INPUT_POST, 'pays') != NULL) {
+                $pays = filter_input(INPUT_POST, 'pays');
             } else {
                 returnToListePrestations($error);
             }
@@ -457,7 +488,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             /* On update la partie general de la prestation */
             $update_gen_string = "UPDATE prestation " 
                     . "SET pres_moddate = :moddate, pres_moduser = :moduser, " 
-                    . "pres_rf_nom = :nom_code, pres_prestation = :prestation, pres_repartition_cons = :repartition, " 
+                    . "pres_rf_nom = :nom_code, pres_type = :type, pres_prestation = :prestation, pres_repartition_cons = :repartition, " 
                     . "pres_rf_pay = :pays, pres_rf_typ_dossier = :type_dossier, pres_rf_typ_operation = :operation "
                     . "WHERE pres_id_general = :id_gen";
             
@@ -467,6 +498,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_update_gen->bindParam(':moddate', $date);
             $stmt_update_gen->bindParam(':moduser', $user);
             $stmt_update_gen->bindParam(':nom_code', $nom_code);
+            $stmt_update_gen->bindParam(':type', $type_lib);
             $stmt_update_gen->bindParam(':prestation', $prestation);
             $stmt_update_gen->bindParam(':repartition', $repartition);
             $stmt_update_gen->bindParam(':pays', $pays);

@@ -16,7 +16,7 @@
 $pdo = new SPDO();
 
 //On cree la requete pour recupéré les prestations de facon general
-$stmt_presta = "SELECT DISTINCT(pres_id_general), pres_prestation, pres_repartition_cons, pres_rf_nom, nom_code, pres_rf_pay, pay_nom, " 
+$stmt_presta = "SELECT DISTINCT(pres_id_general), pres_prestation, pres_repartition_cons, pres_rf_nom, nom_code, pres_type, pres_rf_pay, pay_nom, " 
         . "pres_rf_typ_operation, t_ope_libelle, pres_rf_typ_dossier, t_dos_entite, t_dos_type " 
         . "FROM prestation, nomenclature, pays, type_operation, type_dossier " 
         . "WHERE pres_rf_nom = nom_id "
@@ -70,6 +70,7 @@ $result_pays_reg->execute();
             <th scope="col">Opération</th>
             <th scope="col">Type dossier</th>
             <th scope="col">Code</th>
+            <th scope="col">Type</th>
             <th scope="col">Prestation</th>
             <th scope="col">Répartition consultants</th>
             <th scope="col">Pays</th>
@@ -78,6 +79,7 @@ $result_pays_reg->execute();
             <th scope="col">Opération</th>
             <th scope="col">Type dossier</th>
             <th scope="col">Code</th>
+            <th scope="col">Type</th>
             <th scope="col">Prestation</th>
             <th scope="col">Répartition consultants</th>
             <th scope="col">Pays</th>
@@ -92,6 +94,7 @@ $result_pays_reg->execute();
             <td><?php echo $presta->t_ope_libelle; ?></td>
             <td><?php echo $presta->t_dos_type; ?></td>
             <td><?php echo $presta->nom_code; ?></td>
+            <td><?php echo $presta->pres_type; ?></td>
             <td><?php echo $presta->pres_prestation; ?></td>
             <td>
                 <div class="progress">
@@ -122,7 +125,7 @@ $result_pays_reg->execute();
                                 <div class="container-fluid">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Lignes de prestation</div>
-                                        <table class="table">
+                                        <table class="table table-striped table-hover">
                                             <tr>
                                                 <th scope="col">Libellé</th>
                                                 <th scope="col">Type tarification</th>
@@ -164,6 +167,7 @@ $result_pays_reg->execute();
             <th scope="col">Opération</th>
             <th scope="col">Type dossier</th>
             <th scope="col">Code</th>
+            <th scope="col">Type</th>
             <th scope="col">Prestation</th>
             <th scope="col">Répartition consultants</th>
             <th scope="col">Pays</th>
@@ -176,7 +180,6 @@ $result_pays_reg->execute();
 </div>
 
 <script type="text/javascript" charset="utf-8">
-    
     jQuery.noConflict();
     jQuery('#lprestations').dataTable({
         "language":{
@@ -209,6 +212,10 @@ $result_pays_reg->execute();
                         },
                         {
                             type: "text"
+                        },
+                        {
+                            type: "select",
+                            values: ['honos', 'frais', 'taxes']
                         },
                         {
                             type: "text"

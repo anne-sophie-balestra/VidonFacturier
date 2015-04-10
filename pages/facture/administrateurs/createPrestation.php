@@ -70,13 +70,25 @@ $result_pays_reg->execute();
         <div class="form-group">
             <label class="control-label" for="nom_code">Code :</label>
             <!--On affiche les codes de nomenclature dans le select--> 
-            <select name="nom_code" id="nom_code" required class="form-control select2">
+            <select name="nom_code" id="nom_code" required class="form-control select2" onchange="checkTypePrestation($('#nom_code option:selected').text());">
                 <option></option>
             <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $nom) { ?>
                 <option value="<?php echo $nom->nom_id; ?>"><?php echo $nom->nom_code; ?></option>
             <?php } ?>
             </select>
         </div>
+        <div class="form-group">
+            <label class="control-label" for="type">Type : </label><br />
+            <input type="radio" id="honos" name="type" value="H" required> Honoraires
+            <input type="radio" id="frais" name="type" value="F" required> Frais
+            <input type="radio" id="taxes" name="type" value="T" required> Taxes
+        </div>  
+        <div class="form-group">
+            <label class="control-label" for="prestation">Prestation :</label>
+            <!--on prend le nom general de la prestation, i.e. nom du modele-->
+            <input name="prestation" type="text" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
+            <div class="help-block with-errors"></div>
+        </div>      
         <div class="form-group">
             <label class="control-label" for="pays">Pays :</label>
             <!--On affiche les pays en les groupant par regions-->
@@ -93,12 +105,6 @@ $result_pays_reg->execute();
                 </optgroup>
             <?php } ?>
             </select>
-        </div>
-        <div class="form-group">
-            <label class="control-label" for="prestation">Prestation :</label>
-            <!--on prend le nom general de la prestation, i.e. nom du modele-->
-            <input name="prestation" type="text" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
-            <div class="help-block with-errors"></div>
         </div>
         <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
         <div class="form-group">
@@ -142,7 +148,7 @@ $result_pays_reg->execute();
         <div class="panel panel-default">
             <div class="panel-heading">Liste des prestations</div>
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Libellé</th>
