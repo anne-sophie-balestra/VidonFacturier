@@ -273,6 +273,7 @@ function genererListeNomModele($t_dossier)
 		$array_model[$model->t_fac_id] = $model->t_fac_modelname;
 	}
 	echo json_encode($array_model);
+}
 
 /*****
  * changeDevise : permet de retourner le taux de change de la devise
