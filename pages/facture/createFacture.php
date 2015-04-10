@@ -52,7 +52,7 @@ $result_cons->execute();
                 </div>
             <?php } ?>
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -164,7 +164,7 @@ $result_cons->execute();
         <div class="panel panel-default" onmouseover="this.className='panel panel-primary';" onmouseout="this.className='panel panel-default';">
             <div class="panel-heading">Réglements</div><br />
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
@@ -191,7 +191,7 @@ $result_cons->execute();
         <div class="panel panel-default" onmouseover="this.className='panel panel-primary';" onmouseout="this.className='panel panel-default';">
             <div class="panel-heading">Lignes de facture</div><br />
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
@@ -228,18 +228,18 @@ $result_cons->execute();
         <div class="panel panel-default" onmouseover="this.className='panel panel-primary';" onmouseout="this.className='panel panel-default';">
             <div class="panel-heading">Achats</div><br />
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
                         <th scope="col">CPV</th>
                         <th scope="col">Fournisseur</th>
-                        <th scope="col">Tarif</th>
                         <th scope="col">Devise</th>
+                        <th scope="col">Tarif</th>
                         <th scope="col">Quantité</th>
-                        <th scope="col">Total HT</th>
-                        <th scope="col">Total TTC</th>
+                        <th scope="col">Total Achat</th>
+                        <th scope="col">Total Vente €</th>
                         <th scope="col">Réel ?</th>
                         <th scope="col">Modifier</th>
                         <th scope="col">Supprimer</th>
@@ -250,7 +250,7 @@ $result_cons->execute();
             <br />
             <!--Bouton pour appeler le modal d'ajout d'une ligne de facture-->
             <div class="form-group">
-                <button type="button" class="btn btn-default" onclick="genererModalAchat('modalAchat',0);"><i class='icon-plus fa fa-plus'></i> Ajouter un achat</button>
+                <button type="button" class="btn btn-default" id="modalAjoutAchat" <?php if(filter_input(INPUT_GET, 'id') == NULL) { ?> onclick="genererModalAchat('modalAchat',0,document.getElementById('dossier').value);" <?php } else { ?> onclick="genererModalAchat('modalAchat',0,'<?php echo filter_input(INPUT_GET, 'id'); ?>');" <?php } ?> disabled><i class='icon-plus fa fa-plus'></i> Ajouter un achat</button>
             </div>
             <!--input pour compter le nombre d'achats ajoutes en tout (meme si elles ont ete supprimees ensuite)-->
             <div class="form-group" hidden>

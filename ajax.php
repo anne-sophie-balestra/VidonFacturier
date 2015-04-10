@@ -52,6 +52,12 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             getListeClient($term);
             break;
 
+        //permet de retourner le taux de change de la devise
+        case('changeDevise'):
+            $devise = (filter_input(INPUT_GET, 'dev') != NULL ? filter_input(INPUT_GET, 'dev') : "");
+            changeDevise($devise);
+            break;
+
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('getPrestationTabFromID'):
             $presta = (filter_input(INPUT_GET, 'presta') != NULL ? filter_input(INPUT_GET, 'presta') : "");
@@ -59,12 +65,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $nbInfosTot = (filter_input(INPUT_GET, 'nbInfosTot') != NULL ? filter_input(INPUT_GET, 'nbInfosTot') : 0);
             $lib = (filter_input(INPUT_GET, 'lib') != NULL ? filter_input(INPUT_GET, 'lib') : "");
             getPrestationTabFromID($presta, $nbInfos, $nbInfosTot,$lib);
-            break;
-
-        //Genere une ligne de tableau dans contenant la prestation dans createModel.php
-        case('genererInfosRemote'):
-            genererListePaysRemote(filter_input(INPUT_GET, 'q'));
-            break;           
+            break;       
 
         //Genere les infos du dossier associé a la facture dans createFacture
         case('genererInfosDossier'):
@@ -88,9 +89,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('genererModalModelLigne'):
             $model_id = (filter_input(INPUT_GET, 'lig') != NULL ? filter_input(INPUT_GET, 'lig') : 0);
             genererModalModelLigne($model_id);
-            break;
-
-            break;            
+            break;    
 
         //Genere le modal pour ajouter ou modifier une ligne de facture dans create facture
         case('genererLibelleCode'):
@@ -101,8 +100,22 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         //Genere le modal pour ajouter ou modifier un achat dans create facture
         case('genererModalAchat'):
             $achat = (filter_input(INPUT_GET, 'ac') != NULL ? filter_input(INPUT_GET, 'ac') : 0);
-            genererModalAchat($achat);
-            break;            
+            $dossier = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
+            genererModalAchat($achat, $dossier);
+            break; 
+
+        //Genere le select avec les factures associées au dossier pour lier des achats
+        case('genererFacturesAchat'):
+            $dossier = (filter_input(INPUT_GET, 'dos') != NULL ? filter_input(INPUT_GET, 'dos') : "");
+            $facture = (filter_input(INPUT_GET, 'fac') != NULL ? filter_input(INPUT_GET, 'fac') : "");
+            genererFacturesAchat($dossier, $facture);
+            break;             
+
+        //Genere la date liée a la facture
+        case('genererDateFacture'):
+            $facture = (filter_input(INPUT_GET, 'fac') != NULL ? filter_input(INPUT_GET, 'fac') : "");
+            genererDateFacture($facture);
+            break;             
 
         //Genere le modal pour ajouter un reglement dans create facture
         case('genererModalReglement'):
@@ -134,6 +147,49 @@ function genererInfosDossier($p_dos) {
     <td><?php echo substr($dossier->dos_creadate, 0, 11); ?></td>
     <td><?php echo $dossier->dos_type; ?></td>
 <?php }
+
+/*****
+ * genererFacturesAchat : genere les factures liées a un dossier pour répercuter un achat
+ *
+ * @param String $p_dos : id du dossier
+ * @param String $p_fac : id de la facture si on modifie l'achat
+ ***/
+function genererFacturesAchat($p_dos, $p_fac) {    
+    $pdo = new SPDO;
+    
+    /* On recupere les factures en fonction du dossier */
+    $stmt = "SELECT fac_id, fac_num, fac_objet FROM facture WHERE fac_rf_dos = :dos";
+    $result_factures = $pdo->prepare($stmt);
+    $result_factures->bindParam(":dos", $p_dos);
+    $result_factures->execute();
+    ?>
+    
+    <label class="control-label" for="fac_rf">Référence facture :</label>
+    <select name="fac_rf" id="fac_rf" required class="form-control" onchange="checkAchat('subAction');genererDateFacture('#date_fac_rf_reel', this.value);">
+        <option value="" disabled <?php if($p_fac == 'false') { echo "selected"; } ?>>Choisissez une facture...</option>
+        <?php //On affiche toutes les factures associées au dossier
+        foreach($result_factures->fetchAll(PDO::FETCH_OBJ) as $fac) { ?>
+            <option value="<?php echo $fac->fac_id; ?>" <?php if($p_fac == $fac->fac_id) { echo "selected"; } ?>><?php echo $fac->fac_num . " (" . $fac->fac_objet . ")"; ?></option>
+        <?php } ?>
+    </select>
+<?php }
+
+/*****
+ * genererDateFacture : genere la date de la facture 
+ *
+ * @param String $p_fac : id de la facture
+ ***/
+function genererDateFacture($p_fac) {    
+    $pdo = new SPDO;
+    
+    /* On recupere la date de la facture en fonction de son id */
+    $stmt = "SELECT fac_date FROM facture WHERE fac_id = :fac";
+    $result_facture = $pdo->prepare($stmt);
+    $result_facture->bindParam(":fac", $p_fac);
+    $result_facture->execute();
+    $fac = $result_facture->fetch(PDO::FETCH_OBJ);
+    echo substr($fac->fac_date,0,10);
+}
 
 /*****
  * genererObjetFacture : genere l'objet de la facture en fonction de celui du dossier
@@ -190,6 +246,24 @@ function genererListeTypeDossier($p_entite) {
         $array_dos[$t_dos_type->t_dos_id] = $t_dos_type->t_dos_type;
     }
     echo json_encode($array_dos);
+}
+
+/*****
+ * changeDevise : permet de retourner le taux de change de la devise
+ *
+ * @param String $p_devise : devise choisie
+ ***/
+function changeDevise($p_devise) {    
+    $pdo = new SPDO;
+    
+    //On recupere les differentes devises possibles
+    $stmt_dev = "SELECT dev_iso, dev_cours FROM devise WHERE dev_iso = :devise";
+    $result_dev = $pdo->prepare($stmt_dev);
+    $result_dev->bindParam(":devise", $p_devise);
+    $result_dev->execute();
+    $devise = $result_dev->fetch(PDO::FETCH_OBJ);
+    
+    echo $devise->dev_cours;
 }
 
 /*****
@@ -310,7 +384,7 @@ function genererModalPrestation($prestation) {
     // Connexion a la base de donnees
     $pdo = new SPDO();
     //On cree la requete pour recupérer les infos générales de la prestation
-    $stmt_presta = "SELECT DISTINCT(pres_id_general), pres_prestation, pres_repartition_cons, pres_rf_nom, nom_code, pres_rf_pay, pay_nom, " 
+    $stmt_presta = "SELECT DISTINCT(pres_id_general), pres_prestation, pres_repartition_cons, pres_rf_nom, nom_code, pres_type, pres_rf_pay, pay_nom, " 
             . "pres_rf_typ_operation, t_ope_libelle, pres_rf_typ_dossier, t_dos_entite, t_dos_type " 
             . "FROM prestation, nomenclature, pays, type_operation, type_dossier " 
             . "WHERE pres_rf_nom = nom_id "
@@ -411,11 +485,23 @@ function genererModalPrestation($prestation) {
                                             <div class="form-group">
                                                 <label class="control-label" for="nom_code">Code :</label>
                                                 <!--On affiche les codes de nomenclature dans le select--> 
-                                                <select name="nom_code" id="nom_code" required class="form-control">
+                                                <select name="nom_code" id="nom_code" required class="form-control" onchange="checkTypePrestation($('#nom_code option:selected').text());">
                                                 <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $nom) { ?>
                                                     <option value="<?php echo $nom->nom_id; ?>" <?php if($presta->pres_rf_nom == $nom->nom_id) { echo "selected"; } ?>><?php echo $nom->nom_code; ?></option>
                                                 <?php } ?>
                                                 </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="type">Type : </label><br />
+                                                <input type="radio" id="honos" name="type" value="H" <?php if($presta->pres_type == "honos") { echo "checked"; } else { echo "disabled"; } ?> required> Honoraires
+                                                <input type="radio" id="frais" name="type" value="F" <?php if($presta->pres_type == "frais") { echo "checked"; } else if($presta->pres_type == "taxes") { echo "disabled"; } ?> required> Frais
+                                                <input type="radio" id="taxes" name="type" value="T" <?php if($presta->pres_type == "taxes") { echo "checked"; } else { echo "disabled"; } ?> required> Taxes
+                                            </div>  
+                                            <div class="form-group">
+                                                <label class="control-label" for="prestation">Prestation :</label>
+                                                <!--on prend le nom general de la prestation, i.e. nom du modele-->
+                                                <input name="prestation" type="text" value="<?php echo $presta->pres_prestation; ?>" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
+                                                <div class="help-block with-errors"></div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label" for="pays">Pays :</label>
@@ -432,12 +518,6 @@ function genererModalPrestation($prestation) {
                                                     </optgroup>
                                                 <?php } ?>
                                                 </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="control-label" for="prestation">Prestation :</label>
-                                                <!--on prend le nom general de la prestation, i.e. nom du modele-->
-                                                <input name="prestation" type="text" value="<?php echo $presta->pres_prestation; ?>" required class="form-control" id="prestation" maxlength="255" data-error="Veuillez entrer le nom de la prestation générale">
-                                                <div class="help-block with-errors"></div>
                                             </div>
                                             <!--On gere ici la repartition des consultants soit par un select, soit avec un slider (les deux sont liés)-->
                                             <div class="form-group">
@@ -521,7 +601,7 @@ function genererModalPrestation($prestation) {
                                             <div class="panel panel-default">
                                                 <div class="panel-heading">Liste des prestations</div>
                                                 <!-- Table -->
-                                                <table class="table">
+                                                <table class="table table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">Libellé</th>
@@ -653,7 +733,7 @@ function genererModalLigneFacture($ligneFac) {
                     <div class="container-fluid">                               
                         <div class="form-group">
                             <label class="control-label" for="code">Code :</label>
-                            <select name="code" id="code" required class="form-control" onchange="checkLigneFacture('subAction');genererLibelleCode('#libelleAchat',this.value);">
+                            <select name="code" id="code" required class="form-control" onchange="checkLigneFacture('subAction');genererLibelleCode('#libelle',this.value);checkTypePrestation($('#code option:selected').text());">
                                 <option value="" disabled selected>Choisissez un code...</option>
                                 <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $code) { ?>
                                 <option value='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
@@ -661,8 +741,8 @@ function genererModalLigneFacture($ligneFac) {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="libelleAchat">Libellé :</label>
-                            <input name="libelleAchat" type="text" required onkeyup="checkLigneFacture('subAction');" class="form-control" id="libelleAchat">
+                            <label class="control-label" for="libelle">Libellé :</label>
+                            <input name="libelle" type="text" required onkeyup="checkLigneFacture('subAction');" class="form-control" id="libelle">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="type_ligne">Type : </label><br />
@@ -692,7 +772,7 @@ function genererModalLigneFacture($ligneFac) {
                         <div class="form-group">
                             <label class="control-label" for="Total">Total :</label>
                             <div class="input-group">
-                                <input name="Total" value="0" type="text" required disabled class="form-control" id="total">
+                                <input name="Total" value="0" type="text" required readonly class="form-control" id="total">
                                 <span class="input-group-addon">€</span>
                             </div>
                         </div>
@@ -700,7 +780,7 @@ function genererModalLigneFacture($ligneFac) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($ligneFac != 0) { ?> onclick="modifierLigneFactureForm('ligne<?php echo $ligneFac; ?>', <?php echo $ligneFac; ?>, true);" <?php } else { ?> onclick="ajouterLigneFactureForm('listeLignesFacture', true);"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($ligneFac != 0) { ?> onclick="modifierLigneFactureForm('ligneLigne<?php echo $ligneFac; ?>', <?php echo $ligneFac; ?>, true);" <?php } else { ?> onclick="ajouterLigneFactureForm('listeLignesFacture', true);"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -711,8 +791,9 @@ function genererModalLigneFacture($ligneFac) {
  * genererModalAchat : genere le modal pour ajouter ou modifier un achat dans createFacture
  * 
  * @param int $achat : contient le numero de l'achat si c'est une modification, 0 si c est un ajout
+ * @param String $dossier : contient le numero de dossier actuel
  ***/
-function genererModalAchat($achat) {  
+function genererModalAchat($achat, $dossier) {  
     //Connexion a la base
     $pdo = new SPDO();
     
@@ -730,6 +811,11 @@ function genererModalAchat($achat) {
     $stmt_fournisseurs = "SELECT ent_id, ent_raisoc FROM entite WHERE ent_nature LIKE '%Fournisseur%' OR ent_nature LIKE '%fournisseur%' ORDER BY ent_raisoc";
     $result_fournisseurs = $pdo->prepare($stmt_fournisseurs);
     $result_fournisseurs->execute();
+    
+    //On recupere les differentes devises possibles
+    $stmt_dev = "SELECT dev_iso, dev_cours FROM devise WHERE dev_iso <> '' ORDER BY dev_iso";
+    $result_dev = $pdo->prepare($stmt_dev);
+    $result_dev->execute();
     
     //Definit l'action qui sera faite
     $action = "Ajout";
@@ -752,7 +838,7 @@ function genererModalAchat($achat) {
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label" for="code">Code :</label>
-                                <select name="code" id="code" required class="form-control" onchange="checkAchat('subAction');genererLibelleCode('#libelle', this.value)">
+                                <select name="code" id="code" required class="form-control" onchange="genererLibelleCode('#libelleAchat', this.value);checkAchat('subAction');">
                                     <option value="" disabled selected>Choisissez un code...</option>
                                     <?php foreach($result_nom->fetchAll(PDO::FETCH_OBJ) as $code) { ?>
                                     <option value='<?php echo $code->nom_id ?>'><?php echo $code->nom_code; ?></option>;
@@ -762,56 +848,340 @@ function genererModalAchat($achat) {
                         </div>
                         <div class="col-md-8">
                             <div class="form-group">
-                                <label class="control-label" for="libelle">Libellé :</label>
-                                <input name="libelle" type="text" required onkeyup="checkAchat('subAction');" class="form-control" id="libelle" maxlength="255">
+                                <label class="control-label" for="libelleAchat">Libellé :</label>
+                                <input name="libelleAchat" type="text" required onkeyup="checkAchat('subAction');" class="form-control" id="libelleAchat">
                             </div>
                         </div>
-                        <!--On choisit le consultant sur cet achat-->
-                        <div class="form-group">
-                            <label class="control-label" for="cpv">CPV :</label>
-                            <select name="cpv" id="cpv" required class="form-control" onchange="checkAchat('subAction');">
-                                <option value="" disabled selected>Choisissez un CPV...</option>
-                            <?php //On affiche tous les utilisateurs comme des options du select
-                            foreach($result_cons->fetchAll(PDO::FETCH_OBJ) as $cons) { ?>
-                                <option value="<?php echo $cons->uti_id; ?>"><?php echo $cons->uti_prenom . " " . $cons->uti_nom; ?></option>
-                            <?php } ?>
-                            </select>
-                        </div>
-                        <!--On choisit le fournisseur sur cet achat-->
-                        <div class="form-group">
-                            <label class="control-label" for="fournisseur">Fournisseur :</label>
-                            <select name="fournisseur" id="fournisseur" required class="form-control" onchange="checkAchat('subAction');">
-                                <option value="" disabled selected>Choisissez un fournisseur...</option>
-                            <?php //On affiche tous les fournisseurs comme des options du select
-                            foreach($result_fournisseurs->fetchAll(PDO::FETCH_OBJ) as $fournisseur) { ?>
-                                <option value="<?php echo $fournisseur->ent_id; ?>"><?php echo $fournisseur->ent_raisoc; ?></option>
-                            <?php } ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label" for="tarif">Tarif :</label>
-                            <div class="input-group">
-                                <input name="tarif" id="tarif" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                <span class="input-group-addon">€</span>
+                        <div class="col-md-12">
+                            <!--On choisit le consultant sur cet achat-->
+                            <div class="form-group">
+                                <label class="control-label" for="cpv">CPV :</label>
+                                <select name="cpv" id="cpv" required class="form-control" onchange="checkAchat('subAction');">
+                                    <option value="" disabled selected>Choisissez un CPV...</option>
+                                <?php //On affiche tous les utilisateurs comme des options du select
+                                foreach($result_cons->fetchAll(PDO::FETCH_OBJ) as $cons) { ?>
+                                    <option value="<?php echo $cons->uti_id; ?>"><?php echo $cons->uti_prenom . " " . $cons->uti_nom; ?></option>
+                                <?php } ?>
+                                </select>
                             </div>
-                            <div class="help-block with-errors"></div>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label" for="Quantité">Quantité :</label>
-                            <input name="quantite" type="number" value="1" min='1' required onkeyup="checkAchat('subAction');" class="form-control" id="quantite">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="control-label" for="litige">En litige : </label>
+                                <input name="litige" type="checkbox" id="litige">                                
+                            </div>
                         </div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label class="control-label" for="complement">Complétement facture : </label>
+                                <input name="complement" type="checkbox" id="complement">     
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <!--On choisit le fournisseur sur cet achat-->
+                            <div class="form-group">
+                                <label class="control-label" for="fournisseur">Fournisseur :</label>
+                                <select name="fournisseur" id="fournisseur" required class="form-control" onchange="checkAchat('subAction');">
+                                    <option value="" disabled selected>Choisissez un fournisseur...</option>
+                                <?php //On affiche tous les fournisseurs comme des options du select
+                                foreach($result_fournisseurs->fetchAll(PDO::FETCH_OBJ) as $fournisseur) { ?>
+                                    <option value="<?php echo $fournisseur->ent_id; ?>"><?php echo $fournisseur->ent_raisoc; ?></option>
+                                <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label" for="devise">Devise :</label>
+                                <select name="devise" id="devise" required class="form-control" onchange="changeDevise('#taux', this.value, 'subAction');">
+                                    <?php foreach($result_dev->fetchAll(PDO::FETCH_OBJ) as $devise) { ?>0
+                                    <option <?php if($devise->dev_iso == 'EUR') { echo "selected"; } ?> value="<?php echo $devise->dev_iso; ?>"><?php echo $devise->dev_iso; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label" for="taux">Taux :</label>
+                                <input name="taux" type="text" required onkeyup="checkAchat('subAction');" value="1" class="form-control" id="taux" pattern="\d+(\.\d*)?" data-error='Veuillez renseigner un montant (ex: 400.50)'>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                        <!--Achat provisionnel ou réel-->
                         <div class="form-group">
-                            <label class="control-label" for="Total">Total :</label>
-                            <div class="input-group">
-                                <input name="Total" value="0" type="text" required disabled class="form-control" id="total">
-                                <span class="input-group-addon">€</span>
+                            <label class="control-label" for="reel">Achat : </label><br />
+                            <div class="col-md-2">
+                                <input type="radio" name="reel" value="P" id="P" required onchange="changerPanelAchat(this.value);checkAchat('subAction');"> Provisionnel
+                            </div>
+                            <div class="col-md-10">
+                                <input type="radio" name="reel" value="R" id="R" required onchange="changerPanelAchat(this.value);checkAchat('subAction');"> Réel
+                            </div>
+                        </div>        
+                        <br />
+                        <div class="panel panel-default" id="panel_provisionnel" style="display: none;">
+                            <div class="panel-heading">Provisionnel</div><br /> 
+                            <h3>Achat</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="tarif_u_prov">Tarif unitaire :</label>
+                                        <div class="input-group">
+                                            <input name="tarif_u_prov" id="tarif_u_prov" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                            <span class="input-group-addon devise">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label" for="quantite_prov">Quantité :</label>
+                                        <input name="quantite_prov" id="quantite_prov" min="1" value="1" type="number" onkeyup="checkAchat('subAction');" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="montant_prov">Montant total :</label>
+                                        <div class="input-group">
+                                            <input name="montant_prov" id="montant_prov" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon devise">EUR</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input name="tarif_u_prov_marge" id="tarif_u_prov_marge" type="text" required class="form-control" readonly>
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input name="montant_prov_marge" id="montant_prov_marge" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="marge_prov">Marge prévisionnelle :</label>
+                                        <input name="marge_prov" id="marge_prov" type="text"  min="-100" max="100" value="0" readonly required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="dateEcheance_prov">Date échéance prévisionnelle :</label>
+                                        <input class="form-control datepicker" name="dateEcheance_prov" onchange="checkAchat('subAction');" data-date-format="yyyy-mm-dd" type="text" required id="dateEcheance_prov" value="">
+                                    </div> 
+                                </div>
+                            </div>                            
+                            <h3>Vente</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="tarif_u_revente_prov">Tarif de revente unitaire :</label>
+                                        <div class="input-group">
+                                            <input name="tarif_u_revente_prov" id="tarif_u_revente_prov" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label" for="quantite_revente_prov">Quantité :</label>
+                                        <input name="quantite_revente_prov" id="quantite_revente_prov" min="1" value="1" type="number" readonly required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="montant_revente_prov">Montant total :</label>
+                                        <div class="input-group">
+                                            <input name="montant_revente_prov" id="montant_revente_prov" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label" for="date_fac_rf_prov">Date préfacturation :</label>
+                                        <input class="form-control datepicker" name="date_fac_rf_prov" type="text" onchange="checkAchat('subAction');" id="date_fac_rf_prov" required value="" data-date-format="yyyy-mm-dd">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default" id="panel_reel" style="display: none;">
+                            <div class="panel-heading">Réel</div><br />
+                            <h3>Achat</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="tarif_u_reel">Tarif unitaire :</label>
+                                        <div class="input-group">
+                                            <input name="tarif_u_reel" id="tarif_u_reel" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                            <span class="input-group-addon devise">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label" for="quantite_reel">Quantité :</label>
+                                        <input name="quantite_reel" id="quantite_reel" min="1" value="1" type="number" onkeyup="checkAchat('subAction');" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="montant_reel">Montant total :</label>
+                                        <div class="input-group">
+                                            <input name="montant_reel" id="montant_reel" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon devise">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input name="tarif_u_reel_marge" id="tarif_u_reel_marge" type="text" required class="form-control" readonly>
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input name="montant_reel_marge" id="montant_reel_marge" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="num_ffo">N°FFO :</label>
+                                        <input class="form-control" name="num_ffo" type="text" required id="num_ffo" value="" onkeyup="checkAchat('subAction');">
+                                    </div> 
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="marge_reel">Marge effective :</label>
+                                        <input name="marge_reel" id="marge_reel" type="number" min="-100" max="100" value="0" readonly required class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label" for="dateFacure_reel">Date facture :</label>
+                                        <input class="form-control datepicker" name="dateFacture_reel" onchange="checkAchat('subAction');" data-date-format="yyyy-mm-dd" type="text" required id="dateFacture_reel" value="">
+                                    </div>  
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label" for="dateEcheance_reel">Date échéance :</label>
+                                        <input class="form-control datepicker" name="dateEcheance_reel" onchange="checkAchat('subAction');" data-date-format="yyyy-mm-dd" type="text" required id="dateEcheance_reel" value="">
+                                    </div> 
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label" for="dateReglement_reel">Date réglement :</label>
+                                        <input class="form-control datepicker" name="dateReglement_reel" onchange="checkAchat('subAction');" data-date-format="yyyy-mm-dd" type="text" required id="dateReglement_reel" value="">
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label" for="bap">BAP : </label>
+                                        <input name="bap" type="checkbox" id="bap" onchange="if(this.checked) { $('#bap_date').val('<?php echo date('Y-m-d'); ?>'); $('#bap_cpv').val('ASB'); } else { $('#bap_date').val(''); $('#bap_cpv').val(''); } checkAchat('subAction');">                                
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input class="form-control" name="bap_date" type="text" id="bap_date" value="" readonly>
+                                    </div> 
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input class="form-control" name="bap_cpv" type="text" id="bap_cpv" value="" readonly>
+                                    </div> 
+                                </div>
+                            </div>
+                            <h3>Vente</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="tarif_u_revente_reel">Tarif de revente unitaire :</label>
+                                        <div class="input-group">
+                                            <input name="tarif_u_revente_reel" id="tarif_u_revente_reel" type="text" onkeyup="checkAchat('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label" for="quantite_revente_reel">Quantité :</label>
+                                        <input name="quantite_revente_reel" id="quantite_revente_reel" min="1" value="1" type="number" readonly required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="montant_revente_reel">Montant total :</label>
+                                        <div class="input-group">
+                                            <input name="montant_revente_reel" id="montant_revente_reel" type="text" readonly required class="form-control">
+                                            <span class="input-group-addon">EUR</span>
+                                        </div>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                            </div><br />
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label" for="visa">Visa de contrôle de marge : </label>
+                                        <input name="visa" type="checkbox" id="visa" onchange="checkAchat('subAction');genererFacturesAchat('fac_rf_div', '<?php echo $dossier; ?>', false);">                                
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group" id="fac_rf_div">
+                                        <label class="control-label" for="fac_rf">Référence facture :</label>
+                                        <select name="fac_rf" id="fac_rf" disabled required class="form-control">
+                                            <option value="" disabled selected>Choisissez une facture...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label" for="date_fac_rf_reel">Date préfacturation :</label>
+                                        <input class="form-control datepicker" name="date_fac_rf_reel" type="text" id="date_fac_rf_reel" required value="" data-date-format="yyyy-mm-dd">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($achat != 0) { ?> onclick="modifierAchatForm('ligne<?php echo $achat; ?>', <?php echo $achat; ?>, true);" <?php } else { ?> onclick="ajouterAchatForm('listeAchats', true);"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
+                    <button type="button" class="btn btn-primary" id="subAction" data-dismiss="modal" <?php if($achat != 0) { ?> onclick="modifierAchatForm('ligneAchat<?php echo $achat; ?>', <?php echo $achat; ?>, true, '<?php echo $dossier; ?>');" <?php } else { ?> onclick="ajouterAchatForm('listeAchats', true, '<?php echo $dossier; ?>');"  disabled <?php }?>><?php echo $actionVerbe; ?></button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -842,7 +1212,7 @@ function genererModalReglement() {
                     <div class="container-fluid">                            
                         <div class="form-group">
                             <label class="control-label" for="date">Date :</label>
-                            <input class="datepicker form-control" data-date-format="mm/dd/yyyy" name="date" type="text" required onkeyup="checkReglement('subAction');" id="date">
+                            <input class="datepicker form-control" data-date-format="yyyy-mm-dd" name="date" type="text" required onkeyup="checkReglement('subAction');" id="date">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="montant">Montant :</label>
