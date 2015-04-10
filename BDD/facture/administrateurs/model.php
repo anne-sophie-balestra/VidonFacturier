@@ -211,63 +211,74 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             if (filter_input(INPUT_POST, 't_fac_id') != NULL) {
                 $fac_id = filter_input(INPUT_POST, 't_fac_id');
             } else {
-                returnToCreateModel($error);
+                echo("fac_id"); exit();
+                returnToListModelError($error);
             }
 
             $name = "";
             if (filter_input(INPUT_POST, 'name') != NULL) {
                 $name = filter_input(INPUT_POST, 'name');
             } else {
-                returnToCreateModel($error);
+                echo("name"); exit();
+                returnToListModelError($error);
             }
 
             $client = "";
             if (filter_input(INPUT_POST, 'client') != NULL) {
                 $client = filter_input(INPUT_POST, 'client');
             } else {
-                returnToCreateModel($error);
+                echo("client");exit();
+                returnToListModelError($error);
             }
 
+            /* Inutile car ne change jamais
             $ent_dossier = "";
             if (filter_input(INPUT_POST, 'ent_dossier') != NULL) {
                 $ent_dossier = filter_input(INPUT_POST, 'ent_dossier');
             } else {
-                returnToCreateModel($error);
+                echo("ent_doss"); exit();
+                returnToListModelError($error);
             }
 
             $type_dossier = "";
             if (filter_input(INPUT_POST, 'type_dossier') != NULL) {
                 $type_dossier = filter_input(INPUT_POST, 'type_dossier');
             } else {
-                returnToCreateModel($error);
+                echo("type_dossier");exit();
+                returnToListModelError($error);
             }
 
             $type_operation = "";
             if (filter_input(INPUT_POST, 'type_operation') != NULL) {
                 $type_operation = filter_input(INPUT_POST, 'type_operation');
             } else {
-                returnToCreateModel($error);
+                echo("type_ope"); exit();
+                returnToListModelError($error);
             }
+            */
 
             $type = "";
             if (filter_input(INPUT_POST, 'type') != NULL) {
                 $type = filter_input(INPUT_POST, 'type');
             } else {
-                returnToCreateModel($error);
+                echo("type"); exit();
+                returnToListModelError($error);
             }
 
             $objet = "";
             if (filter_input(INPUT_POST, 'objet') != NULL) {
                 $objet = filter_input(INPUT_POST, 'objet');
             } else {
-                returnToCreateModel($error);
+                echo("objet"); exit();
+                returnToListModelError($error);
             }
 
             $nbInfosTot = 0;
             if (filter_input(INPUT_POST, 'nbInfosTot') != NULL) {
                 $nbInfosTot = filter_input(INPUT_POST, 'nbInfosTot');
             } else {
-                returnToCreatePrestation($error);
+                echo("infotot"); exit();
+                returnToListModelError($error);
             }
 
             // Champs non renseignes par le user.
@@ -287,25 +298,28 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     if (filter_input(INPUT_POST, 'presta_id_' . $i) != NULL) {
                         $presta_id[$i] = filter_input(INPUT_POST, 'presta_id_' . $i);
                     } else {
-                        returnToCreateModel($error);
+                        echo("prestaID"); exit();
+                        returnToListModelError($error);
                     }
 
                     $presta_lib[$i] = "";
                     if (filter_input(INPUT_POST, 'presta_lib_' . $i) != NULL) {
                         $presta_lib[$i] = filter_input(INPUT_POST, 'presta_lib_' . $i);
                     } else {
-                        returnToCreateModel($error);
+                        echo("prestaLib"); exit();
+                        returnToListModelError($error);
                     }
                 }
             }
 
             // requete de mise à jour du modele (type_facture)
-            $req_update ="UPDATE type_facture SET t_fac_modelname = :modelname, t_fac_objet = :objet, t_fac_rf_ent = :rf_ent WHERE t_fac_id = :fac_id";
+            $req_update ="UPDATE type_facture SET t_fac_modelname = :modelname, t_fac_objet = :objet, t_fac_rf_ent = :rf_ent, t_fac_type = :type WHERE t_fac_id = :fac_id";
 
             $stmt_update = $pdo->prepare($req_update);
             $stmt_update->bindParam(':modelname', $name);
             $stmt_update->bindParam(':objet', $objet);
             $stmt_update->bindParam(':rf_ent', $client);
+            $stmt_update->bindParam(':type', $type);
             $stmt_update->bindParam(':fac_id', $fac_id);
 
             $stmt_update->execute();
@@ -376,5 +390,15 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
  ***/
 function returnToCreateModel($p_error){
     echo "<script>alert(\"" . $p_error . "\");window.location.href='index.php?action=createModel';</script>";
+    exit;
+}
+
+/*****
+ * returnToListModel : renvoie l'utilisateur sur la page de liste des modeles s'il a mal rempli le formulaire de modification
+ *
+ * String p_error: message d'erreur a afficher quand l'utilisateur est renvoyé sur la page
+ ***/
+function returnToListModelError($p_error){
+    echo "<script>alert(\"" . $p_error . "\");window.location.href='index.php?action=updateModel';</script>";
     exit;
 }

@@ -29,7 +29,7 @@ $result_type_operation = $pdo->prepare ( $stmt_type_operation );
 $result_type_operation->execute();
 
 // On recupere les nom des clients
-$stmt_entite = "SELECT ent_id, ent_raisoc FROM entite ORDER BY ent_raisoc";
+$stmt_entite = "SELECT ent_id, ent_raisoc, ent_nature FROM entite WHERE ent_nature LIKE '%client%' OR ent_nature LIKE '%Client%'ORDER BY ent_raisoc";
 $result_entite = $pdo->prepare ( $stmt_entite );
 $result_entite->execute();
 
@@ -81,7 +81,7 @@ $result_entite->execute();
         </div>
         <div class="form-group">
             <!--On cree un select vide qui sera peuplé grace a un appel ajax-->
-            <select name="type_dossier" id="type_dossier" required class="form-control select2">
+            <select name="type_dossier" id="type_dossier" required  class="form-control select2">
                 <option></option>
             </select>
         </div>
@@ -89,7 +89,7 @@ $result_entite->execute();
         <div class="form-group">
             <!-- Operation -->
             <label class="control-label" for="t_operation">Type d'opération :</label>
-            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value);" class="form-control select2">
+            <select name="type_operation" id="type_operation" required onchange="genererListePresta('#select_presta', document.getElementById('type_dossier').value, this.value); emptyTabPresta('listePrestations');" class="form-control select2">
                 <option></option>
                 <?php
                 foreach($result_type_operation->fetchAll(PDO::FETCH_OBJ) as $type_ope) { ?>
@@ -212,6 +212,9 @@ $result_entite->execute();
         });
         jQuery("#type").select2({
             placeholder: "Choisissez un type de facture..."
+        });
+        jQuery("#client").select2({
+            placeholder: "Choisissez un client..."
         });
         /*jQuery("#remote").select2({
          placeholder: "Choisissez une option...",
