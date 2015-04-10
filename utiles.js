@@ -1298,3 +1298,45 @@ function emptyTabPresta(id_tab) {
     document.getElementById("nbInfos").value = 0;
     document.getElementById("nbInfosTot").value = 0;
 }
+
+
+
+
+/*---fONCTION ABDOUL*/
+
+function genererListeNomModele(p_id,p_value){
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=genererListeNomModele&mod=" + p_value;
+
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            var jsonData = $.parseJSON(xmlHttp.responseText);
+
+            //on recupere la reference a l'element select que l'on veut peupler
+            var $select = $(p_id);
+            $select.empty();    
+            //$select.select2('data', null);    
+            $select.append('<option></option>');
+            //$select.select2({placeholder:"Choisissez un type d'operation..."});
+            $.each(jsonData,function(key, value) 
+            {
+                $select.append('<option value=' + key + '>' + value + '</option>');
+            });
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+
+
+
+
