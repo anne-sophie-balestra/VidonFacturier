@@ -17,17 +17,16 @@ $pdo = new SPDO();
 
 //On va chercher les factures depuis l'annÃ©e derniere a aujourd'hui qui sont individuelles cad les valeurs de client.cli_libellefact=1
 $stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression, 
-fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture 
-		Join entite on facture.fac_rf_ent=entite.ent_id 
+fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture
+		Join entite on facture.fac_rf_ent=entite.ent_id
 		Join client on entite.ent_id=client.cli_rf_ent
-		WHERE client.cli_libellefact=1 
-		AND EXTRACT(YEAR FROM fac_creadate) = " . (date('Y')-1) . " OR 
-		EXTRACT(YEAR FROM fac_creadate) = " . (date('Y'));
+		WHERE client.cli_libellefact=1
+		AND EXTRACT(YEAR FROM fac_creadate) = " . (date('Y'));
 $result_fac = $pdo->prepare($stmt);
 $result_fac->execute();
 
 
-//On va chercher toutes les repartitions liés à la facture
+//On va chercher toutes les repartitions liï¿½s ï¿½ la facture
 function get_all_repartitions($id_fac)
 {
 	$pdo_rep = new SPDO();
@@ -48,7 +47,7 @@ function get_all_repartitions($id_fac)
 	return $list_rep;
 }
 
-//on va chercher tous les lignes de factures liés à la facture
+//on va chercher tous les lignes de factures liï¿½s ï¿½ la facture
 
 function get_all_lignes($id_fac)
 {
@@ -72,7 +71,7 @@ function get_all_lignes($id_fac)
 
 }
 
-//on va chercher le nom du bénéficaire
+//on va chercher le nom du bï¿½nï¿½ficaire
 
 function get_beneficiare_repartition($id_util)
 {
@@ -100,10 +99,12 @@ function get_beneficiare_repartition($id_util)
 </head>
 <div class="container" style="width:100%;">    
     <h2>Factures individuelles</h2>
+    <!--Creation d'un formulaire avec la validation Bootstrap-->
+    <form id="formUpdateFactureStatus" action="index.php?action=updateStatutFacture" method="post" role="form" data-toggle="validator">
     <!-- Ajout d'une partie du css  de datatable...pour ne pas impacter les autres fichiers ??en peu mais efficace -->
     <table class="table table-striped table-bordered table-condensed table-hover" id="lfacturesInd"
     
-    
+
     style="
     
     /*
@@ -144,7 +145,7 @@ table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc,
 table.dataTable thead .sorting {
   cursor: pointer;
-  *cursor: hand;
+  cursor: hand;
 }
 table.dataTable thead .sorting {
   background: url("../images/sort_both.png") no-repeat center right;
@@ -332,9 +333,10 @@ table.dataTable td {
             <th scope="col">Date facture/Date Ã©cheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col">Afficher</th>
+            <th scope="col">Selection</th>
             
         </tr>
-        <tr class="warning">
+        <tr>
            <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col">Objet</th>
@@ -343,7 +345,8 @@ table.dataTable td {
             <th scope="col">Date facture/Date Ã©cheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col"></th>
-           
+            <th scope="col"></th>
+
         </tr>
     </thead>
     <tbody>
@@ -367,12 +370,12 @@ table.dataTable td {
 				{
               	case 0:echo "Prof &agrave; Valider";break;
               	case 1:echo "Prof Valid&eacute;e CPV";break;
-              	case 2:echo "Prof Envoy	&eacute;e à Client";break;
+              	case 2:echo "Prof Envoy	&eacute;e ï¿½ Client";break;
               	case 3:echo "Prof accept&eacute;e";break;
               	case 4:echo "Facture imprim&eacute;e";break;
               	case 5:echo "Facture export&eacute;e";break;
               	case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
-              	case 7:echo "Facture Régl&eacute;e";break;	 
+              	case 7:echo "Facture Rï¿½gl&eacute;e";break;	 
               }
               ?>
               </td>      
@@ -382,132 +385,134 @@ table.dataTable td {
            <!--  <td><?php echo $fac->fac_honoraires; ?></td>
             <td><?php echo $fac->fac_retro; ?></td>
             <td><?php echo $fac->fac_taxes; ?></td>
-            <td><?php echo $fac->fac_montantht; ?></td>--> 
+            <td><?php echo $fac->fac_montantht; ?></td>-->
+
             <td align="center">
                 <button class="btn btn-primary btn-sm" data-target="#modalDetailsfact_<?php echo $fac->fac_id; ?>" data-toggle="modal">
                     <i class="icon-plus fa fa-eye"></i> Afficher
                 </button>
             
-            <div class="modal fade" role="dialog" aria-labelledby="modalDetailsfact_<?php echo  $fac->fac_id; ?>" aria-hidden="true" id="modalDetailsfact_<?php echo $fac->fac_id;  ?>">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-body">                                    
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
-                                <div class="container-fluid">
-                                  
-                                  <!-- Panel des Details des Montants -->
-                                  
-                                   <div class="panel panel-default">
-                                        <div class="panel-heading"> Details des Montants</div>
-                                        <table class="table">
-                                            <tr>
-                                                <th scope="col">Honoraires</th>
-                                                <th scope="col">Retro</th>
-                                                <th scope="col">Taxes</th>
-                                                 <th scope="col">Montant</th>
-                                            </tr>
-                                                <tr>
-                                                 <td><?php echo $fac->fac_honoraires; ?></td>
-           										  <td><?php echo $fac->fac_retro; ?></td>
-            									  <td><?php echo $fac->fac_taxes; ?></td>
-           										 <td><?php echo $fac->fac_montantht; ?></td>
-            
-           										 
-                                                </tr>   
-                                           
-                                        </table>
-                                    </div>
-                                
-                                   <!-- Panel des Lignes de Factures -->
-                                   <!-- Requete aussi des lignes de factures liés à la facture -->
-                                   
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading"> Details de Lignes de factures</div>
-                                        <table class="table">
-                                            <tr>
-                                                <th scope="col">Rubrique</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">LibellÃ©</th>
-                                                 <th scope="col">Type</th>
-                                                <th scope="col">TVA</th>
-                                                <th scope="col">Montant</th>
-                                             
-                                            </tr>
+                <div class="modal fade" role="dialog" aria-labelledby="modalDetailsfact_<?php echo  $fac->fac_id; ?>" aria-hidden="true" id="modalDetailsfact_<?php echo $fac->fac_id;  ?>">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
+                                    <div class="container-fluid">
 
-                                            <?php 
-                                            $result_ligne= $pdo->prepare("select 
-					                            lig_rubrique,lig_code,
-												lig_libelle,lig_tauxtva,lig_tva,lig_total_dev,lig_montant,
-												lig_typeligne from lignefacture
-												where lig_rf_fac= :id_fac");
-                                            $result_ligne->bindParam(":id_fac", $fac->fac_id);
-                                            $result_ligne->execute();
-                                            $list_ligne=array();
-                                            $list_ligne= $result_ligne->fetchAll(PDO::FETCH_OBJ);
-                                             
-                							foreach($list_ligne as $ligne) 
-												  { ?>
+                                      <!-- Panel des Details des Montants -->
+
+                                       <div class="panel panel-default">
+                                            <div class="panel-heading"> Details des Montants</div>
+                                            <table class="table">
                                                 <tr>
-                                                    <td><?php echo $ligne->lig_rubrique; ?></td>
-                                                    <td><?php echo $ligne->lig_code; ?></td>
-                                                    <td><?php echo $ligne->lig_libelle; ?></td>
-                                                     <td><?php if ($ligne->lig_typeligne=="honos") 
-                                                     	echo"honoraires";
-                                                    	else echo $ligne->lig_typeligne;?>
+                                                    <th scope="col">Honoraires</th>
+                                                    <th scope="col">Retro</th>
+                                                    <th scope="col">Taxes</th>
+                                                     <th scope="col">Montant</th>
+                                                </tr>
+                                                    <tr>
+                                                     <td><?php echo $fac->fac_honoraires; ?></td>
+                                                      <td><?php echo $fac->fac_retro; ?></td>
+                                                      <td><?php echo $fac->fac_taxes; ?></td>
+                                                     <td><?php echo $fac->fac_montantht; ?></td>
+
+
+                                                    </tr>
+
+                                            </table>
+                                        </div>
+
+                                       <!-- Panel des Lignes de Factures -->
+                                       <!-- Requete aussi des lignes de factures liï¿½s ï¿½ la facture -->
+
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading"> Details de Lignes de factures</div>
+                                            <table class="table">
+                                                <tr>
+                                                    <th scope="col">Rubrique</th>
+                                                    <th scope="col">Code</th>
+                                                    <th scope="col">LibellÃ©</th>
+                                                     <th scope="col">Type</th>
+                                                    <th scope="col">TVA</th>
+                                                    <th scope="col">Montant</th>
+
+                                                </tr>
+
+                                                <?php
+                                                $result_ligne= $pdo->prepare("select
+                                                    lig_rubrique,lig_code,
+                                                    lig_libelle,lig_tauxtva,lig_tva,lig_total_dev,lig_montant,
+                                                    lig_typeligne from lignefacture
+                                                    where lig_rf_fac= :id_fac");
+                                                $result_ligne->bindParam(":id_fac", $fac->fac_id);
+                                                $result_ligne->execute();
+                                                $list_ligne=array();
+                                                $list_ligne= $result_ligne->fetchAll(PDO::FETCH_OBJ);
+
+                                                foreach($list_ligne as $ligne)
+                                                      { ?>
+                                                    <tr>
+                                                        <td><?php echo $ligne->lig_rubrique; ?></td>
+                                                        <td><?php echo $ligne->lig_code; ?></td>
+                                                        <td><?php echo $ligne->lig_libelle; ?></td>
+                                                         <td><?php if ($ligne->lig_typeligne=="honos")
+                                                            echo"honoraires";
+                                                            else echo $ligne->lig_typeligne;?>
+                                                         </td>
+                                                        <td><?php echo $ligne->lig_tva; ?></td>
+                                                        <td><?php echo $ligne->lig_montant; ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </table>
+                                        </div>
+
+                                        <!-- Panel des Repartitions -->
+                                        <!-- Requete aussi des lignes de factures liï¿½s ï¿½ la facture..->plus  -->
+
+
+                                                  <div class="panel panel-default">
+                                            <div class="panel-heading"> Details des Repartitions</div>
+                                            <table class="table">
+                                                <tr>
+
+                                                    <th scope="col">Pourcentage</th>
+                                                    <th scope="col">LibellÃ©</th>
+                                                </tr>
+
+                                                <?php //On parcours des Repartitions pour les afficher
+
+
+                                                      $result_rep= $pdo->prepare("select rep_pourcentage,rep_rf_uti,rep_rf_fac,rep_type
+                                                              from repartition where rep_rf_fac=:id_facture");
+                                                         $result_rep->bindParam(":id_facture", $fac->fac_id);
+                                                         $result_rep->execute();
+                                                         $list_rep=array();
+                                                         $list_rep= $result_rep->fetchAll(PDO::FETCH_OBJ);
+
+                                                    foreach($list_rep as $ligne_rep)
+                                                      { ?>
+                                                    <tr>
+                                                     <td>
+                                                  <div class="progress">
+                                         <div class="progress-bar progress-bar-primary " role="progressbar" aria-valuenow="<?php echo $ligne_rep->rep_pourcentage;?>"
+                                            aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ligne_rep->rep_pourcentage; ?>%; min-width: 2em;">
+                                          <span><?php echo $ligne_rep->rep_pourcentage; ?>%</span>
+                                        </div>
+                                             </div>
                                                      </td>
-                                                    <td><?php echo $ligne->lig_tva; ?></td>
-                                                    <td><?php echo $ligne->lig_montant; ?></td>
-                                                </tr>   
-                                            <?php } ?>
-                                        </table>
-                                    </div>
-                                    
-                                    <!-- Panel des Repartitions -->
-                                    <!-- Requete aussi des lignes de factures liés à la facture..->plus  -->
-                                    
-                                    
-                                              <div class="panel panel-default">
-                                        <div class="panel-heading"> Details des Repartitions</div>
-                                        <table class="table">
-                                            <tr>
-                                               
-                                                <th scope="col">Pourcentage</th>
-                                                <th scope="col">LibellÃ©</th>
-                                            </tr>
+                                                      <td><?php echo $ligne_rep->rep_type; ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </table>
+                                        </div>
 
-                                            <?php //On parcours des Repartitions pour les afficher
-											
-                                                    
-                                                  $result_rep= $pdo->prepare("select rep_pourcentage,rep_rf_uti,rep_rf_fac,rep_type
-                                                          from repartition where rep_rf_fac=:id_facture");
-                                                     $result_rep->bindParam(":id_facture", $fac->fac_id);
-                                                     $result_rep->execute();
-                                                     $list_rep=array();
-                                                     $list_rep= $result_rep->fetchAll(PDO::FETCH_OBJ);
-                                      	
-                								foreach($list_rep as $ligne_rep) 
-												  { ?>
-                                                <tr>
-                                                 <td>  
-                                              <div class="progress">
-                   					 <div class="progress-bar progress-bar-primary " role="progressbar" 
-                   					aria-valuenow="<?php echo $ligne_rep->rep_pourcentage;?>" 
-                   					 aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ligne_rep->rep_pourcentage; ?>%; min-width: 2em;">
-                      				  <span><?php echo $ligne_rep->rep_pourcentage; ?>%</span>
-                   				 </div>
-               							 </div>                
-               							 	 	 </td>
-                                                  <td><?php echo $ligne_rep->rep_type; ?></td>                            
-                                                </tr>   
-                                            <?php } ?>
-                                        </table>
-                                    </div>      
-                             
+                                    </div>
                                 </div>
-                            </div>
-                        </div><!-- /.modal-content -->
-                    </div><!-- /.modal-dialog -->
-                </div>                
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+            </td>
+            <td><INPUT type="checkbox" name="selection[]" value="<?php echo $fac->fac_id; ?>"></td>
         </tr>
         <?php } ?>
     </tbody>
@@ -521,10 +526,31 @@ table.dataTable td {
             <th scope="col">Date facture/Date Ã©cheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col">Afficher</th>
+            <th scope="col">Selection</th>
          
             </tr>
         </tfoot>
     </table>
+
+        <!--Renseignement du client-->
+        <div class="form-inline">
+            <select name="status_update" id="status_update" required class="form-control select2">
+                <option></option>
+                    <option value="0">Prof Ã  valider</option>
+                    <option value="1">Prof validÃ©e CPV</option>
+                    <option value="2">Prof EnvoyÃ©e Client</option>
+                    <option value="3">Prof acceptÃ©e</option>
+                    <option value="4">Facture imprimÃ©e</option>
+                    <option value="5">Facture exportÃ©e</option>
+                    <option value="6">Facture echÃ©ance dÃ©passÃ©e</option>
+                    <option value="7">Facture RÃ©glÃ©e</option>
+
+            </select>
+            <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre Ã  jour">
+        </div>
+
+    </form>
+
 </div>
 <script type="text/javascript" charset="utf-8">
     $('#lfacturesInd').dataTable({

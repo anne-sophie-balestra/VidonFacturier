@@ -88,6 +88,10 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("BDD/facture/administrateurs/model.php");
             break;
 
+        // Mise a jour du statut des factures dans listeFactureindiv
+        case('updateStatutFacture'):
+            require_once("BDD/facture/administrateurs/updateStatutFacture.php");
+            break;
     }
 }
 
