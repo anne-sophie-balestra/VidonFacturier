@@ -54,6 +54,7 @@ $result_fac->execute();
             <th scope="col">Date facture/Date Ã©cheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col">Afficher</th>
+             <th scope="col">Selection</th>
             
         </tr>
         <tr class="warning">
@@ -65,6 +66,7 @@ $result_fac->execute();
             <th scope="col">Date facture/Date Ã©cheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col"></th>       
+            <th scope="col"></th>   
         </tr>
     </thead>
     <tbody>
@@ -108,7 +110,9 @@ $result_fac->execute();
                  &taxes=<?php echo $fac->fac_taxes;?>&dispa=1">
                     <i class="icon-plus fa fa-eye"></i> Afficher
                 </a>
-             </td>               
+             </td>
+              <td><INPUT type="checkbox" name="selection[]" value="<?php echo $fac->fac_id; ?>"></td>
+                            
         </tr>
         <?php } ?>
     </tbody>
@@ -126,6 +130,30 @@ $result_fac->execute();
             </tr>
         </tfoot>
     </table>
+    
+    
+        <!--Renseignement du client-->
+        <div class="form-inline">
+            <select name="status_update" id="status_update" required class="form-control select2">
+                <option></option>
+                    <option value="0">Prof à valider</option>
+                    <option value="1">Prof validée CPV</option>
+                    <option value="2">Prof Envoyée Client</option>
+                    <option value="3">Prof acceptée</option>
+                    <option value="4">Facture imprimée</option>
+                    <option value="5">Facture exportée</option>
+                    <option value="6">Facture echéance dépassée</option>
+                    <option value="7">Facture Réglée</option>
+
+            </select>
+            <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre à jour">
+        </div>
+
+    
+    
+    
+    
+    
 </div>
 <script type="text/javascript" charset="utf-8">
     $('#lfacturesInd').dataTable({
