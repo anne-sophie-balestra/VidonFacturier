@@ -75,6 +75,8 @@
                                 <li class="divider"></li>
                                 <li><a href="index.php?action=updateModel"><i class="icon-plus fa fa-list-alt"></i> Liste des Mod&egraveles...</a></li>
                                 <li><a href="index.php?action=createModel"><i class="icon-plus fa fa-plus"></i> Nouveau Mod&egravele...</a></li>
+                           		<li class="divider"></li>
+                                <li><a href="index.php?action=createDiagram"><i class="icon-plus fa fa-list-alt"></i> Statistiques...</a></li>
                             </ul>
                         <li class="text-center sidebar-brand"><a href="#autres"><i class="icon-shopping-cart fa fa-shopping-cart fa-2x icon-2x"></i><br>Autres</a></li>
                     </ul>
