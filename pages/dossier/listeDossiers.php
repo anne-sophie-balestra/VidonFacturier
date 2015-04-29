@@ -47,7 +47,7 @@ $result_dossiers->execute();
         <tr>
             <td><?php echo $dossier->dos_type; ?></td>
             <td>
-<!--             <a  href="createFacture.php?id=<?php echo$dossier->dos_id; ?>"> 
+<!--             <a  href="createFacture.php?id=<?php echo $dossier->dos_id; ?>"> 
  -->
             <ul class="dropdown">
                     <a href="#menuDossier<?php echo $dossier->dos_id; ?>" class="dropdown-toggle" data-toggle="dropdown" title="Dossier_<?php echo $dossier->dos_id; ?>"><?php echo $dossier->dos_numcomplet; ?> <b class="caret"></b></a>

@@ -395,6 +395,258 @@ function afficherTarifs(p_value){
     }
 }
 
+
+function afficherPeriode(p_value){
+    //Pour les achats
+    if(p_value == "achat") {
+        //pour l'affichage des entites 
+        document.getElementById('correspondant').style.display= "block";
+        document.getElementById('ent_vidon').style.display= "none";
+        document.getElementById('cli_fac').style.display= "none";
+        document.getElementById('cli_ligfac').style.display= "none";
+        document.getElementById('utilisateur').style.display= "none";
+
+        //pour l'affichage du type de regroupement 
+        document.getElementById('type_regp').style.display= "block";
+        //modification du contenu du select type de regroupement pour l'initialiser à la valeur par défaut
+        document.getElementById('regp').value="tous";
+        //masque de tous les selects en rapport avec type de regroupement
+        document.getElementById('p_achat').style.display= "none";
+        document.getElementById('p_fact').style.display= "none";
+        document.getElementById('p_ligfact').style.display= "none";
+        document.getElementById('p_repart').style.display= "none";
+        document.getElementById('multi_jours').style.display= "none";
+        document.getElementById('multi_semaines').style.display= "none";
+        document.getElementById('multi_mois').style.display= "none";
+        document.getElementById('pl_mois').style.display= "none";
+
+    }
+    //Pour les factures
+    else if(p_value == "facture") {
+        //pour l'affichage des entites 
+        document.getElementById('correspondant').style.display= "none";
+        document.getElementById('ent_vidon').style.display= "block";
+        document.getElementById('cli_fac').style.display= "block";
+        document.getElementById('cli_ligfac').style.display= "none";
+        document.getElementById('utilisateur').style.display= "none";
+
+        //pour l'affichage du type de regroupement 
+        document.getElementById('type_regp').style.display= "block";
+        //modification du contenu du select type de regroupement pour l'initialiser à la valeur par défaut
+        document.getElementById('regp').value="tous";
+        //masque de tous les selects en rapport avec type de regroupement
+        document.getElementById('p_achat').style.display= "none";
+        document.getElementById('p_fact').style.display= "none";
+        document.getElementById('p_ligfact').style.display= "none";
+        document.getElementById('p_repart').style.display= "none";
+        document.getElementById('multi_jours').style.display= "none";
+        document.getElementById('multi_semaines').style.display= "none";
+        document.getElementById('multi_mois').style.display= "none";
+        document.getElementById('pl_mois').style.display= "none";
+    } 
+     //Pour les lignes de factures
+    else if(p_value == "lignefacture") {
+        //pour l'affichage des entites 
+        document.getElementById('correspondant').style.display= "none";
+        document.getElementById('ent_vidon').style.display= "block";
+        document.getElementById('cli_fac').style.display= "none";
+        document.getElementById('cli_ligfac').style.display= "block";
+        document.getElementById('utilisateur').style.display= "none";
+
+        //pour l'affichage du type de regroupement 
+        document.getElementById('type_regp').style.display= "block";
+        //modification du contenu du select type de regroupement pour l'initialiser à la valeur par défaut
+        document.getElementById('regp').value="tous";
+        //masque de tous les selects en rapport avec type de regroupement
+        document.getElementById('p_achat').style.display= "none";
+        document.getElementById('p_fact').style.display= "none";
+        document.getElementById('p_ligfact').style.display= "none";
+        document.getElementById('p_repart').style.display= "none";
+        document.getElementById('multi_jours').style.display= "none";
+        document.getElementById('multi_semaines').style.display= "none";
+        document.getElementById('multi_mois').style.display= "none";
+        document.getElementById('pl_mois').style.display= "none";
+    }
+    //Pour les repartitions
+    else if(p_value == "repartition") {
+        //pour l'affichage des entites
+        document.getElementById('correspondant').style.display= "none";
+        document.getElementById('ent_vidon').style.display= "none";
+        document.getElementById('cli_fac').style.display= "none";
+        document.getElementById('cli_ligfac').style.display= "none";
+        document.getElementById('utilisateur').style.display= "block";
+
+       //pour l'affichage du type de regroupement 
+        document.getElementById('type_regp').style.display= "block";
+        //modification du contenu du select type de regroupement pour l'initialiser à la valeur par défaut
+        document.getElementById('regp').value="tous";
+        //masque de tous les selects en rapport avec type de regroupement
+        document.getElementById('p_achat').style.display= "none";
+        document.getElementById('p_fact').style.display= "none";
+        document.getElementById('p_ligfact').style.display= "none";
+        document.getElementById('p_repart').style.display= "none";
+        document.getElementById('multi_jours').style.display= "none";
+        document.getElementById('multi_semaines').style.display= "none";
+        document.getElementById('multi_mois').style.display= "none";
+        document.getElementById('pl_mois').style.display= "none";
+
+    }
+    //pour les types de regroupement 
+
+    else if(p_value == "jour") {
+               document.getElementById('multi_jours').style.display= "block";
+               document.getElementById('multi_semaines').style.display= "none";
+               document.getElementById('multi_mois').style.display= "none"; 
+               document.getElementById('pl_mois').style.display= "block";
+          if(document.getElementById('nom_table').value == "achat") { 
+                document.getElementById('p_achat').style.display= "block";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+            } 
+            else if(document.getElementById('nom_table').value == "facture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "block";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "lignefacture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "block";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "repartition") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "block";
+              
+           } 
+    } 
+    else if(p_value == "semaine") {
+               document.getElementById('multi_jours').style.display= "none";
+               document.getElementById('multi_semaines').style.display= "block";
+               document.getElementById('multi_mois').style.display= "none";
+               document.getElementById('pl_mois').style.display= "none";
+          if(document.getElementById('nom_table').value == "achat") {             
+                document.getElementById('p_achat').style.display= "block";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+
+            } 
+            else if(document.getElementById('nom_table').value == "facture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "block";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "lignefacture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "block";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "repartition") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "block";
+           } 
+    } 
+    else if(p_value == "mois") {
+              document.getElementById('multi_jours').style.display= "none";
+               document.getElementById('multi_semaines').style.display= "none";
+               document.getElementById('multi_mois').style.display= "block"; 
+               document.getElementById('pl_mois').style.display= "none";
+          if(document.getElementById('nom_table').value == "achat") {                
+                document.getElementById('p_achat').style.display= "block";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+            } 
+            else if(document.getElementById('nom_table').value == "facture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "block";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+
+           } 
+           else if(document.getElementById('nom_table').value == "lignefacture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "block";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "repartition") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "block";
+              
+           } 
+    } 
+    else if(p_value == "annee") {
+               document.getElementById('multi_jours').style.display= "none";
+               document.getElementById('multi_semaines').style.display= "none";
+               document.getElementById('multi_mois').style.display= "none";
+               document.getElementById('pl_mois').style.display= "none";
+          if(document.getElementById('nom_table').value == "achat") {                
+                document.getElementById('p_achat').style.display= "block";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+
+            } 
+            else if(document.getElementById('nom_table').value == "facture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "block";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "lignefacture") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "block";
+                document.getElementById('p_repart').style.display= "none";
+           } 
+           else if(document.getElementById('nom_table').value == "repartition") {
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "block";
+              
+           } 
+    } 
+
+
+
+    else{
+               //pour le masquage des entites
+                document.getElementById('correspondant').style.display= "none";
+                document.getElementById('ent_vidon').style.display= "none";
+                document.getElementById('cli_fac').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('utilisateur').style.display= "none";
+
+                //pour le masquage de la périodicité
+                document.getElementById('p_achat').style.display= "none";
+                document.getElementById('p_fact').style.display= "none";
+                document.getElementById('p_ligfact').style.display= "none";
+                document.getElementById('p_repart').style.display= "none";
+                document.getElementById('multi_semaines').style.display= "none";
+                document.getElementById('multi_mois').style.display= "none"; 
+                document.getElementById('pl_mois').style.display= "none";
+
+                 //pour le masquage de type de regroupement
+                document.getElementById('type_regp').style.display= "none";
+
+    } 
+}
+
+
+
 /*****
  * genererModalLignePrestation : genere le modal pour ajouter ou modifier une ligne de prestation dans createPrestation
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
