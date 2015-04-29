@@ -14,12 +14,6 @@
 //On lance une session pour conserver les données issues du dossier
 //session_start();
 
-/* Ajout en-tete avec le menu */
-/*require_once("header.php");
-require_once("BDD/SPDO.php");
-require_once("ajax.php");
-require_once("utiles.php");
-*/
 //On récupère l'id du dossier à travers l'url de la page
 $url = "http://".$_SERVER['SERVER_NAME'].$_SERVER["REQUEST_URI"];
 $idPage = stristr($url, '&id=');
