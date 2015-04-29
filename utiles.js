@@ -75,14 +75,14 @@ function checkTypePrestation(p_value){
     }
 }
 
-/*
- * changeDevise : Permet de changer la devise pour un achat et de mettre le taux de la devise automatiquement
+/* changeDevise : Permet de changer la devise pour un achat et de mettre le taux de la devise automatiquement
  *
  * @param p_id : Contient l'id pour le taux de la devise
  * @param p_value : Contient l'iso de la devise
  * @param p_button : nom du bouton pour faire un check
+ * @param p_modal : definit depuis quel modal la fonction est appelée
  ***/
-function changeDevise(p_id, p_value, p_button){    
+function changeDevise(p_id, p_value, p_button, p_modal){    
     // Appel la fonction qui crée un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
     
@@ -97,7 +97,11 @@ function changeDevise(p_id, p_value, p_button){
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             $(p_id).val(xmlHttp.responseText);
-            checkAchat(p_button);
+            if(p_modal == 'achat') {
+                checkAchat(p_button);
+            } else if (p_modal == 'reglement') {
+                checkReglement(p_button);
+            }
             var items = document.getElementsByClassName('devise');
             var i, len;
             for (i = 0, len = items.length; i < len; i++) {
@@ -107,6 +111,40 @@ function changeDevise(p_id, p_value, p_button){
     };
     xmlHttp.open("GET",url,true); // Ouvre l'url
     xmlHttp.send(null); 
+}
+
+/* changeMontantTTC : Permet de prendre en compte ou non la TVA si le dossier est francais ou etranger
+ *
+ *@param p_value : Contient le type de dossier chosi (français ou étranger)
+ ***/
+function changeMontantTTC(p_value){    
+    //On recupere le nombre de lignes de factures qui ont été ajoutées
+    var nbLignes = document.getElementById('nbLignesFacTot').value;
+    //On parcourt toutes les lignes pour savoir leur montant et leur TVA
+    var i=1;
+    var tva, total, montantttc;
+    for(i;i<=nbLignes;i++) {
+        //On verifie que la ligne ne soit pas supprimée
+        if(document.getElementById('suppLigne'+i) == null) {
+            //On recupere le taux de la TVA appliquée a cette ligne et le total HT
+            tva = document.getElementById('tvaLigne'+i).value;
+            total = document.getElementById('totalLigne'+i).value;
+            //on verifie si on passe sur un dossier francais (avec TVA) ou un dossier etranger (sans TVA)
+            if(p_value == "FR") {
+                //Ici on prend en compte la TVA dans le montant TTC
+                //On recupère le montant TTC actuel
+                montantttc = parseFloat(document.getElementById("montantttc").value);
+                //On ajoute simplement la TVA associée au montant de la ligne de facture
+                document.getElementById('montantttc').value = montantttc + parseFloat(total*(tva/100));
+            } else {
+                //Ici on ne prend plus la TVA en compte
+                //On recupère le montant TTC actuel
+                montantttc = parseFloat(document.getElementById("montantttc").value);
+                //On retire la TVA associée au montant de la ligne de facture
+                document.getElementById('montantttc').value = montantttc - parseFloat(total*(tva/100));
+            }
+        }
+    }
 }
 
 /*****
@@ -870,10 +908,10 @@ function genererModalLigneFacture(p_id, p_ligneFac) {
             document.getElementById(p_id).innerHTML = xmlHttp.responseText;
             //Si nous souhaitons modifier une ligne de prestation, nous allons preremplir le modal
             if(p_ligneFac != 0) {
-                $('#code').val($('#code'+p_ligneFac).val());
-                $('#libelle').val($('#libelle'+p_ligneFac).val());
+                $('#code').val($('#codeLigne'+p_ligneFac).val());
+                $('#libelle').val($('#libelleLigne'+p_ligneFac).val());
                 //On regarde quel radio bouton est coché
-                var radio = $('#type'+p_ligneFac).val();
+                var radio = $('#typeLigne'+p_ligneFac).val();
                 var radio_id;
                 switch(radio) {
                     case "H" : radio_id = "honos"; break; 
@@ -881,10 +919,10 @@ function genererModalLigneFacture(p_id, p_ligneFac) {
                     case "T" : radio_id = "taxes"; break; 
                 }
                 $('#'+radio_id).prop('checked', true);
-                $('#tva').val($('#tva'+p_ligneFac).val());
-                $('#tarif').val($('#tarif'+p_ligneFac).val());
-                $('#quantite').val($('#quantite'+p_ligneFac).val());
-                $('#total').val($('#total'+p_ligneFac).val());
+                $('#tva').val($('#tvaLigne'+p_ligneFac).val());
+                $('#tarif').val($('#tarifLigne'+p_ligneFac).val());
+                $('#quantite').val($('#quantiteLigne'+p_ligneFac).val());
+                $('#total').val($('#totalLigne'+p_ligneFac).val());
             }
             $('#modalInfoLigneFacture').modal('toggle');
         };
@@ -922,12 +960,13 @@ function ajouterLigneFactureForm(p_id, p_modal){
         }
     }
     
-    var type_lib;
+    var type_lib, type_ajout;
     switch (type) {
-        case "H" : type_lib = "Honoraires"; break;
-        case "F" : type_lib = "Frais"; break;
-        case "T" : type_lib = "Taxes"; break;
+        case "H" : type_lib = "Honoraires"; type_ajout = "honos"; break;
+        case "F" : type_lib = "Frais"; type_ajout = "frais"; break;
+        case "T" : type_lib = "Taxes"; type_ajout = "taxes"; break;
     }
+    
     //on recupere la TVA
     var tva =  document.getElementById('tva').value;
     //on recupere le tarif
@@ -974,6 +1013,26 @@ function ajouterLigneFactureForm(p_id, p_modal){
                 +"</td>"
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
+    
+    //On ajoute la somme de la ligne dans honos, frais ou taxes et dans le montant HT
+    var montantht = parseFloat(document.getElementById('montantht').value);
+    var total_type = parseFloat(document.getElementById('total_'+type_ajout).value);
+    document.getElementById('total_'+type_ajout).value = total_type + parseFloat(total);    
+    document.getElementById('montantht').value = montantht + parseFloat(total);
+    
+    //Si le dossier est francais, on compte la TVA avant d'ajouter dans le montant TTC, sinon on l'ignore
+    var tvaOk = document.getElementById('FR').checked;
+    var montantttc;
+    //dossier francais, on prend en compte la TVA
+    if(tvaOk) {        
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        document.getElementById('montantttc').value = montantttc + parseFloat(total) + parseFloat((tva/100)*total);
+    } //dossier etranger, on ne prend pas en compte la TVA 
+    else {
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        document.getElementById('montantttc').value = montantttc + parseFloat(total);       
+    }
+    
     //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
     if(p_modal) {
         document.getElementById('modalLigneFacture').innerHTML = "";
@@ -1014,11 +1073,11 @@ function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){
         }
     }
     
-    var type_lib;
+    var type_lib, type_ajout;
     switch (type) {
-        case "H" : type_lib = "Honoraires"; break;
-        case "F" : type_lib = "Frais"; break;
-        case "T" : type_lib = "Taxes"; break;
+        case "H" : type_lib = "Honoraires"; type_ajout = "honos"; break;
+        case "F" : type_lib = "Frais"; type_ajout = "frais"; break;
+        case "T" : type_lib = "Taxes"; type_ajout = "taxes"; break;
     }
     
     //on recupere la TVA
@@ -1030,6 +1089,54 @@ function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){
     //on recupere le montant total
     var total =  document.getElementById('total').value;
     
+    
+    //On recupere l'ancien type et l'ancienne somme
+    var old_type = document.getElementById('typeLigne' + p_ligneFac).value;
+    var old_type_supp;
+    switch (old_type) {
+        case "H" : old_type_supp = "honos"; break;
+        case "F" : old_type_supp = "frais"; break;
+        case "T" : old_type_supp = "taxes"; break;
+    }
+    //On recupere l'ancien totale et l'ancienne tva
+    var old_total = parseFloat(document.getElementById('totalLigne' + p_ligneFac).value);
+    var old_tva = document.getElementById('tvaLigne' + p_ligneFac).value;
+    
+    var montantht = parseFloat(document.getElementById('montantht').value);
+    //On retire la somme aux bons endroits
+    var total_type = parseFloat(document.getElementById('total_'+old_type_supp).value);
+    document.getElementById('total_'+old_type_supp).value = total_type - parseFloat(old_total);
+    document.getElementById('montantht').value = montantht - parseFloat(old_total);
+    
+    //On ajout la nouvelle somme
+    montantht = parseFloat(document.getElementById('montantht').value);
+    total_type = parseFloat(document.getElementById('total_'+type_ajout).value);
+    document.getElementById('total_'+type_ajout).value = total_type + parseFloat(total);
+    document.getElementById('montantht').value = montantht + parseFloat(total);   
+        
+    //Si le dossier est francais, on compte la TVA avant de retirer l'ancien total et d'ajouter le nouveau total dans le montant TTC, sinon on l'ignore
+    var tvaOk = document.getElementById('FR').checked;
+    var montantttc;
+    
+    //dossier francais, on prend en compte la TVA
+    if(tvaOk) {        
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        //on retire d'abord l'ancienne somme
+        document.getElementById('montantttc').value = montantttc - parseFloat(old_total) - parseFloat((old_tva/100)*old_total);
+        //puis on ajoute la nouvelle
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        document.getElementById('montantttc').value = montantttc + parseFloat(total) + parseFloat((tva/100)*total);
+    } //dossier etranger, on ne prend pas en compte la TVA 
+    else {
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        //On retire d'abord l'ancienne somme
+        document.getElementById('montantttc').value = montantttc - parseFloat(old_total);
+        //Puis on ajoute la nouvelle
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        document.getElementById('montantttc').value = montantttc + parseFloat(total);       
+    }
+    
+    
     //On modifier la ligne dans la table
     var ligne = "<td>" + code_nom
                 + "<input type='hidden' value='" + code.value + "' name='codeLigne" + p_ligneFac + "' id='codeLigne" + p_ligneFac + "'/></td>"
@@ -1037,7 +1144,7 @@ function modifierLigneFactureForm(p_id, p_ligneFac, p_modal){
                 +"<input type='hidden' value=\"" + libelle + "\" name='libelleLigne" + p_ligneFac + "' id='libelleLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + type_lib
                 +"<input type='hidden' value='" + type + "' name='typeLigne" + p_ligneFac + "' id='typeLigne" + p_ligneFac + "'/></td>"
-                +"<td>" + tva
+                +"<td>" + tva + "%"
                 +"<input type='hidden' value='" + tva + "' name='tvaLigne" + p_ligneFac + "' id='tvaLigne" + p_ligneFac + "'/></td>"
                 +"<td>" + tarif
                 +"<input type='hidden' value='" + tarif + "' name='tarifLigne" + p_ligneFac + "' id='tarifLigne" + p_ligneFac + "'/></td>"
@@ -1093,6 +1200,44 @@ function supprimerLigneFactureForm(p_num){
     
     //On decrement le nombre de lignes de facture ajoutées
     document.getElementById('nbLignesFac').value = parseInt(nbLignesFac-1);  
+    
+    //On recupere l'ancien type et l'ancienne somme
+    var old_type = document.getElementById('typeLigne' + p_num).value;
+    var old_type_supp;
+    switch (old_type) {
+        case "H" : old_type_supp = "honos"; break;
+        case "F" : old_type_supp = "frais"; break;
+        case "T" : old_type_supp = "taxes"; break;
+    }
+    //on recupere l'ancien total et l'ancienne TVA
+    var old_total = parseFloat(document.getElementById('totalLigne' + p_num).value);
+    var old_tva = document.getElementById('tvaLigne' + p_num).value;
+    
+    //On retire la somme au bon endroit
+    var total_type = parseFloat(document.getElementById('total_'+old_type_supp).value);
+    document.getElementById('total_'+old_type_supp).value = total_type - parseFloat(old_total);
+    
+    var montantht = parseFloat(document.getElementById('montantht').value);
+    
+    
+    document.getElementById('total_'+old_type_supp).value = total_type - parseFloat(old_total);
+    document.getElementById('montantht').value = montantht - parseFloat(old_total);
+    
+    //Si le dossier est francais, on compte la TVA avant de retirer l'ancien total et d'ajouter le nouveau total dans le montant TTC, sinon on l'ignore
+    var tvaOk = document.getElementById('FR').checked;
+    var montantttc;
+    
+    //dossier francais, on prend en compte la TVA
+    if(tvaOk) {        
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        //on retire l'ancienne somme
+        document.getElementById('montantttc').value = montantttc - parseFloat(old_total) - parseFloat((old_tva/100)*old_total);
+    } //dossier etranger, on ne prend pas en compte la TVA 
+    else {
+        montantttc = parseFloat(document.getElementById('montantttc').value);
+        //On retire l'ancienne somme
+        document.getElementById('montantttc').value = montantttc - parseFloat(old_total);
+    }
     
     //On modifier la ligne dans la table en mode supprimé
     var ligne = "<input type='hidden' value='" + p_num + "' name='suppLigne" + p_num + "' id='suppLigne" + p_num + "'/>";
@@ -1398,6 +1543,13 @@ function ajouterAchatForm(p_id, p_modal, p_dossier){
                 +"</td>"
             +"</tr>";
     document.getElementById(p_id).innerHTML = element + ligne;
+    
+    //On ajoute la somme de l'achat dans le total Achats et dans les montants totaux
+    var total_achats = parseFloat(document.getElementById('total_achats').value);
+    document.getElementById('total_achats').value = total_achats + parseFloat(montant_revente);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) + parseFloat(montant_revente);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) + parseFloat(montant_revente);
+    
     //On supprime le modal en caché afin de pouvoir valider le formulaire (sinon le validator bootstrap trouve des inputs required non remplis dans le modal)
     if(p_modal) {
         document.getElementById('modalAchat').innerHTML = "";
@@ -1467,6 +1619,20 @@ function modifierAchatForm(p_id, p_achat, p_modal, p_dossier){
         fac_rf = document.getElementById('fac_rf').value;
         datePrefacturation = document.getElementById('date_fac_rf_reel').value;        
     }
+    //On recupere l'ancienne somme de l'achat
+    var old_total = parseFloat(document.getElementById('montantReventeAchat' + p_achat).value);
+    
+    //On retire l'ancienne somme des bons endroits
+    var total_achats = parseFloat(document.getElementById('total_achats').value);
+    document.getElementById('total_achats').value = total_achats - parseFloat(old_total);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) - parseFloat(old_total);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) - parseFloat(old_total);
+    
+    //On ajout la nouvelle somme a total_achats et aux montants totaux
+    total_achats = parseFloat(document.getElementById('total_achats').value);
+    document.getElementById('total_achats').value = total_achats + parseFloat(montant_revente);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) + parseFloat(montant_revente);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) + parseFloat(montant_revente);
     
     //On cree la ligne dans la table
     var ligne = "<tr id='ligneAchat" + p_achat + "'>" 
@@ -1544,6 +1710,15 @@ function modifierAchatForm(p_id, p_achat, p_modal, p_dossier){
  * @param p_num : Contient le numero de la ligne a supprimer
  ***/
 function supprimerAchatForm(p_num){
+    //On recupere l'ancienne somme de l'achat
+    var old_total = parseFloat(document.getElementById('montantReventeAchat' + p_num).value);
+    
+    //On retire l'ancienne somme des bons endroits
+    var total_achats = parseFloat(document.getElementById('total_achats').value);
+    document.getElementById('total_achats').value = total_achats - parseFloat(old_total);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) - parseFloat(old_total);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) - parseFloat(old_total);
+    
     //On modifier la ligne dans la table en mode supprimé
     var ligne = "<input type='hidden' value='" + p_num + "' name='suppAchat" + p_num + "' id='suppAchat" + p_num + "'/>";
     document.getElementById('ligneAchat'+p_num).innerHTML = ligne;
@@ -1780,12 +1955,20 @@ function ajouterReglementForm(p_id, p_modal){
     var montant = document.getElementById('montant').value;
     //on recupere la devise
     var devise = document.getElementById('devise').value;
+    //on recupere le montant en euros
+    var montantEuro = document.getElementById('montantEuro').value;
     
     //On augmente le nombre de reglements ajoutées
     document.getElementById('nbReglementsTot').value = parseInt(nbReglementsTot+1); 
     
     //On recupere ce qu'il y avait deja dans la table pour ne pas l'ecraser
     var element = document.getElementById(p_id).innerHTML;
+    
+    //On ajoute la somme aux reglements ainsi qu'aux montants HT et TTC (en les retirant des montants totaux)
+    var total_reg = parseFloat(document.getElementById('total_reglements').value);
+    document.getElementById('total_reglements').value = total_reg + parseFloat(montantEuro);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) - parseFloat(montantEuro);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) - parseFloat(montantEuro);
     
     //On cree la ligne dans la table
     var ligne = "<tr id='ligneReg" + document.getElementById('nbReglementsTot').value + "'>" 
@@ -1795,6 +1978,8 @@ function ajouterReglementForm(p_id, p_modal){
                 + "<input type='hidden' value='" + montant + "' name='montantReg" + document.getElementById('nbReglementsTot').value + "' id='montantReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>" + devise
                 + "<input type='hidden' value='" + devise + "' name='deviseReg" + document.getElementById('nbReglementsTot').value + "' id='deviseReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
+                +"<td>" + montantEuro
+                + "<input type='hidden' value='" + montantEuro + "' name='montantEuroReg" + document.getElementById('nbReglementsTot').value + "' id='montantEuroReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerReglementForm(" + document.getElementById('nbReglementsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
@@ -1816,6 +2001,12 @@ function ajouterReglementForm(p_id, p_modal){
  * @param p_num : Contient le numero de la ligne a supprimer
  ***/
 function supprimerReglementForm(p_num){
+    //On retire la somme des reglements et on l'ajoute aux montants totaux
+    var total_reg = parseFloat(document.getElementById('total_reglements').value);
+    document.getElementById('total_reglements').value = total_reg - parseFloat(document.getElementById('montantEuroReg'+p_num).value);
+    document.getElementById('montantht').value = parseFloat(document.getElementById('montantht').value) + parseFloat(document.getElementById('montantEuroReg'+p_num).value);
+    document.getElementById('montantttc').value = parseFloat(document.getElementById('montantttc').value) + parseFloat(document.getElementById('montantEuroReg'+p_num).value);
+    
     //On modifier la ligne dans la table en mode supprimé
     var ligne = "<input type='hidden' value='" + p_num + "' name='suppReg" + p_num + "' id='suppReg" + p_num + "'/>";
     document.getElementById('ligneReg'+p_num).innerHTML = ligne;
@@ -1829,6 +2020,7 @@ function supprimerReglementForm(p_num){
 function checkReglement(p_id){
     //si tous les champs sont remplis correctement, alors le bouton de submit du modal sera activé
     var buttonOk = true;
+    var totalOk = true;
     
     var date = document.getElementById('date').value;
     if(date == "") {
@@ -1839,6 +2031,20 @@ function checkReglement(p_id){
     var montant =  document.getElementById('montant').value;
     if(!isANumber(montant)) {
         buttonOk = false;
+        totalOk = false;
+    }
+    
+    var taux =  document.getElementById('taux').value;
+    if((taux == "") || (!isANumber(taux))) {
+        buttonOk = false;
+        totalOk = false;
+    }
+    
+    //on modifie le montant si le taux et la valeur du montant dans la devise choisie sont ok
+    if(totalOk) {
+        document.getElementById('montantEuro').value = montant*taux;
+    } else {
+        document.getElementById('montantEuro').value = 0;
     }
     
     if(buttonOk)
@@ -1876,17 +2082,17 @@ function emptyTabPresta(id_tab) {
 /*---fONCTION ABDOUL*/
 
 function genererListeNomModele(p_id,p_value){
-    // Appel la fonction qui cr�e un objet XmlHttp.
+    // Appel la fonction qui cr�e un objet XmlHttp.
     var xmlHttp = GetXmlHttpObject(); 
-    // V�rifie si le navigateur supporte l'AJAX
+    // V�rifie si le navigateur supporte l'AJAX
     if (xmlHttp == null) {
         alert ("Votre navigateur ne supporte pas AJAX");
         return;
     } 
-    // Cr�ation de l'url envoyee � l'aiguilleur.
+    // Cr�ation de l'url envoyee � l'aiguilleur.
     var url= "ajax.php?action=genererListeNomModele&mod=" + p_value;
 
-    // Cr�ation de la fonction qui sera appel� au changement de statut.
+    // Cr�ation de la fonction qui sera appel� au changement de statut.
     xmlHttp.onreadystatechange= function StateChanged() {
         if (xmlHttp.readyState == 4) {
             var jsonData = $.parseJSON(xmlHttp.responseText);

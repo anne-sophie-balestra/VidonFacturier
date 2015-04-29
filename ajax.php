@@ -920,7 +920,7 @@ function genererModalAchat($achat, $dossier) {
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label" for="devise">Devise :</label>
-                                <select name="devise" id="devise" required class="form-control" onchange="changeDevise('#taux', this.value, 'subAction');">
+                                <select name="devise" id="devise" required class="form-control" onchange="changeDevise('#taux', this.value, 'subAction', 'achat');">
                                     <?php foreach($result_dev->fetchAll(PDO::FETCH_OBJ) as $devise) { ?>0
                                     <option <?php if($devise->dev_iso == 'EUR') { echo "selected"; } ?> value="<?php echo $devise->dev_iso; ?>"><?php echo $devise->dev_iso; ?></option>
                                     <?php } ?>
@@ -1241,17 +1241,36 @@ function genererModalReglement() {
                             <label class="control-label" for="date">Date :</label>
                             <input class="datepicker form-control" data-date-format="yyyy-mm-dd" name="date" type="text" required onkeyup="checkReglement('subAction');" id="date">
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label" for="devise">Devise :</label>
+                                <select name="devise" id="devise" required class="form-control" onchange="changeDevise('#taux', this.value, 'subAction', 'reglement');">
+                                    <?php foreach($result_dev->fetchAll(PDO::FETCH_OBJ) as $devise) { ?>0
+                                    <option <?php if($devise->dev_iso == 'EUR') { echo "selected"; } ?> value="<?php echo $devise->dev_iso; ?>"><?php echo $devise->dev_iso; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label" for="taux">Taux :</label>
+                                <input name="taux" type="text" required onkeyup="checkReglement('subAction');" value="1" class="form-control" id="taux" pattern="\d+(\.\d*)?" data-error='Veuillez renseigner un montant (ex: 400.50)'>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="control-label" for="montant">Montant :</label>
                             <div class="input-group">
                                 <input name="montant" id="montant" type="text" onkeyup="checkReglement('subAction');" pattern="\d+(\.\d{1,2})?" data-error='Veuillez renseigner un montant (ex: 400.50)' required class="form-control">
-                                <span class="input-group-addon">
-                                    <select id="devise" class="form-inline">
-                                        <?php foreach($result_dev->fetchAll(PDO::FETCH_OBJ) as $devise) { ?>
-                                        <option <?php if($devise->dev_iso == 'EUR') { echo "selected"; } ?> value="<?php echo $devise->dev_iso; ?>"><?php echo $devise->dev_iso; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                </span>
+                                <span class="input-group-addon devise">EUR</span>
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="montantEuro">Montant total :</label>
+                            <div class="input-group">
+                                <input name="montantEuro" id="montantEuro" type="text" readonly required class="form-control">
+                                <span class="input-group-addon">EUR</span>
                             </div>
                             <div class="help-block with-errors"></div>
                         </div>

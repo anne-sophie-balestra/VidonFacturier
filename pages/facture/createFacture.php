@@ -87,8 +87,8 @@ $result_cons->execute();
             <!--Renseignement de la zone geographique-->
             <div class="form-group">
                 <label class="control-label" for="area">Prestation pour un dossier : </label><br />
-                <input type="radio" name="area" value="FR" checked> Français
-                <input type="radio" name="area" value="E"> Etranger
+                <input type="radio" name="area" id="FR" value="FR" checked onchange="changeMontantTTC(this.value);"> Français
+                <input type="radio" name="area" id="E" value="E" onchange="changeMontantTTC(this.value);"> Etranger
             </div>
             <!--On choisit les consultants sur cette facture-->
             <div class="form-group">
@@ -158,7 +158,81 @@ $result_cons->execute();
             <div class="form-group">
                 <label class="control-label" for="objet">Objet :</label>
                 <input class="form-control" name="objet" type="text" required id="objet" value="">
-            </div> 
+            </div>
+            <br />
+            <div class="row">                
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="total_honos">Honoraires :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="total_honos" type="text" readonly required id="total_honos" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="total_frais">Frais :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="total_frais" type="text" readonly required id="total_frais" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="total_taxes">Taxes :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="total_taxes" type="text" readonly required id="total_taxes" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="total_achats">Achats :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="total_achats" type="text" readonly required id="total_achats" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>   
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="total_reglements">Réglements :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="total_reglements" type="text" readonly required id="total_reglements" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="row">                
+                <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="montantht">Montant HT :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="montantht" type="text" readonly required id="montantht" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="row">                
+                <div class="col-md-6"> </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label" for="montantttc">Montant TTC :</label>
+                        <div class="input-group">
+                            <input class="form-control" name="montantttc" type="text" readonly required id="montantttc" value="0">
+                            <span class="input-group-addon">€</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
         </div>
         <!--Panel qui contient les reglement effectués-->
         <div class="panel panel-default" onmouseover="this.className='panel panel-primary';" onmouseout="this.className='panel panel-default';">
@@ -170,6 +244,7 @@ $result_cons->execute();
                         <th scope="col">Date</th>
                         <th scope="col">Montant</th>
                         <th scope="col">Devise</th>
+                        <th scope="col">Montant €</th>
                         <th scope="col">Supprimer</th>
                     </tr>
                 </thead>

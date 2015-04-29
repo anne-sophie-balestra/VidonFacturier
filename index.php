@@ -46,6 +46,11 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             require_once("pages/facture/createFacture.php");
             break;
         
+        //Ajout d'une facture dans la BD
+        case('insertFacture'):
+            require_once("BDD/facture/facture.php");
+            break;
+        
         /* Prestations */    
         //Affichage des prestations dans un tableau
         case('listePrestations'):
