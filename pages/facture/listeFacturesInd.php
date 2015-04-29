@@ -88,14 +88,14 @@ $result_fac->execute();
               <?php 
               switch ($fac->fac_status) 
 				{
-              	case 0:echo "Prof &agrave; Valider";break;
-              	case 1:echo "Prof Valid&eacute;e CPV";break;
-              	case 2:echo "Prof Envoy	&eacute;e à Client";break;
-              	case 3:echo "Prof accept&eacute;e";break;
-              	case 4:echo "Facture imprim&eacute;e";break;
-              	case 5:echo "Facture export&eacute;e";break;
-              	case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
-              	case 7:echo "Facture Régl&eacute;e";break;	 
+					case 0:echo "Prof &agrave; Valider";break;
+					case 1:echo "Prof Valid&eacute;e CPV";break;
+					case 2:echo "Prof Envoy&eacute;e au Client";break;
+					case 3:echo "Prof accept&eacute;e";break;
+					case 4:echo "Facture imprim&eacute;e";break;
+					case 5:echo "Facture export&eacute;e";break;
+					case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
+					case 7:echo "Facture Régl&eacute;e";break;
               }
               ?>
               </td>      

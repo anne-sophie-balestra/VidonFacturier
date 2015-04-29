@@ -88,7 +88,7 @@ $result_fac->execute();
 				{
               	case 0:echo "Prof &agrave; Valider";break;
               	case 1:echo "Prof Valid&eacute;e CPV";break;
-              	case 2:echo "Prof Envoy	&eacute;e &agrave; Client";break;
+              	case 2:echo "Prof Envoy&eacute;e au Client";break;
               	case 3:echo "Prof accept&eacute;e";break;
               	case 4:echo "Facture imprim&eacute;e";break;
               	case 5:echo "Facture export&eacute;e";break;
