@@ -11,103 +11,75 @@
  *                                           *
  * Date de creation : 26/03/2015             *
  ********************************************/
-//On lance une session pour conserver les données issues du dossier
-//session_start();
 
-//On récupère l'id du dossier à travers l'url de la page
-$url = "http://".$_SERVER['SERVER_NAME'].$_SERVER["REQUEST_URI"];
-$idPage = stristr($url, '&id=');
-$id = substr($idPage, 4);
-
+//Connexion a la base
 $pdo = new SPDO();
 
+//On recupere l'id du dossier
+$id = filter_input(INPUT_GET, 'id');
+
 //On recupere les informations sur le dossier choisi 
-$stmt_dossiers = "SELECT dos_id, dos_type , dos_numcomplet, dos_titre, dos_refclient, dos_rf_int, dos_statut, dos_creadate  FROM dossier WHERE dos_id='$id' AND EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
-$result_dossiers = $pdo->prepare($stmt_dossiers);
-$result_dossiers->execute();
-//$result1 = $result_dossiers->fetchAll();
+$stmt_dossier = "SELECT dos_id, dos_type , dos_numcomplet, dos_titre, dos_refclient, dos_rf_int, dos_statut, dos_creadate  FROM dossier WHERE dos_id = :id";
+$result_dossier = $pdo->prepare($stmt_dossier);
+$result_dossier->bindParam(":id", $id);
+$result_dossier->execute();
+$dossier = $result_dossier->fetch(PDO::FETCH_OBJ);
 
-$stmt_tdossier = "SELECT dos_type  FROM dossier WHERE dos_id='$id' ";
-$result_tdossier = $pdo->prepare($stmt_tdossier);
-$result_tdossier->execute();
-$result = $result_tdossier->fetchAll();
+//On recupere le type de dossier issu de la requete ci-dessus
+$t_dossier = $dossier->dos_type;
 
-//var_dump($result1);
-
-
-//On recupere le type de dossier issue de la requete ci-dessus
-$t_dossier = $result[0]['dos_type'];
-
-$stmt_t_ope = "SELECT t_ope_id, t_ope_libelle FROM type_operation JOIN type_facture ON type_facture.t_fac_rf_ope=type_operation.t_ope_id JOIN type_dossier ON type_facture.t_fac_rf_typdos=type_dossier.t_dos_id WHERE t_dos_type = :t_dossier ORDER BY t_dos_type";
+$stmt_t_ope = "SELECT t_ope_id, t_ope_libelle FROM type_operation";
 $result_t_ope = $pdo->prepare($stmt_t_ope);
-$result_t_ope->bindParam(":t_dossier", $t_dossier);
 $result_t_ope->execute();
-
-
-
 ?>
 <!-- Contenu principal de la page -->
 <div class="container">
-<div class="col-md-10">
+    <div class="col-md-10">
+        <!--Creation d'un formulaire avec la validation Bootstrap-->
+        <form id="formChoixModele" action="index.php?action=createFactureAutomatique" method="post" role="form" data-toggle="validator">
+            <h2>Création automatique de facture</h2>
+            <div class="form-group">
+                <!--On affiche les données sur le dossier-->
+                <label class="control-label" for="num_dossier">Numéro du dossier :</label><br/>
+                <input type="text" name="num_dossier" value="<?php echo $dossier->dos_numcomplet; ?>" class="form-control" readonly><br>
 
-    <!--Creation d'un formulaire avec la validation Bootstrap-->
-    <form id="formNewModel" action="index.php?action=createFactureAutomatique" method="post" role="form" data-toggle="validator">
-        <h2>Création automatique de facture</h2>
+                <label class="control-label" for="type_dossier">Type de dossier :</label><br/>
+                <input type="text" name="type_dossier" value="<?php echo $dossier->dos_type; ?>" onload="genererListeTypeOperation('#type_operation', type_dossier.value);" class="form-control" readonly><br/>
 
-        <div class="form-group">
-   
-            <?php // On affiche les données sur le dossier
-                foreach($result_dossiers->fetchAll(PDO::FETCH_OBJ) as $dossier) { ?>
-                 <label class="control-label" for="num_dossier">Numéro du dossier :</label><br/>
-                 <input type="text" name="num_dossier" value="<?php echo $dossier->dos_numcomplet; ?>" class="form-control" readonly><br>
-                 
-                 <label class="control-label" for="type_dossier">Type de dossier :</label><br/>
-                 <input type="text" name="type_dossier" value="<?php echo $dossier->dos_type; ?>" onload="genererListeTypeOperation('#type_operation', type_dossier.value);" class="form-control" readonly><br/>
-                  
-                 <label class="control-label" for="objet_dossier">Objet du dossier :</label><br/>
-                 <textarea rows="3" cols="30" name="objet" class="form-control" readonly><?php echo $dossier->dos_titre; ?></textarea><br/>
+                <label class="control-label" for="objet_dossier">Objet du dossier :</label><br/>
+                <textarea rows="3" cols="30" name="objet" class="form-control" readonly><?php echo $dossier->dos_titre; ?></textarea><br/>
 
-                 <label class="control-label" for="client">Client :</label><br/>
-                 <input type="text" name="client" value="<?php echo $dossier->dos_refclient; ?>" class="form-control" readonly><br>
+                <label class="control-label" for="client">Client :</label><br/>
+                <input type="text" name="client" value="<?php echo $dossier->dos_refclient; ?>" class="form-control" readonly><br>
 
-                 <input type="hidden" name="creadate" value="<?php echo substr($dossier->dos_creadate, 0, 11); ?>" class="form-control" readonly>
-
-            <?php } ?>
-        </div>
-        
-
-        <!--On demande a l'utilisateur le type de l'opération pour le modele de facture-->
-        <div class="form-group">
-            <!-- Operation -->
-            <label class="control-label" for="ent_dossier">Type d'opération :</label>
-            <select name="type_operation" id="type_operation" required onchange="genererListeNomModele('#nom_modele', type_dossier.value);" class="form-control select2">
-                 <option></option>
-                 <?php // On affiche les entites disponibles
-                foreach($result_t_ope->fetchAll(PDO::FETCH_OBJ) as $t_ope) { ?>
-                <option value="<?php echo $t_ope->t_ope_libelle; ?>"><?php echo $t_ope->t_ope_libelle; ?></option>
-                <?php } ?>
-             </select>
-        </div>
-
-         <!--Renseignement du nom du modele-->
-       <div class="form-group">
-            <label class="control-label" for="t_operation">Nom du modèle :</label>
-            <select name="nom_modele" id="nom_modele" required  class="form-control select2">
-                 <option></option>
-             </select>
-       </div>
-
-        <div>
-            <input type="submit" name="button" class="btn btn-success" id="button" value="Valider">
-            <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
-        </div>
-        
-    </form>
-
-    
+                <input type="hidden" name="creadate" value="<?php echo substr($dossier->dos_creadate, 0, 11); ?>" class="form-control" readonly>
+            </div>
+            <!--On demande a l'utilisateur le type de l'opération pour le modele de facture-->
+            <div class="form-group">
+                <!-- Operation -->
+                <label class="control-label" for="type_operation">Type d'opération :</label>
+                <select name="type_operation" id="type_operation" required onchange="genererListeNomModele('#nom_modele', type_dossier.value);" class="form-control select2">
+                     <option></option>
+                     <?php // On affiche les entites disponibles
+                    foreach($result_t_ope->fetchAll(PDO::FETCH_OBJ) as $t_ope) { ?>
+                    <option value="<?php echo $t_ope->t_ope_id; ?>"><?php echo $t_ope->t_ope_libelle; ?></option>
+                    <?php } ?>
+                 </select>
+            </div>
+             <!--Renseignement du nom du modele-->
+            <div class="form-group">
+                <label class="control-label" for="nom_modele">Nom du modèle :</label>
+                <select name="nom_modele" id="nom_modele" required  class="form-control select2">
+                     <option></option>
+                 </select>
+           </div>
+            <div>
+                <input type="submit" name="button" class="btn btn-success" id="button" value="Valider">
+                <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
+            </div>
+        </form>
+    </div>
 </div>
-</div>
-
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
@@ -131,9 +103,3 @@ $result_t_ope->execute();
 
     });
 </script>
-
- <script type="text/javascript">
-var url = document.location.href;
-idPage = url.substring(url.lastIndexOf( "&" )+4 );
-//alert(idPage);
- </script>

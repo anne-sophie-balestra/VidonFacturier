@@ -95,7 +95,7 @@ $result_fac->execute();
 					case 4:echo "Facture imprim&eacute;e";break;
 					case 5:echo "Facture export&eacute;e";break;
 					case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
-					case 7:echo "Facture Régl&eacute;e";break;
+					case 7:echo "Facture Rï¿½gl&eacute;e";break;
               }
               ?>
               </td>      
@@ -136,17 +136,17 @@ $result_fac->execute();
         <div class="form-inline">
             <select name="status_update" id="status_update" required class="form-control select2">
                 <option></option>
-                    <option value="0">Prof à valider</option>
-                    <option value="1">Prof validée CPV</option>
-                    <option value="2">Prof Envoyée Client</option>
-                    <option value="3">Prof acceptée</option>
-                    <option value="4">Facture imprimée</option>
-                    <option value="5">Facture exportée</option>
-                    <option value="6">Facture echéance dépassée</option>
-                    <option value="7">Facture Réglée</option>
+                    <option value="0">Prof Ã  valider</option>
+                    <option value="1">Prof validÃ©e CPV</option>
+                    <option value="2">Prof EnvoyÃ©e Client</option>
+                    <option value="3">Prof acceptÃ©e</option>
+                    <option value="4">Facture imprimÃ©e</option>
+                    <option value="5">Facture exportÃ©e</option>
+                    <option value="6">Facture echÃ©ance dÃ©passÃ©e</option>
+                    <option value="7">Facture RÃ©glÃ©e</option>
 
             </select>
-            <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre à jour">
+            <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre Ã  jour">
         </div>
 
     

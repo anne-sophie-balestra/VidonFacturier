@@ -25,9 +25,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
 
-            //var_dump($_POST);
-            //exit();
-
             /* Recuperation des inputs avec verification de leur initialisation  
              * Si on trouve une erreur, on renvoie l'utilisateur sur la page de creation de modele */
             $name = "";
@@ -190,9 +187,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     $stmt_insert->execute();
                 }
             }
-
-        //var_dump(sizeof($presta_id));
-        //exit();
 
             // On retourne a la page d'accueil
             returnToListModel();

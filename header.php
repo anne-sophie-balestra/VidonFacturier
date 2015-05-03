@@ -52,7 +52,7 @@
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav sidebar-brand">
                         <li class="text-center sidebar-brand">                            
-                            <a id="slider" class="sidebar-brand" style="padding-left: 85%; background-color: transparent; cursor: pointer;"><img src="img/arrows.png" width="50" height="50"></a>
+                            <a id="slider" class="sidebar-brand" style="padding-left: 85%; background-color: transparent; cursor: pointer;"><img id="arrow" src="img/left-arrow.png" width="50" height="50"></a>
                         </li>
                         <li class="text-center sidebar-brand" style="margin-bottom: 20px;">                            
                             <a class="sidebar-brand" href="index.php"><img src="img/logo.png" width="85" height="72"></a>
@@ -90,9 +90,13 @@
                         e.preventDefault();
                         if (a==0) {
                             $("#sidebar-wrapper").animate({"left":"270px"}, "fast").show();
+                            $("#wrapper").animate({"margin-left":"0px"}, "fast");
+                            $("#arrow").attr("src","img/left-arrow.png");
                             a=1;
                         } else {
-                            $("#sidebar-wrapper").animate({"left":"50px"}, "fast");
+                            $("#sidebar-wrapper").animate({"left":"60px"}, "fast");
+                            $("#wrapper").animate({"margin-left":"-220px"}, "fast").show();
+                            $("#arrow").attr("src","img/right-arrow.png");
                             a=0;
                         }
                     });

@@ -546,7 +546,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $idFac = generateId("FAC", "re", "facture");
             $num = generateId("", "", "numfacture12014");
             $proforma = generateId("", "", "proforma");
-            $entite = 'ENTre0169kn';
             
             //On lie les parametres recuperés via le formulaire pour les associer a la requete
             $stmt_facture->bindParam(':id', $idFac);
@@ -563,7 +562,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $stmt_facture->bindValue(':impression', NULL);
             $stmt_facture->bindValue(':export', NULL);
             $stmt_facture->bindParam(':num', $num);
-            $stmt_facture->bindValue(':status', NULL);
+            $stmt_facture->bindValue(':status', $typeProforma);
             $stmt_facture->bindParam(':operation', $idOpe);
             $stmt_facture->bindParam(':honos', $total_honos);
             $stmt_facture->bindParam(':retro', $total_achats);
@@ -766,8 +765,7 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     //$stmt_achat->execute();
                 }
             }
-            
-            exit;
+            returnToListIndiv();
             break;
     }
 }

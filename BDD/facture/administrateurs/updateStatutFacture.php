@@ -1,11 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yoannlt
- * Date: 10/04/15
- * Time: 16:42
- */
-
+/********************************************
+* updateStatutFacture.php                   *
+* Change le statut d'une facture            *
+*                                           *
+* Auteurs : Anne-Sophie Balestra            *
+*           Abdoul Wahab Haidara            *
+*           Yvan-Christian Maso             *
+*           Baptiste Quere                  *
+*           Yoann Le Taillanter             *
+*                                           *
+* Date de creation : 22/04/2015             *
+********************************************/
 
 //Connexion a la base de données
 $pdo = new SPDO();

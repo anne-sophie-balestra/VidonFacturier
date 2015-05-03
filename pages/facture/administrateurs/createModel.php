@@ -126,9 +126,11 @@ $result_entite->execute();
         </div>
 
         <!-- Bouton d'ajout d'une prestation au modèle -->
-        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPresta">
-            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Ajouter une prestation
-        </button>
+        <div class="form-group">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPresta">
+                <span class="icon-plus fa fa-plus" aria-hidden="true"></span> Ajouter une prestation
+            </button>
+        </div>
 
         <!--input pour compter le nombre de prestations ajoutees (au moins une necessaire)-->
         <div class="form-group" hidden>
