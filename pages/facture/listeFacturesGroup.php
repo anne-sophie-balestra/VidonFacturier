@@ -30,18 +30,7 @@ $result_fac->execute();
 
 ?>
 <!-- Contenu principal de la page -->
-<head>
-<!--  
-<a class="btn btn-primary btn-sm"
-		onclick="open('index.php?action=details_facture&facid=<?php echo $fac->fac_id;?>&honos=<?php echo $fac->fac_honoraires;?>
-		&retro=<?php echo $fac->fac_retro;?>&taxes=<?php echo $fac->fac_taxes;?>&montant=<?php echo $fac->fac_montantht;?>',
-		'Popup', 'scrollbars=1,resizable=1,height=560,width=770'); return false;">
-		<i class="icon-plus fa fa-eye"></i> Afficher
-                </a>
--->
- <link rel="stylesheet" type="text/css" href="librairies//DataTables-1.10.5/media/css/jquery.dataTables.css">
-</head>
-<div class="container" style="width:100%;">    
+<div class="container" style="width:100%;">
     <h2>Factures Group&eacute;es</h2>
     <table class="table table-striped table-bordered table-condensed table-hover" id="lfacturesInd">
     <thead>
@@ -49,18 +38,18 @@ $result_fac->execute();
             <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col" >Objet</th>
-             <th scope="col">#<br/>Type</th>
+             <th scope="col">Type</th>
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col">Afficher</th>
             
         </tr>
-        <tr class="warning">
+        <tr>
            <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col">Objet</th>
-             <th scope="col">#<br/>Type</th>
+             <th scope="col">Type</th>
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
@@ -93,7 +82,7 @@ $result_fac->execute();
               	case 4:echo "Facture imprim&eacute;e";break;
               	case 5:echo "Facture export&eacute;e";break;
               	case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
-              	case 7:echo "Facture R�gl&eacute;e";break;	 
+              	case 7:echo "Facture R�gl&eacute;e";break;	 
               }
               ?>
               </td>      
@@ -117,7 +106,7 @@ $result_fac->execute();
             <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col">Objet</th>
-             <th scope="col">#<br/>Type</th>
+             <th scope="col">Type</th>
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>

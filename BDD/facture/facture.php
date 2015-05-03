@@ -766,8 +766,8 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
                     //$stmt_achat->execute();
                 }
             }
-            
-            exit;
+
+            returnToListIndiv();
             break;
     }
 }
