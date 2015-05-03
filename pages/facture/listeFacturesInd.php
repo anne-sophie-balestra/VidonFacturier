@@ -17,14 +17,17 @@ $pdo = new SPDO();
 
 //On va chercher les factures depuis l'année derniere a aujourd'hui qui sont individuelles cad les valeurs de client.cli_libellefact=1
 $stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression, 
-fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture 
-		Join entite on facture.fac_rf_ent=entite.ent_id 
-		Join client on entite.ent_id=client.cli_rf_ent
-		WHERE client.cli_libellefact=1 
-		AND EXTRACT(YEAR FROM fac_creadate) between ". (date('Y')-1) . "and  " . (date('Y'));
+        fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture
+
+		WHERE EXTRACT(YEAR FROM fac_creadate) between ". (date('Y')-1) . "and  " . (date('Y'));
 $result_fac = $pdo->prepare($stmt);
 $result_fac->execute();
 
+/* fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture
+   Join entite on facture.fac_rf_ent=entite.ent_id
+   Join client on entite.ent_id=client.cli_rf_ent
+   WHERE client.cli_libellefact=1
+ */
 
 ?>
 <!-- Contenu principal de la page -->
@@ -85,6 +88,7 @@ $result_fac->execute();
 					case 5:echo "Facture export&eacute;e";break;
 					case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
 					case 7:echo "Facture R�gl&eacute;e";break;
+                  default:echo "sans";break;
               }
               ?>
               </td>      
