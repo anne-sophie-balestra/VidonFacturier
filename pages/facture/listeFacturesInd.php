@@ -15,8 +15,6 @@
 //Connexion a la base de donnees
 $pdo = new SPDO();
 
-
-
 //On va chercher les factures depuis l'année derniere a aujourd'hui qui sont individuelles cad les valeurs de client.cli_libellefact=1
 $stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression, 
 fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture 
@@ -30,26 +28,17 @@ $result_fac->execute();
 
 ?>
 <!-- Contenu principal de la page -->
-<head>
-<!--  
-<a class="btn btn-primary btn-sm"
-		onclick="open('index.php?action=details_facture&facid=<?php echo $fac->fac_id;?>&honos=<?php echo $fac->fac_honoraires;?>
-		&retro=<?php echo $fac->fac_retro;?>&taxes=<?php echo $fac->fac_taxes;?>&montant=<?php echo $fac->fac_montantht;?>',
-		'Popup', 'scrollbars=1,resizable=1,height=560,width=770'); return false;">
-		<i class="icon-plus fa fa-eye"></i> Afficher
-                </a>
--->
- <link rel="stylesheet" type="text/css" href="librairies//DataTables-1.10.5/media/css/jquery.dataTables.css">
-</head>
+
 <div class="container" style="width:100%;">    
     <h2>Factures individuelles</h2>
+    <form id="formUpdateFactureStatus" action="index.php?action=updateStatutFacture" method="post" role="form" data-toggle="validator">
     <table class="table table-striped table-bordered table-condensed table-hover" id="lfacturesInd">
     <thead>
         <tr>
             <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col" >Objet</th>
-             <th scope="col">#<br/>Type</th>
+             <th scope="col">Type</th>
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
@@ -57,11 +46,11 @@ $result_fac->execute();
              <th scope="col">Selection</th>
             
         </tr>
-        <tr class="warning">
+        <tr>
            <th scope="col">Dossier/Client</th>
              <th scope="col">Numero</th>
             <th scope="col">Objet</th>
-             <th scope="col">#<br/>Type</th>
+             <th scope="col">Type</th>
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
@@ -147,12 +136,8 @@ $result_fac->execute();
 
             </select>
             <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre à jour">
+            </form>
         </div>
-
-    
-    
-    
-    
     
 </div>
 <script type="text/javascript" charset="utf-8">

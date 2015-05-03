@@ -24,7 +24,6 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
         case('insertFacture'):                        
             /* Erreur a retourner si besoin */
             $error = "Certains champs n'ont pas été remplis correctement. Merci de recommencer.";
-            var_dump($_POST);
             
             /* Recuperation des inputs avec verification de leur initialisation  
              * Si on trouve une erreur, on renvoie l'utilisateur sur la page de creation d'e prestation'une facture */
