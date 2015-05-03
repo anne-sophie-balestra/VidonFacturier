@@ -92,8 +92,8 @@ $result_cons->execute();
             </div>
             <!--On choisit les consultants sur cette facture-->
             <div class="form-group">
-                <label class="control-label" for="consultants">Consultants :</label>
-                <select name="consultants" id="consultants" required class="form-control select2" multiple="multiple">
+                <label class="control-label" for="consultants[]">Consultants :</label>
+                <select name="consultants[]" id="consultants" required class="form-control select2" multiple="multiple">
                     <option></option> 
                 <?php //On affiche tous les utilisateurs de type consultant comme des options du select
                 foreach($result_cons->fetchAll(PDO::FETCH_OBJ) as $cons) { ?>

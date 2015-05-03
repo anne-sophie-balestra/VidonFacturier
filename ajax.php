@@ -28,10 +28,10 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             break;
 
 
-            case('genererListeNomModele'):
-            	$model = (filter_input(INPUT_GET, 'mod') != NULL ? filter_input(INPUT_GET, 'mod') : "");
-            	genererListeNomModele($model);
-            	break;
+        case('genererListeNomModele'):
+            $model = (filter_input(INPUT_GET, 'mod') != NULL ? filter_input(INPUT_GET, 'mod') : "");
+            genererListeNomModele($model);
+            break;
             
             
         // Genere la liste des prestations piour la page createModel.php suivant l'entite, le dossier et l'operation.
@@ -142,15 +142,21 @@ function genererInfosDossier($p_dos) {
     $pdo = new SPDO;
     
     /* On recupere les infos du dossier en fonction de son id */
-    $stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_creadate, dos_titre, ent_raisoc FROM dossier, entite WHERE dos_rf_ent = ent_id AND dos_id = :dos";
+    $stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_creadate, dos_titre, dos_rf_ent, ent_raisoc FROM dossier, entite WHERE dos_rf_ent = ent_id AND dos_id = :dos";
     $result_dossier = $pdo->prepare($stmt);
     $result_dossier->bindParam(":dos", $p_dos);
     $result_dossier->execute();
     $dossier = $result_dossier->fetch(PDO::FETCH_OBJ);
     ?>
-    <td><span class="badge"><?php echo $dossier->dos_numcomplet; ?></span></td>
+    <td>
+        <input type="hidden" id="dos_id" name="dos_id" value="<?php echo $p_dos; ?>"/>
+        <span class="badge"><?php echo $dossier->dos_numcomplet; ?></span>
+    </td>
     <td><?php echo $dossier->dos_titre; ?></td>
-    <td><?php echo $dossier->ent_raisoc; ?></td>
+    <td>
+        <input type="hidden" id="ent_id" name="ent_id" value="<?php echo $dossier->dos_rf_ent; ?>"/>
+            <?php echo $dossier->ent_raisoc; ?>
+    </td>
     <td><?php echo substr($dossier->dos_creadate, 0, 11); ?></td>
     <td><?php echo $dossier->dos_type; ?></td>
 <?php }

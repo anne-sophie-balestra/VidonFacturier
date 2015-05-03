@@ -1251,7 +1251,7 @@ function ajouterLigneFactureForm(p_id, p_modal){
                 + "<input type='hidden' value='" + quantite + "' name='quantiteLigne" + document.getElementById('nbLignesFacTot').value + "' id='quantiteLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
                +"<td>" + total
                 + "<input type='hidden' value='" + total + "' name='totalLigne" + document.getElementById('nbLignesFacTot').value + "' id='totalLigne" + document.getElementById('nbLignesFacTot').value + "'/></td>"
-                +"<td>"
+                +"<td align='center'>"
                 +"<a class='btn btn-primary btn-sm' onclick='";
     if(p_modal) {
         ligne += "genererModalLigneFacture(\"modalLigneFacture\"," + document.getElementById('nbLignesFacTot').value + ", " + p_modal + ")'>";
@@ -1260,7 +1260,7 @@ function ajouterLigneFactureForm(p_id, p_modal){
     }
     ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
-                +"<td>"
+                +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerLigneFactureForm(" + document.getElementById('nbLignesFacTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
@@ -1617,7 +1617,7 @@ function genererModalAchat(p_id, p_achat, p_dossier) {
                 $('#R').prop('checked',$('#reelAchat'+p_achat).val());
                 $('#P').prop('checked',$('#provAchat'+p_achat).val());
                 //si c est un achat provisionnel
-                if($('#provAchat'+p_achat).val() == true) {
+                if($('#provAchat'+p_achat).val() == 'true') {
                     document.getElementById('panel_provisionnel').style.display = 'block';
                     $('#P').prop('checked', true); 
                     $('#tarif_u_prov').val($('#tarif_uAchat'+p_achat).val());                    
@@ -1782,7 +1782,7 @@ function ajouterAchatForm(p_id, p_modal, p_dossier){
                 +"<td>" + reelOuProv
                 + "<input type='hidden' value=\"" +  reel + "\" name='reelAchat" + document.getElementById('nbAchatsTot').value + "' id='reelAchat" + document.getElementById('nbAchatsTot').value + "'/>"
                 + "<input type='hidden' value=\"" +  prov + "\" name='provAchat" + document.getElementById('nbAchatsTot').value + "' id='provAchat" + document.getElementById('nbAchatsTot').value + "'/></td>"
-                +"<td><a class='btn btn-primary btn-sm' onclick='";
+                +"<td align='center'><a class='btn btn-primary btn-sm' onclick='";
     if(p_modal) {
         ligne += "genererModalAchat(\"modalAchat\"," + document.getElementById('nbAchatsTot').value + ", \"" + p_dossier + "\")'>";
     } else {
@@ -1790,7 +1790,7 @@ function ajouterAchatForm(p_id, p_modal, p_dossier){
     }
     ligne += "<i class='icon-plus fa fa-edit'></i> Modifier</a>"
                 +"</td>"
-                +"<td>"
+                +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerAchatForm(" + document.getElementById('nbAchatsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
@@ -2232,7 +2232,7 @@ function ajouterReglementForm(p_id, p_modal){
                 + "<input type='hidden' value='" + devise + "' name='deviseReg" + document.getElementById('nbReglementsTot').value + "' id='deviseReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
                 +"<td>" + montantEuro
                 + "<input type='hidden' value='" + montantEuro + "' name='montantEuroReg" + document.getElementById('nbReglementsTot').value + "' id='montantEuroReg" + document.getElementById('nbReglementsTot').value + "'/></td>"
-                +"<td>"
+                +"<td align='center'>"
                     +"<a class='btn btn-danger btn-sm' onclick='supprimerReglementForm(" + document.getElementById('nbReglementsTot').value + ")'><i class='icon- fa fa-remove'></i> Supprimer</a>"
                 +"</td>"
             +"</tr>";
