@@ -42,8 +42,9 @@ $stmt_cons = "SELECT uti_id, uti_nom, uti_prenom FROM utilisateur ORDER BY uti_i
 $result_cons = $pdo->prepare($stmt_cons);
 $result_cons->execute();
 
-$stmt_t_facture ="SELECT t_fac_id AS idFacture,t_fac_modelname AS modele,
-        pres_id AS idPrestation,pres_rf_nom AS codeNomenclature,nom_code, pres_libelle_ligne_fac AS libelle,pres_t_tarif AS typeTarif, pres_tarif_std AS forfetaire, pres_tarif_jr AS junior,
+$stmt_t_facture ="SELECT t_fac_id AS idFacture,t_fac_modelname AS modele, pres_id AS idPrestation,
+	pres_rf_nom AS codeNomenclature,nom_code, pres_libelle_ligne_fac AS libelle, pres_t_tarif AS typeTarif, 
+	pres_tarif_std AS tarif_standard, pres_tarif_jr AS junior,
         pres_tarif_sr AS senior, pres_tarif_mgr AS manager, t_dos_type
     FROM type_facture
     JOIN type_operation ON type_facture.t_fac_rf_ope = type_operation.t_ope_id
@@ -241,17 +242,22 @@ $result_t_facture->execute();
                             <th><?php echo $facture->libelle ;?></th>
                             <th><?php echo $facture->typetarif ;?></th>
                             <th><input type="numeric" name="tva<?php echo $i; ?>" id="tva<?php echo $i; ?>" onkeyup="total('#total1');" class="form-control" ></th>
-                            <th><?php echo $tarifm = $facture->forfetaire ; ?>
-                            <input type="hidden" name="tarifm<?php echo $i; ?>" id="tarifm<?php echo $i; ?>" value="<?php echo $tarifm ?>" class="form-control">
+                            <th><?php 
+								if($facture->typetarif=="tarif") {//frais
+									echo $tarifm = $facture->tarif_standard ; 
+								}elseif($facture->typetarif=="honos") {//forfetaire ou honos
+									echo $tarifm = $facture->tarif_standard ; 
+								}else{ //taxes
+									echo $tarifm = $facture->tarif_standard ;
+								}
+                            ?>
+                            
                             </th>
                             <th><input type="numeric" name="qte<?php echo $i; ?>" id="qte<?php echo $i; ?>" onkeyup="total('#total1');" class="form-control" ></th>
                             <th><input name="total<?php echo $i; ?>" type="text" disabled class="form-control" id="total<?php echo $i; ?>"></th>
                         </tr>
                         
-                    <?php $i++; } ?> 
-                
-                
-                
+                    <?php $i++; } ?>   
                 </tbody>
             </table>
             <br />

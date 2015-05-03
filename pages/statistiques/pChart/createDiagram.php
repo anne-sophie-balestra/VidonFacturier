@@ -132,7 +132,7 @@ BDD/testMultiSelect.php
         </div>         
         <div class="form-group" id="utilisateur" style="display: none;">
             <label class="control-label" for="util_entite">Utilisateur :</label>
-            <select name="util_entite[]" id="util_entite" class="form-control" multiple>
+            <select name="util_entite[]" id="util_entite" class="form-control" multiple="multiple">
                  <option value="tous"></option>
                  <?php // On affiche les années disponibles de la table facture
                 foreach($result_repart_entites->fetchAll(PDO::FETCH_OBJ) as $entite) { ?>
@@ -153,7 +153,7 @@ BDD/testMultiSelect.php
         </div>
         <div class="form-group" id="multi_jours" style="display: none;">
             <label class="control-label" for="multijrs">Selectionner les jours :</label><br/>
-            <select name="multijrs[]" id="multijrs" class="form-control" multiple>
+            <select name="multijrs[]" id="multijrs" class="form-control" multiple="multiple">
                   <option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
                   <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
                   <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
@@ -165,7 +165,7 @@ BDD/testMultiSelect.php
 
         <div class="form-group" id="multi_semaines" style="display: none;">
             <label class="control-label" for="nom_table">Selectionner la semaine :</label><br/>
-            <select name="multisemaines[]" id="multisemaines" class="form-control" multiple>
+            <select name="multisemaines[]" id="multisemaines" class="form-control" multiple="multiple">
                  <option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
                  <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
                  <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
@@ -182,7 +182,7 @@ BDD/testMultiSelect.php
 
          <div class="form-group" id="multi_mois" style="display: none;">
             <label class="control-label" for="multimois">Selectionner le mois :</label><br/>
-           <select name="multimois[]" id="multimois" class="form-control" multiple>
+           <select name="multimois[]" id="multimois" class="form-control" multiple="multiple">
               <option value="tous"></option>
               <option value="1" selected>Janvier</option><option value="2">Février</option><option value="3">Mars</option>
               <option value="4">Avril</option><option value="5">Mai</option><option value="6">Juin</option>
@@ -206,7 +206,7 @@ BDD/testMultiSelect.php
         <!-- La periode qui sera afficher lorsque le choix du type de regroupement est en mois ou année -->  
         <div class="form-group" id="p_achat" style="display: none;">
             <label class="control-label" for="achat_periode">Période achat :</label>
-            <select name="achat_periode[]" id="achat_periode" class="form-control" multiple>
+            <select name="achat_periode[]" id="achat_periode" class="form-control" multiple="multiple">
                  <option value="tous"></option>
                  <?php // On affiche les années disponibles de la table facture
                 foreach($result_achat_annees->fetchAll(PDO::FETCH_OBJ) as $periodeach) { ?>
@@ -217,7 +217,7 @@ BDD/testMultiSelect.php
 
         <div class="form-group" id="p_fact" style="display: none;">
             <label class="control-label" for="fac_periode">Période facture :</label>
-            <select name="fac_periode[]" id="fac_periode" class="form-control" multiple>
+            <select name="fac_periode[]" id="fac_periode" class="form-control" multiple="multiple">
                  <option value="tous"></option>
                  <?php // On affiche les années disponibles de la table facture
                 foreach($result_fac_annees->fetchAll(PDO::FETCH_OBJ) as $periode) { ?>
@@ -229,7 +229,7 @@ BDD/testMultiSelect.php
         
         <div class="form-group" id="p_ligfact" style="display: none;">
             <label class="control-label" for="ligfac_periode">Période ligne de facture :</label>
-            <select name="ligfac_periode[]" id="ligfac_periode" class="form-control" multiple>
+            <select name="ligfac_periode[]" id="ligfac_periode" class="form-control" multiple="multiple">
                  <option value="tous"></option>
                  <?php // On affiche les années disponibles de la table facture
                 foreach($result_ligfac_annees->fetchAll(PDO::FETCH_OBJ) as $periode) { ?>
@@ -239,7 +239,7 @@ BDD/testMultiSelect.php
         </div>
         <div class="form-group" id="p_repart" style="display: none;">
             <label class="control-label" for="repart_periode">Période repartition :</label>
-            <select name="repart_periode[]" id="repart_periode" class="form-control" multiple>
+            <select name="repart_periode[]" id="repart_periode" class="form-control" multiple="multiple">
                  <option value="tous"></option>
                  <?php // On affiche les années disponibles de la table facture
                 foreach($result_repart_annees->fetchAll(PDO::FETCH_OBJ) as $periode) { ?>
