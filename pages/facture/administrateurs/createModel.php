@@ -51,7 +51,7 @@ $result_entite->execute();
         <!--Renseignement du client-->
         <div class="form-group">
             <label class="control-label" for="name">Client :</label>
-            <select name="client" id="client" class="form-control select2">
+            <select name="client" id="client" required class="form-control select2">
                 <option></option>
                 <?php // On affiche les entites disponibles
                 foreach($result_entite->fetchAll(PDO::FETCH_OBJ) as $cli) { ?>

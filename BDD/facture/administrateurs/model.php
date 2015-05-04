@@ -37,8 +37,8 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             $client = "";
             if (filter_input(INPUT_POST, 'client') != NULL) {
                 $client = filter_input(INPUT_POST, 'client');
-            } else {
-                $client = null;
+            }else {
+                returnToCreateModel($error);
             }
 
             $area = "";
