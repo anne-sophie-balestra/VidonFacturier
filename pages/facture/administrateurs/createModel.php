@@ -192,8 +192,8 @@ $result_entite->execute();
 
         <!--Validation du formulaire-->
         <div>
-            <input type="submit" name="button" class="btn btn-success" id="button" value="Ajouter">
-            <a href="#" onclick="history.back()" class="btn btn-danger" title="Annuler">Annuler</a>
+            <a href="#" onclick="history.back()" class="btn btn-default" title="Annuler">Annuler</a>
+            <input type="submit" name="button" class="btn btn-primary" id="button" value="Ajouter">
         </div>
     </form>
 

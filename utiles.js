@@ -245,17 +245,47 @@ function getTarif(p_id, p_value, p_presta) {
  * @param p_id : Contient l'id de l'element a modifier.
  * @param p_quantite : Contient la quantite
  * @param p_value : Contient le montant
+ * @param p_type : Honos, frais ou taxes
+ * @param p_tva : valeur du taux de la tva
+ * @param p_tvaChange : c est la tva qui a changé
  ***/
-function calculerTotal(p_id, p_quantite, p_value) {
-    var total = 0;
+function calculerTotal(p_id, p_quantite, p_value, p_type, p_tva, p_tvaChange) {
+    //On recupere l'ancien total
+    var oldTotal = document.getElementById(p_id).value;
+    //On recupere l'ancienne TVA
+    var oldTVA = p_tva;
+    if(p_tvaChange) {
+        if(p_tva == 0) {
+            oldTVA = 20;
+        } else {
+            oldTVA = 0;
+        }
+            
+    }
+    //On va maintenant l'enlever de l'ancien montant total
+    var oldTotalType = document.getElementById('total_'+p_type).value;
+    var oldMontantHT = document.getElementById('montantht').value;
+    var oldMontantTTC = document.getElementById('montantttc').value;
+    document.getElementById('total_'+ p_type).value = oldTotalType - oldTotal;
+    document.getElementById('montantht').value = oldMontantHT - oldTotal;
+    document.getElementById('montantttc').value = oldMontantTTC - oldTotal - (oldTotal * (oldTVA/100));
     
-    //on verifie que la quantité et le montant sont bien des nombres
+    var total = 0;
+        //on verifie que la quantité et le montant sont bien des nombres
     if((p_quantite != "" && isANumber(p_quantite)) && (p_value != "" && isANumber(p_value))) {
         total = p_quantite * p_value;
     }
-        
     //On remplace la valeur du total
     document.getElementById(p_id).value = total;
+    
+    //Puis on ajoute ce nouveau total aux montants totaux
+    var totalType = parseFloat(document.getElementById('total_'+p_type).value);
+    var montantHT = parseFloat(document.getElementById('montantht').value);
+    var montantTTC = parseFloat(document.getElementById('montantttc').value);
+    
+    document.getElementById('total_'+ p_type).value = parseFloat(totalType + total);
+    document.getElementById('montantht').value = parseFloat(montantHT + total);
+    document.getElementById('montantttc').value = parseFloat(montantTTC + total) + parseFloat((total * (p_tva/100)));
 }
 
 /*****

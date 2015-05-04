@@ -45,7 +45,7 @@ $result_cons = $pdo->prepare($stmt_cons);
 $result_cons->execute();
 
 //On recupere les lignes de facture associées au modele
-$stmt_lignes = "SELECT prestation.pres_id, prestation.pres_rf_nom, nomenclature.nom_code, prestation.pres_libelle_ligne_fac, "
+$stmt_lignes = "SELECT prestation.pres_id, prestation.pres_rf_nom, nomenclature.nom_code, prestation.pres_libelle_ligne_fac, t_lig_libelle, "
         . "prestation.pres_type, prestation.pres_t_tarif, prestation.pres_tarif_std "
         . "FROM type_facture, type_ligne, prestation, nomenclature "
         . "WHERE t_fac_id = :id_facture AND type_facture.t_fac_id = type_ligne.t_lig_rf_typ_fac "
@@ -314,12 +314,12 @@ $result_lignes->execute();
                         <tr id='ligneLigne<?php echo $i; ?>'> 
                             <td><?php echo $ligne->nom_code; ?>
                             <input type='hidden' value='<?php echo $ligne->pres_rf_nom; ?>' name='codeLigne<?php echo $i; ?>' id='codeLigne<?php echo $i; ?>'/></td>
-                            <td><?php echo $ligne->pres_libelle_ligne_fac; ?>
-                            <input type='hidden' value="<?php echo $ligne->pres_libelle_ligne_fac; ?>" name='libelleLigne<?php echo $i; ?>' id='libelleLigne<?php echo $i; ?>'/></td>
+                            <td><?php echo $ligne->t_lig_libelle; ?>
+                            <input type='hidden' value="<?php echo $ligne->t_lig_libelle; ?>" name='libelleLigne<?php echo $i; ?>' id='libelleLigne<?php echo $i; ?>'/></td>
                             <td><?php echo $type_lib; ?>
                             <input type='hidden' value='<?php echo $type_initial; ?>' name='typeLigne<?php echo $i; ?>' id='typeLigne<?php echo $i; ?>'/></td>
                             <td>
-                                <select name="tvaLigne<?php echo $i; ?>" id="tvaLigne<?php echo $i; ?>" required class="form-control">
+                                <select name="tvaLigne<?php echo $i; ?>" id="tvaLigne<?php echo $i; ?>" required class="form-control" onchange="calculerTotal('totalLigne<?php echo $i; ?>', document.getElementById('quantiteLigne<?php echo $i; ?>').value, document.getElementById('tarifLigne<?php echo $i; ?>').value, '<?php echo $ligne->pres_type; ?>', this.value, true);">
                                     <option value="0" selected>0</option>
                                     <option value="20">20</option>
                                 </select>
@@ -328,7 +328,7 @@ $result_lignes->execute();
                                 echo $ligne->pres_tarif_std; ?>
                                 <input type='hidden' value='<?php echo $ligne->pres_tarif_std; ?>' name='tarifLigne<?php echo $i; ?>' id='tarifLigne<?php echo $i; ?>'/>
                             <?php } else { ?>
-                                <select name="t_cons<?php echo $i; ?>" id="t_cons<?php echo $i; ?>" required class="form-control" onchange="getTarif('tarifLigne<?php echo $i; ?>', this.value, '<?php echo $ligne->pres_id; ?>');calculerTotal('totalLigne<?php echo $i; ?>', document.getElementById('quantiteLigne<?php echo $i; ?>').value, this.value)">
+                                <select name="t_cons<?php echo $i; ?>" id="t_cons<?php echo $i; ?>" required class="form-control" onchange="getTarif('tarifLigne<?php echo $i; ?>', this.value, '<?php echo $ligne->pres_id; ?>');calculerTotal('totalLigne<?php echo $i; ?>', document.getElementById('quantiteLigne<?php echo $i; ?>').value, this.value, '<?php echo $ligne->pres_type; ?>', document.getElementById('tvaLigne<?php echo $i; ?>').value, false)">
                                     <option></option>
                                     <option value="jr">Junior</option>
                                     <option value="sr">Senior</option>
@@ -337,7 +337,7 @@ $result_lignes->execute();
                                 <input type='text' value='0' name='tarifLigne<?php echo $i; ?>' id='tarifLigne<?php echo $i; ?>' readonly/>
                             <?php } ?>
                             </td>
-                            <td><input type='number' value="0" name='quantiteLigne<?php echo $i; ?>' id='quantiteLigne<?php echo $i; ?>' required onkeyup="calculerTotal('totalLigne<?php echo $i; ?>', this.value, document.getElementById('tarifLigne<?php echo $i; ?>').value);"/></td>
+                            <td><input type='number' value="0" name='quantiteLigne<?php echo $i; ?>' id='quantiteLigne<?php echo $i; ?>' required onkeyup="calculerTotal('totalLigne<?php echo $i; ?>', this.value, document.getElementById('tarifLigne<?php echo $i; ?>').value, '<?php echo $ligne->pres_type; ?>', document.getElementById('tvaLigne<?php echo $i; ?>').value, false);"/></td>
                             <td><input type='text' value='' name='totalLigne<?php echo $i; ?>' id='totalLigne<?php echo $i; ?>'/></td>
                             <td align='center'>
                                 <a class='btn btn-primary btn-sm' onclick='genererModalLigneFacture("modalLigneFacture", <?php echo $i; ?>, true)'>
