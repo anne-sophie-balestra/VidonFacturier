@@ -16,23 +16,16 @@
 $pdo = new SPDO();
 
 //On va chercher les factures depuis l'année derniere a aujourd'hui qui sont individuelles cad les valeurs de client.cli_libellefact=1
-$stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression, 
+$stmt = "SELECT fac_id, fac_num, fac_type, fac_rf_ent,fac_rf_dos, fac_objet,fac_status, fac_date, fac_echeance, fac_impression,
         fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture
-
 		WHERE EXTRACT(YEAR FROM fac_creadate) between ". (date('Y')-1) . "and  " . (date('Y'));
 $result_fac = $pdo->prepare($stmt);
 $result_fac->execute();
 
-/* fac_export, fac_honoraires, fac_retro, fac_taxes, fac_montantht FROM facture
-   Join entite on facture.fac_rf_ent=entite.ent_id
-   Join client on entite.ent_id=client.cli_rf_ent
-   WHERE client.cli_libellefact=1
- */
-
 ?>
 <!-- Contenu principal de la page -->
 
-<div class="container" style="width:100%;">    
+<div class="container" style="width:100%;">
     <h2>Factures individuelles</h2>
     <form id="formUpdateFactureStatus" action="index.php?action=updateStatutFacture" method="post" role="form" data-toggle="validator">
     <table class="table table-striped table-bordered table-condensed table-hover" id="lfacturesInd">
@@ -45,9 +38,9 @@ $result_fac->execute();
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
-            <th scope="col">Afficher</th>
-             <th scope="col">Selection</th>
-            
+            <th scope="col"></th>
+             <th scope="col"></th>
+
         </tr>
         <tr>
            <th scope="col">Dossier/Client</th>
@@ -57,15 +50,15 @@ $result_fac->execute();
              <th scope="col">Statut </th>
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
-            <th scope="col"></th>       
-            <th scope="col"></th>   
+            <th scope="col">Afficher</th>
+            <th scope="col">Selection</th>
         </tr>
     </thead>
     <tbody>
         <?php /* On parcours les factures pour les inserer dans le tableau */
         foreach($result_fac->fetchAll(PDO::FETCH_OBJ) as $fac) { ?>
         <tr>
-           
+
             <td><?php echo $fac->fac_rf_dos; ?><br />
                 <?php $entite = $pdo->prepare("SELECT ent_raisoc FROM entite WHERE ent_id = :ent");
                 $entite->bindParam(":ent", $fac->fac_rf_ent);
@@ -74,11 +67,11 @@ $result_fac->execute();
                 echo $ent->ent_raisoc; ?>
             </td>
              <td><?php echo $fac->fac_id; ?></td>
-            <td><?php echo $fac->fac_objet; ?></td>
+            <td><?php echo substr($fac->fac_objet,0,40)."[...]"; ?></td>
             <td><span class="badge"><?php echo $fac->fac_num; ?></span><br /><?php echo $fac->fac_type; ?></td>
               <td>
-              <?php 
-              switch ($fac->fac_status) 
+              <?php
+              switch ($fac->fac_status)
 				{
 					case 0:echo "Prof &agrave; Valider";break;
 					case 1:echo "Prof Valid&eacute;e CPV";break;
@@ -88,16 +81,15 @@ $result_fac->execute();
 					case 5:echo "Facture export&eacute;e";break;
 					case 6:echo "Facture Ech&eacute;ance depass&eacute;e";break;
 					case 7:echo "Facture R�gl&eacute;e";break;
-                  default:echo "sans";break;
               }
               ?>
-              </td>      
-           
+              </td>
+
             <td><?php echo substr($fac->fac_date, 0, 11); ?><br /><?php echo substr($fac->fac_echeance, 0, 11); ?></td>
             <td><?php echo substr($fac->fac_impression, 0, 11); ?><br /><?php echo substr($fac->fac_export, 0, 11); ?></td>
-          
+
             <td align="center">
-                <a class="btn btn-primary btn-sm" 
+                <a class="btn btn-primary btn-sm"
                  href="index.php?action=details_facture&facid=<?php echo $fac->fac_id;?>&honos=<?php echo $fac->fac_honoraires;
                  ?>&retro=<?php echo $fac->fac_retro;?>&montant=<?php echo $fac->fac_montantht;?>
                  &taxes=<?php echo $fac->fac_taxes;?>&dispa=1">
@@ -105,7 +97,7 @@ $result_fac->execute();
                 </a>
              </td>
               <td><INPUT type="checkbox" name="selection[]" value="<?php echo $fac->fac_id; ?>"></td>
-                            
+
         </tr>
         <?php } ?>
     </tbody>
@@ -119,12 +111,13 @@ $result_fac->execute();
             <th scope="col">Date facture/Date écheance</th>
             <th scope="col">Impression/Export compta</th>
             <th scope="col">Afficher</th>
-         
+            <th scope="col">Selection</th>
+
             </tr>
         </tfoot>
     </table>
-    
-    
+
+
         <!--Renseignement du client-->
         <div class="form-inline">
             <select name="status_update" id="status_update" required class="form-control select2">
@@ -142,7 +135,7 @@ $result_fac->execute();
             <input type="submit" name="button" class="btn btn-success" id="button" value="Mettre à jour">
             </form>
         </div>
-    
+
 </div>
 <script type="text/javascript" charset="utf-8">
     $('#lfacturesInd').dataTable({
@@ -162,8 +155,8 @@ $result_fac->execute();
                     sNext:     "Suivant",
                     sLast:     "Dernier"
             }
-        }    
-    }).columnFilter({        
+        }
+    }).columnFilter({
         sPlaceHolder: "head:after",
         aoColumns: [
                         {
@@ -191,3 +184,4 @@ $result_fac->execute();
 
     });
 </script>
+
