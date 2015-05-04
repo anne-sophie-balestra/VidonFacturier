@@ -28,8 +28,6 @@ $result_model->execute();
             <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
             <th scope="col">Dossier</th>
-            <th scope="col">Opération</th>
-            <th scope="col">Objet</th>
             <th scope="col">Type</th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -37,8 +35,6 @@ $result_model->execute();
         <tr>
             <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
-            <th scope="col">Dossier</th>
-            <th scope="col">Opération</th>
             <th scope="col">Objet</th>
             <th scope="col">Type</th>
             <th scope="col">Afficher</th>
@@ -51,8 +47,6 @@ $result_model->execute();
             <tr>
                 <td><?php echo $models->t_fac_modelname; ?></td>
                 <td><?php echo $models->ent_raisoc; ?></td>
-                <td><?php echo $models->t_fac_rf_typdos; ?></td>
-                <td><?php echo $models->t_fac_rf_ope; ?></td>
                 <td><?php echo $models->t_fac_objet; ?></td>
                 <td><?php echo $models->t_fac_type; ?></td>
 
@@ -89,12 +83,34 @@ $result_model->execute();
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><br />
                                     <div class="container-fluid">
                                         <div class="panel panel-default">
+                                            <div class="panel-heading">Information sur le modèle</div>
+                                            <table class="table">
+                                                <tr>
+                                                    <td>Nom du modèle</td>
+                                                    <td><?php echo $models->t_fac_modelname; ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Raison sociale</td>
+                                                    <td><?php echo $models->ent_raisoc; ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Objet</td>
+                                                    <td><?php echo $models->t_fac_objet; ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Type de facture</td>
+                                                    <td><?php echo $models->t_fac_type; ?></td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+
+                                        <div class="panel panel-default">
                                             <div class="panel-heading">Lignes de prestation</div>
                                             <table class="table">
                                                 <tr>
-                                                    <th scope="col">ID</th>
                                                     <th scope="col">Libellé</th>
-                                                    <th scope="col">ref type facture</th>
+                                                    <th scope="col">ref modèle</th>
                                               <!--      <th scope="col">Type tarification</th>
                                                     <th scope="col">Tarif standard</th>
                                                     <th scope="col">Tarif junior</th>
@@ -105,7 +121,6 @@ $result_model->execute();
                                                 <?php //On parcours les lignes pour les afficher
                                                 foreach($result_presta->fetchAll(PDO::FETCH_OBJ) as $lig_presta) { ?>
                                                     <tr>
-                                                        <td><?php echo $lig_presta->t_lig_id; ?></td>
                                                         <td><?php echo $lig_presta->t_lig_libelle; ?></td>
                                                         <td><?php echo $lig_presta->t_lig_rf_typ_fac; ?></td>
                                                     </tr>
@@ -131,8 +146,7 @@ $result_model->execute();
         <tr>
             <th scope="col">Nom</th>
             <th scope="col">Entit&eacute</th>
-            <th scope="col">Dossier</th>
-            <th scope="col">Opération</th>
+
             <th scope="col">Objet</th>
             <th scope="col">Type</th>
             <th></th>
@@ -167,12 +181,6 @@ $result_model->execute();
     }).columnFilter({
         sPlaceHolder: "head:after",
         aoColumns: [
-            {
-                type: "text"
-            },
-            {
-                type: "text"
-            },
             {
                 type: "text"
             },
