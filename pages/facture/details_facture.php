@@ -5,12 +5,12 @@ $fac_hono=$_GET['honos'];
 $fac_retro=$_GET['retro'];
 $fac_taxes=$_GET['taxes'];
 $fac_montant=$_GET['montant'];
-//variable de distinguition des factures groupés et celles individuelles
+//variable de distinguition des factures groupï¿½s et celles individuelles
 $disp=$_GET['dispa'];
 
 $pdo=new SPDO();
 /*
- * fonction de selection des beneficiaires des répartitions
+ * fonction de selection des beneficiaires des rï¿½partitions
  */
 function get_beneficiare_repartition($id_util)
 {
@@ -56,7 +56,7 @@ function get_beneficiare_repartition($id_util)
                                     </div>
                                 
                                    <!-- Panel des Lignes de Factures -->
-                                   <!-- Requete aussi des lignes de factures liés à la facture -->
+                                   <!-- Requete aussi des lignes de factures liï¿½s ï¿½ la facture -->
                                    
                                     <div class="panel panel-default">
                                         <div class="panel-heading"> Details de Lignes de factures</div>
@@ -73,10 +73,10 @@ function get_beneficiare_repartition($id_util)
 
                                             <?php 
                                             $result_ligne= $pdo->prepare("select 
-					                            lig_rubrique,lig_code,
-												lig_libelle,lig_tauxtva,lig_tva,lig_total_dev,lig_montant,
-												lig_typeligne from lignefacture
-												where lig_rf_fac= :id_fac");
+                                                lig_rubrique,lig_code, nom_code,
+                                                lig_libelle,lig_tauxtva,lig_tva,lig_total_dev,lig_montant,
+                                                lig_typeligne from lignefacture, nomenclature
+                                                where lig_rf_fac= :id_fac AND lig_code = nom_id");
                                             $result_ligne->bindParam(":id_fac", $facid);
                                             $result_ligne->execute();
                                             $list_ligne=array();
@@ -86,7 +86,7 @@ function get_beneficiare_repartition($id_util)
 												  { ?>
                                                 <tr>
                                                     <td><?php echo $ligne->lig_rubrique; ?></td>
-                                                    <td><?php echo $ligne->lig_code; ?></td>
+                                                    <td><?php echo $ligne->nom_code; ?></td>
                                                     <td><?php echo $ligne->lig_libelle; ?></td>
                                                      <td><?php if ($ligne->lig_typeligne=="honos") 
                                                      	echo"honoraires";
@@ -100,7 +100,7 @@ function get_beneficiare_repartition($id_util)
                                     </div>
                                     
                                     <!-- Panel des Repartitions -->
-                                    <!-- Requete aussi des lignes de factures liés à la facture..->plus  -->
+                                    <!-- Requete aussi des lignes de factures liï¿½s ï¿½ la facture..->plus  -->
                                     
                                     
                                               <div class="panel panel-default">

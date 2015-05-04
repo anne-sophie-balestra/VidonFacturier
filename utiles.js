@@ -210,6 +210,55 @@ function genererFacturesAchat(p_id, p_value, p_fac) {
 }
 
 /*****
+ * getTarif : genere le tarif d'une prestation en fonction du type de consultant (junior, senior ou manager)
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_value : Contient le type de consultant
+ * @param p_fac : Contient l'id de la prestation associée
+ ***/
+function getTarif(p_id, p_value, p_presta) {
+    // Appel la fonction qui crée un objet XmlHttp.
+    var xmlHttp = GetXmlHttpObject(); 
+    
+    // Vérifie si le navigateur supporte l'AJAX
+    if (xmlHttp == null) {
+        alert ("Votre navigateur ne supporte pas AJAX");
+        return;
+    } 
+    // Création de l'url envoyee à l'aiguilleur.
+    var url= "ajax.php?action=getTarif&cons=" + p_value + "&pre=" + p_presta;
+    // Création de la fonction qui sera appelé au changement de statut.
+    xmlHttp.onreadystatechange= function StateChanged() {
+        if (xmlHttp.readyState == 4) {
+            document.getElementById(p_id).value = xmlHttp.responseText;
+        };
+    };
+    xmlHttp.open("GET",url,true); // Ouvre l'url
+    xmlHttp.send(null); 
+}
+
+/*****
+ * calculerTotal : calcule un total avec une quantite et un montant
+ * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
+ *
+ * @param p_id : Contient l'id de l'element a modifier.
+ * @param p_quantite : Contient la quantite
+ * @param p_value : Contient le montant
+ ***/
+function calculerTotal(p_id, p_quantite, p_value) {
+    var total = 0;
+    
+    //on verifie que la quantité et le montant sont bien des nombres
+    if((p_quantite != "" && isANumber(p_quantite)) && (p_value != "" && isANumber(p_value))) {
+        total = p_quantite * p_value;
+    }
+        
+    //On remplace la valeur du total
+    document.getElementById(p_id).value = total;
+}
+
+/*****
  * genererDateFacture : genere la date de la facture en fonction de son id
  * Fonction AJAX qui passe par le fichier ajax.php. Paramètre de l'url : action.
  *

@@ -65,6 +65,13 @@ if (filter_input(INPUT_GET, 'action') != NULL) {
             changeDevise($devise);
             break;
 
+        //permet de retourner le bon tarif d'une prestation en fonction du type du consultant
+        case('getTarif'):
+            $cons = (filter_input(INPUT_GET, 'cons') != NULL ? filter_input(INPUT_GET, 'cons') : "");
+            $pre = (filter_input(INPUT_GET, 'pre') != NULL ? filter_input(INPUT_GET, 'pre') : "");
+            getTarif($cons, $pre);
+            break;
+
         //Genere une ligne de tableau dans contenant la prestation dans createModel.php
         case('getPrestationTabFromID'):
             $presta = (filter_input(INPUT_GET, 'presta') != NULL ? filter_input(INPUT_GET, 'presta') : "");
@@ -269,7 +276,7 @@ function genererListeNomModele($t_dossier)
 	$pdo = new SPDO;
 
 	/* On recupere les types de dossier en fonction de l'entite */
-	$stmt_model = "SELECT t_fac_id, t_fac_modelname FROM type_facture JOIN type_dossier ON type_facture.t_fac_rf_typdos=type_dossier.t_dos_id WHERE  t_dos_type= :t_dossier";
+	$stmt_model = "SELECT t_fac_id, t_fac_modelname FROM type_facture, type_dossier WHERE type_facture.t_fac_rf_typdos = type_dossier.t_dos_id AND t_dos_type = :t_dossier";
 	$result_model = $pdo->prepare($stmt_model);
 	$result_model->bindParam(":t_dossier", $t_dossier);
 	$result_model->execute();
@@ -297,6 +304,33 @@ function changeDevise($p_devise) {
     $devise = $result_dev->fetch(PDO::FETCH_OBJ);
     
     echo $devise->dev_cours;
+}
+
+/*****
+ * getTarif : permet de retourner le bon tarif d'une prestation en fonction du type du consultant
+ *
+ * @param String $p_cons : type de consultant
+ * @param String $p_pre : prestation
+ ***/
+function getTarif($p_cons, $p_pre) {    
+    $pdo = new SPDO;
+    
+    //On recupere les differentes devises possibles
+    $stmt_prestation = "SELECT pres_tarif_jr, pres_tarif_sr, pres_tarif_mgr FROM prestation WHERE pres_id = :pre";
+    $result_prestation = $pdo->prepare($stmt_prestation);
+    $result_prestation->bindParam(":pre", $p_pre);
+    $result_prestation->execute();
+    $tarif = $result_prestation->fetch(PDO::FETCH_OBJ);
+    
+    $result = "";
+    
+    switch ($p_cons) {
+        case "jr" : $result = $tarif->pres_tarif_jr; break;
+        case "sr" : $result = $tarif->pres_tarif_sr; break;
+        case "mgr" : $result = $tarif->pres_tarif_mgr; break;
+    }
+    
+    echo $result;
 }
 
 /*****

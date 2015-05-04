@@ -83,10 +83,9 @@ CREATE TABLE type_facture
     t_fac_type VARCHAR(200),
     t_fac_objet VARCHAR(255),
     t_fac_rf_ope VARCHAR(11),
-    t_fac_devise VARCHAR(3),
-    t_fac_tauxdevise NUMERIC,
     t_fac_tauxtva NUMERIC,
     t_fac_langue VARCHAR (4),
+    t_fac_area VARCHAR (50),
 
     FOREIGN KEY (t_fac_rf_typdos) REFERENCES type_dossier(t_dos_id),
     FOREIGN KEY (t_fac_rf_ent) REFERENCES entite(ent_id)
@@ -103,8 +102,6 @@ CREATE TABLE type_ligne
     t_lig_rubrique VARCHAR(255),
     t_lig_libelle VARCHAR(255),
     t_lig_rf_typ_fac VARCHAR(11),
-    t_lig_nb NUMERIC,
-    t_lig_total NUMERIC,
 
     FOREIGN KEY (t_lig_rf_typ_fac) REFERENCES type_facture(t_fac_id),
     FOREIGN KEY (t_lig_rf_pres) REFERENCES prestation(pres_id)
@@ -126,8 +123,4 @@ INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creau
 INSERT INTO type_operation (t_ope_id, t_ope_creadate, t_ope_moddate, t_ope_creauser, t_ope_moduser, t_ope_libelle) VALUES ('TOPre000008', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'GLS', 'GLS', 'Divers');
 
 /* DUMMY type_facture */
-INSERT INTO type_facture (t_fac_id, t_fac_rf_typdos, t_fac_rf_ent, t_fac_rf_ope) VALUES ('TEST0001', 'TDOre000001', 'ENTsi015356', 'TOPre000001');
-INSERT INTO type_facture (t_fac_id, t_fac_rf_typdos, t_fac_rf_ent, t_fac_rf_ope) VALUES ('TEST0002', 'TDOre000002', 'ENTre0166o0', 'TOPre000002');
-INSERT INTO type_facture (t_fac_id, t_fac_rf_typdos, t_fac_rf_ent, t_fac_rf_ope) VALUES ('TEST0003', 'TDOre000003', 'ENTre01682k', 'TOPre000003');
-INSERT INTO type_facture (t_fac_id, t_fac_rf_typdos, t_fac_rf_ent, t_fac_rf_ope) VALUES ('TEST0004', 'TDOre000004', 'ENTre0165jm', 'TOPre000004');
 

@@ -149,10 +149,10 @@ $result_cons->execute();
                     <option id="A">Avoir</option> 
                 </select>
                 <select name="type_proforma" id="type_proforma" required class="form-control" style="width: 49.5%;">
-                    <option id="0" selected>Proforma à valider</option> 
-                    <option id="1">Proforma validée CPV</option> 
-                    <option id="2">Proforma envoyée au client</option> 
-                    <option id="3">Proforma acceptée</option> 
+                    <option value="0" selected>Proforma à valider</option> 
+                    <option value="1">Proforma validée CPV</option> 
+                    <option value="2">Proforma envoyée au client</option> 
+                    <option value="3">Proforma acceptée</option> 
                 </select>
             </div><br />
             <div class="form-group">

@@ -13,7 +13,7 @@
 ********************************************/
 
 $pdo = new SPDO();
-$stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_responsable, dos_titre, dos_refclient, dos_rf_int, dos_statut FROM dossier WHERE EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
+$stmt = "SELECT dos_id, dos_type, dos_numcomplet, dos_responsable, dos_titre, ent_raisoc, dos_rf_int, dos_statut FROM dossier, entite WHERE dossier.dos_rf_ent = entite.ent_id AND EXTRACT(YEAR FROM dos_creadate) = " . (date('Y')-1) . " OR EXTRACT(YEAR FROM dos_creadate) = " . (date('Y'));
 $result_dossiers = $pdo->prepare($stmt);
 $result_dossiers->execute();
 ?>
@@ -63,7 +63,7 @@ $result_dossiers->execute();
  -->            </a></td>
             <td><?php echo $dossier->dos_responsable; ?></td>
             <td><?php echo $dossier->dos_titre; ?></td>
-            <td><?php echo $dossier->dos_refclient; ?></td>
+            <td><?php echo $dossier->ent_raisoc; ?></td>
             <td><?php echo $dossier->dos_rf_int; ?></td>
             <td><?php echo $dossier->dos_statut; ?></td>
         </tr>

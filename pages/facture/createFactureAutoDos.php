@@ -19,7 +19,7 @@ $pdo = new SPDO();
 $id = filter_input(INPUT_GET, 'id');
 
 //On recupere les informations sur le dossier choisi 
-$stmt_dossier = "SELECT dos_id, dos_type , dos_numcomplet, dos_titre, dos_refclient, dos_rf_int, dos_statut, dos_creadate  FROM dossier WHERE dos_id = :id";
+$stmt_dossier = "SELECT dos_id, dos_type , dos_numcomplet, dos_titre, ent_raisoc, dos_rf_ent, dos_statut FROM dossier, entite WHERE dossier.dos_rf_ent = entite.ent_id AND dos_id = :id";
 $result_dossier = $pdo->prepare($stmt_dossier);
 $result_dossier->bindParam(":id", $id);
 $result_dossier->execute();
@@ -42,6 +42,7 @@ $result_t_ope->execute();
                 <!--On affiche les données sur le dossier-->
                 <label class="control-label" for="num_dossier">Numéro du dossier :</label><br/>
                 <input type="text" name="num_dossier" value="<?php echo $dossier->dos_numcomplet; ?>" class="form-control" readonly><br>
+                <input type="hidden" id="dos_id" name="dos_id" value="<?php echo $dossier->dos_id; ?>" class="form-control" ><br>
 
                 <label class="control-label" for="type_dossier">Type de dossier :</label><br/>
                 <input type="text" name="type_dossier" value="<?php echo $dossier->dos_type; ?>" onload="genererListeTypeOperation('#type_operation', type_dossier.value);" class="form-control" readonly><br/>
@@ -50,9 +51,8 @@ $result_t_ope->execute();
                 <textarea rows="3" cols="30" name="objet" class="form-control" readonly><?php echo $dossier->dos_titre; ?></textarea><br/>
 
                 <label class="control-label" for="client">Client :</label><br/>
-                <input type="text" name="client" value="<?php echo $dossier->dos_refclient; ?>" class="form-control" readonly><br>
-
-                <input type="hidden" name="creadate" value="<?php echo substr($dossier->dos_creadate, 0, 11); ?>" class="form-control" readonly>
+                <input type="text" name="client" value="<?php echo $dossier->ent_raisoc; ?>" class="form-control" readonly><br>
+                <input type="hidden" id="ent_id" name="ent_id" value="<?php echo $dossier->dos_rf_ent; ?>" class="form-control"><br>
             </div>
             <!--On demande a l'utilisateur le type de l'opération pour le modele de facture-->
             <div class="form-group">
